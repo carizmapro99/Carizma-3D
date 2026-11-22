@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carizma 3D Studio — Storyboard & Previz Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #07090e;
+    --bg-surface: rgba(16, 22, 33, 0.72);
+    --bg-glass: rgba(23, 31, 46, 0.58);
+    --bg-glass-hover: rgba(38, 52, 76, 0.65);
+    --border-subtle: rgba(148, 163, 184, 0.14);
+    --border-bright: rgba(56, 189, 248, 0.45);
+    --accent: #38bdf8;
+    --accent-teal: #2dd4bf;
+    --accent-glow: rgba(56, 189, 248, 0.25);
+    --danger: #f43f5e;
+    --success: #10b981;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 7px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at 15% 10%, rgba(14, 165, 233, 0.12), transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(45, 212, 191, 0.09), transparent 40%),
+                var(--bg-base);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* --- Top Glass Header --- */
+  header {
+    height: 56px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-subtle);
+    z-index: 30;
+    gap: 12px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: -0.2px;
+  }
+  .brand-logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, rgba(45,212,191,0.22), rgba(56,189,248,0.22));
+    border: 1px solid rgba(45,212,191,0.4);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 18px rgba(45,212,191,0.2);
+  }
+  .brand span.tag {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+    background: rgba(56,189,248,0.14); color: var(--accent); border: 1px solid rgba(56,189,248,0.3);
+  }
+
+  .header-center { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 460px; justify-content: center; }
+  .scene-select {
+    flex: 1; max-width: 280px;
+    background: rgba(10, 14, 22, 0.75); color: var(--text-main);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+    padding: 7px 12px; font-family: inherit; font-size: 12.5px; outline: none; cursor: pointer;
+  }
+  .scene-select:focus { border-color: var(--accent); }
+
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+
+  /* --- Liquid Glass Buttons --- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 7px 13px; border-radius: var(--radius-md);
+    font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
+    color: var(--text-main); background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    backdrop-filter: blur(12px); transition: all 0.16s ease; white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg-glass-hover); border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.primary {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.85), rgba(45, 212, 191, 0.85));
+    color: #04131c; font-weight: 700; border-color: rgba(255,255,255,0.25);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.28);
+  }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.active {
+    background: rgba(56, 189, 248, 0.22); border-color: var(--accent); color: #e0f2fe;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .btn.danger { color: #fda4af; border-color: rgba(244,63,94,0.3); }
+  .btn.danger:hover { background: rgba(244,63,94,0.18); }
+  .btn.sm { padding: 5px 9px; font-size: 11px; border-radius: var(--radius-sm); }
+  .btn.icon-only { padding: 7px; width: 32px; height: 32px; }
+
+  /* --- Main Body Layout --- */
+  .workspace {
+    flex: 1; display: flex; min-height: 0; overflow: hidden;
+  }
+
+  /* --- Inspector Sidebar (Right in RTL) --- */
+  aside.inspector {
+    width: 300px;
+    background: var(--bg-surface);
+    backdrop-filter: blur(18px);
+    border-left: 1px solid var(--border-subtle);
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 14px;
+    overflow-y: auto; z-index: 15;
+  }
+  .card {
+    background: rgba(11, 16, 26, 0.55);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .card-title {
+    font-size: 11.5px; font-weight: 700; color: var(--accent);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .row.between { justify-content: space-between; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+
+  label.field-lbl { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+  input[type="text"], textarea {
+    width: 100%; background: rgba(7, 10, 16, 0.8); color: var(--text-main);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+    padding: 7px 10px; font-family: inherit; font-size: 12px; outline: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+  input[type="range"] {
+    flex: 1; accent-color: var(--accent); cursor: pointer; height: 4px;
+  }
+  .val-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    color: var(--accent-teal); min-width: 36px; text-align: left;
+  }
+
+  /* --- Center Stage --- */
+  main.stage-area {
+    flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative;
+  }
+  .viewport-container {
+    flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+    padding: 14px; overflow: hidden;
+    background-image: radial-gradient(rgba(148,163,184,0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .stage-shell {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 14px; overflow: hidden;
+    background: #05070a;
+    border: 1px solid rgba(148,163,184,0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+    transition: width 0.25s ease, height 0.25s ease;
+  }
+  iframe#scene-frame {
+    width: 100%; height: 100%; border: none; display: block; background: #05070a;
+  }
+
+  /* Overlays inside Stage Shell */
+  .overlay-layer {
+    position: absolute; inset: 0; pointer-events: none; z-index: 10; display: none;
+  }
+  #plate-overlay {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+    opacity: 0.5;
+  }
+
+  /* Reels 9:16 Safe Zone Guide */
+  #safezone-overlay {
+    border: 2px dashed rgba(45, 212, 191, 0.5);
+  }
+  .sz-top {
+    position: absolute; top: 0; left: 0; right: 0; height: 14%;
+    background: rgba(244, 63, 94, 0.16); border-bottom: 1px dashed rgba(244, 63, 94, 0.65);
+    display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fda4af;
+  }
+  .sz-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+    background: rgba(244, 63, 94, 0.16); border-top: 1px dashed rgba(244, 63, 94, 0.65);
+    display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fda4af;
+  }
+  .sz-right {
+    position: absolute; top: 14%; bottom: 35%; right: 0; width: 14%;
+    background: rgba(251, 191, 36, 0.12); border-left: 1px dashed rgba(251, 191, 36, 0.55);
+  }
+
+  /* Rule of Thirds Grid */
+  #grid-overlay {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.16) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.16) 1px, transparent 1px);
+    background-size: 33.333% 33.333%;
+  }
+
+  /* --- Bottom Storyboard Filmstrip Dock --- */
+  .filmstrip-dock {
+    height: 132px;
+    background: var(--bg-surface);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 8px 14px;
+    display: flex; flex-direction: column; gap: 6px; z-index: 20;
+  }
+  .dock-header {
+    display: flex; align-items: center; justify-content: space-between; font-size: 11.5px;
+  }
+  .dock-strip {
+    flex: 1; display: flex; align-items: center; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+  }
+  .panel-thumb {
+    position: relative; height: 82px; min-width: 56px; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border-subtle); background: #0d1117; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .panel-thumb img { height: 100%; width: auto; max-width: 110px; object-fit: cover; display: block; }
+  .panel-badge {
+    position: absolute; top: 3px; left: 3px; background: rgba(0,0,0,0.78); color: #fff;
+    font-size: 9px; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+  .panel-del {
+    position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(244,63,94,0.85); color: #fff; border: none; cursor: pointer;
+    font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: 0.15s;
+  }
+  .panel-thumb:hover .panel-del { opacity: 1; }
+  .empty-dock {
+    font-size: 11.5px; color: var(--text-muted); border: 1px dashed var(--border-subtle);
+    border-radius: 8px; padding: 10px 16px; width: 100%; text-align: center;
+  }
+
+  /* --- Modals --- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(2, 6, 14, 0.78); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    width: 100%; max-width: 820px; max-height: 88vh;
+    background: #0e1420; border: 1px solid rgba(148,163,184,0.22);
+    border-radius: 18px; box-shadow: 0 25px 70px rgba(0,0,0,0.8);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .modal-head {
+    padding: 14px 18px; border-bottom: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-head h2 { font-size: 14.5px; font-weight: 700; color: var(--accent); }
+  .modal-body { padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+  .modal-foot {
+    padding: 12px 18px; border-top: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  }
+  .code-editor {
+    min-height: 300px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    direction: ltr; text-align: left; line-height: 1.5; resize: vertical;
+  }
+  .drop-zone {
+    border: 1.5px dashed var(--border-bright); border-radius: 12px; padding: 14px;
+    text-align: center; font-size: 12px; color: var(--accent); background: rgba(56,189,248,0.06);
+    cursor: pointer; transition: 0.15s;
+  }
+  .drop-zone:hover { background: rgba(56,189,248,0.12); }
+
+  #sheet-preview-canvas {
+    max-width: 100%; max-height: 55vh; border-radius: 10px;
+    border: 1px solid var(--border-subtle); margin: 0 auto; display: block;
+  }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 146px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(15, 23, 42, 0.94); border: 1px solid var(--accent); color: #e0f2fe;
+    padding: 8px 16px; border-radius: 99px; font-size: 12px; opacity: 0; pointer-events: none;
+    transition: all 0.25s ease; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.25); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-logo" title="Carizma">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3c-2 4-3 7-3 10a3 3 0 0 0 6 0c0-3-1-6-3-10Z"/>
+        <path d="M12 13c-3-1-6-3-8-6 0 4 2 8 8 10 6-2 8-6 8-10-2 3-5 5-8 6Z"/>
+      </svg>
+    </div>
+    <span>Carizma 3D Studio</span>
+    <span class="tag">GitHub Ready</span>
+  </div>
+
+  <div class="header-center">
+    <select id="scene-select" class="scene-select" onchange="loadSelectedScene()"></select>
+    <button class="btn sm" onclick="openCodeModal(false)" title="ویرایش کد صحنه فعلی">ویرایش کد</button>
+    <button class="btn sm danger" id="btn-del-scene" onclick="deleteCurrentScene()" title="حذف صحنه">حذف</button>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn primary" onclick="openCodeModal(true)">+ جاگذاری کد / فایل</button>
+    <button class="btn" onclick="openSheetModal()">شیت استوری‌بورد (<span id="hdr-count">0</span>)</button>
+    <button class="btn sm" onclick="openGuideModal()">نصب در GitHub</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <!-- Right Inspector Panel -->
+  <aside class="inspector">
+    <div class="card">
+      <div class="card-title"><span>نسبت کادر نمایشگر</span></div>
+      <div class="grid-3">
+        <button class="btn sm active" id="asp-fill" onclick="setStageAspect('fill')">کامل</button>
+        <button class="btn sm" id="asp-916" onclick="setStageAspect('9:16')">۹:۱۶ ریلز</button>
+        <button class="btn sm" id="asp-169" onclick="setStageAspect('16:9')">۱۶:۹ واید</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>کالیبراسیون با پلیت لوکیشن</span></div>
+      <div class="grid-2">
+        <button class="btn sm" onclick="document.getElementById('plate-file').click()">آپلود عکس پلیت</button>
+        <button class="btn sm" id="btn-ov-toggle" onclick="togglePlateOverlay()">خاموش</button>
+      </div>
+      <input type="file" id="plate-file" accept="image/*" style="display:none" onchange="handlePlateUpload(event)" />
+      <div class="row">
+        <span style="font-size:11px;color:var(--text-muted)">شفافیت</span>
+        <input type="range" id="ov-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateOverlayStyle()" />
+        <span class="val-badge" id="ov-op-val">50%</span>
+      </div>
+      <div class="row">
+        <span style="font-size:11px;color:var(--text-muted)">برش مقایسه</span>
+        <input type="range" id="ov-split" min="0" max="100" step="1" value="100" oninput="updateOverlayStyle()" />
+        <span class="val-badge" id="ov-sp-val">100%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>راهنماهای کادربندی (Guides)</span></div>
+      <div class="grid-2">
+        <button class="btn sm" id="btn-sz" onclick="toggleGuide('safezone')">Safe Zone 9:16</button>
+        <button class="btn sm" id="btn-grid" onclick="toggleGuide('grid')">یک‌سوم طلایی</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>ثبت فریم استوری‌بورد</span></div>
+      <div>
+        <label class="field-lbl">برچسب پنل (شماره و زمان)</label>
+        <input type="text" id="capture-label" value="P1 · 0.0s" placeholder="مثلاً P1 · 0.0s" />
+      </div>
+      <button class="btn primary" onclick="captureFrameToDock()">ثبت در استوری‌بورد (1080×1920)</button>
+      <button class="btn sm" onclick="downloadSingleFrame()">دانلود تکی PNG همین نما</button>
+    </div>
+  </aside>
+
+  <!-- Center Stage + Bottom Dock -->
+  <main class="stage-area">
+    <div class="viewport-container" id="vp-container">
+      <div class="stage-shell" id="stage-shell">
+        <iframe id="scene-frame" allow="fullscreen"></iframe>
+
+        <!-- Calibration Plate Overlay -->
+        <div class="overlay-layer" id="plate-layer">
+          <img id="plate-overlay" alt="Location Plate" />
+        </div>
+
+        <!-- Reels Safe Zone Overlay -->
+        <div class="overlay-layer" id="safezone-overlay">
+          <div class="sz-top">ناحیه بالای ریلز (۱۴٪)</div>
+          <div class="sz-right"></div>
+          <div class="sz-bottom">ناحیه کپشن و دکمه‌های پایین (۳۵٪)</div>
+        </div>
+
+        <!-- Rule of Thirds Grid -->
+        <div class="overlay-layer" id="grid-overlay"></div>
+      </div>
+    </div>
+
+    <!-- Storyboard Filmstrip Dock -->
+    <div class="filmstrip-dock">
+      <div class="dock-header">
+        <div class="row">
+          <strong style="color:var(--accent-teal)">نوار پنل‌های استوری‌بورد</strong>
+          <span style="color:var(--text-muted);font-size:11px" id="dock-status">(۰ پنل ثبت شده)</span>
+        </div>
+        <div class="row">
+          <button class="btn sm" onclick="document.getElementById('import-panel-file').click()">+ افزودن PNG از سیستم</button>
+          <input type="file" id="import-panel-file" accept="image/*" multiple style="display:none" onchange="importPanelImages(event)" />
+          <button class="btn sm danger" onclick="clearDock()">پاک کردن همه</button>
+          <button class="btn sm primary" onclick="openSheetModal()">ساخت شیت نهایی ۳×۲</button>
+        </div>
+      </div>
+      <div class="dock-strip" id="dock-strip">
+        <div class="empty-dock">هنوز پنلی ثبت نشده. از پنل سمت راست دکمه «ثبت در استوری‌بورد» را بزن یا PNG وارد کن.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal 1: Paste / Upload Code -->
+<div class="modal-backdrop" id="code-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="code-modal-title">جاگذاری کد یا آپلود فایل HTML / Three.js</h2>
+      <button class="btn sm" onclick="closeModal('code-modal')">بستن ✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('html-file-in').click()">
+        فایل <strong>.html</strong> را اینجا بکش و رها کن یا کلیک کن تا انتخاب شود
+      </div>
+      <input type="file" id="html-file-in" accept=".html,.htm,.txt" style="display:none" onchange="handleHtmlFile(event)" />
+      <div>
+        <label class="field-lbl">نام صحنه (در حافظه مرورگر ذخیره می‌شود)</label>
+        <input type="text" id="scene-name-in" placeholder="مثلاً: صحنه ۳ — دادگاه" />
+      </div>
+      <div>
+        <label class="field-lbl">کد HTML / Three.js (مستقیماً از چت کپی و اینجا Paste کن)</label>
+        <textarea id="scene-code-in" class="code-editor" placeholder="<!DOCTYPE html>..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('code-modal')">انصراف</button>
+      <button class="btn primary" onclick="saveAndRunCode()">ذخیره و اجرای زنده صحنه</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Storyboard Sheet Assembler -->
+<div class="modal-backdrop" id="sheet-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>ساخت شیت نهایی استوری‌بورد (آماده ارسال به مدل تصویر)</h2>
+      <button class="btn sm" onclick="closeModal('sheet-modal')">بستن ✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row between">
+        <div class="row">
+          <span style="font-size:12px">تعداد ستون‌ها:</span>
+          <button class="btn sm active" id="col-3" onclick="setSheetCols(3)">۳ ستون (۳×۲)</button>
+          <button class="btn sm" id="col-2" onclick="setSheetCols(2)">۲ ستون (۲×۲)</button>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)">هر پنل ۵۴۰×۹۶۰ · کادر ۹:۱۶ · خوانش چپ به راست</span>
+      </div>
+      <canvas id="sheet-preview-canvas"></canvas>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('sheet-modal')">بستن</button>
+      <button class="btn primary" onclick="downloadAssembledSheet()">دانلود شیت نهایی (storyboard_sheet.png)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: GitHub Pages Guide -->
+<div class="modal-backdrop" id="guide-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <h2>میزبانی رایگان روی GitHub Pages (۳ قدم)</h2>
+      <button class="btn sm" onclick="closeModal('guide-modal')">بستن ✕</button>
+    </div>
+    <div class="modal-body" style="font-size:13px;line-height:1.8;color:#cbd5e1">
+      <p>۱. وارد اکانت GitHub خودت شو و یک Repository جدید (Public) مثلاً با نام <code>carizma-3d-studio</code> بساز.</p>
+      <p>۲. همین فایل را دقیقاً با نام <strong><code>index.html</code></strong> داخل آن آپلود (Commit) کن.</p>
+      <p>۳. به بخش <strong>Settings → Pages</strong> برو، در قسمت Branch گزینه <code>main</code> را انتخاب کن و Save بزن. بعد از ۱ دقیقه وب‌اپ تو روی لینک دائمی گیت‌هاب بالا می‌آید.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn primary" onclick="closeModal('guide-modal')">متوجه شدم</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const DEFAULT_SCENE_CODE = `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scene 2 — Bakery 3D</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+  body { background: #090b0f; color: #e6edf3; display: flex; height: 100vh; overflow: hidden; }
+  #panel-bar {
+    width: 220px; background: rgba(15, 19, 26, 0.92); border-left: 1px solid rgba(255,255,255,0.08);
+    padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; z-index: 5;
+  }
+  .lbl { font-size: 10.5px; color: #8b949e; margin-top: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 3px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  button {
+    background: rgba(255,255,255,0.06); color: #e6edf3; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 7px; padding: 7px 6px; font-size: 11px; cursor: pointer; transition: 0.15s;
+  }
+  button:hover { background: rgba(56,189,248,0.18); border-color: rgba(56,189,248,0.45); }
+  button.active { background: rgba(14,165,233,0.35); border-color: #38bdf8; font-weight: 600; }
+  #desc { font-size: 11px; color: #cbd5e1; background: rgba(0,0,0,0.35); padding: 8px; border-radius: 7px; line-height: 1.5; }
+  #wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: #05070a; overflow: hidden; }
+  #frame { position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.12); }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="panel-bar">
+  <div class="lbl">نمای مرجع (۱۶:۹)</div>
+  <div class="grid">
+    <button id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">CAM_PLATE</button>
+    <button id="b-CAM_DOOR" onclick="selectPreset('CAM_DOOR')">CAM_DOOR</button>
+  </div>
+  <div class="lbl">پنل‌های صحنه ۲ (۹:۱۶)</div>
+  <div class="grid">
+    <button id="b-P1" onclick="selectPreset('P1')">P1 · 0.0s</button>
+    <button id="b-P2" onclick="selectPreset('P2')">P2 · 3.0s</button>
+    <button id="b-P3" onclick="selectPreset('P3')">P3 · 6.2s</button>
+    <button id="b-P4" onclick="selectPreset('P4')">P4 · 8.8s</button>
+    <button id="b-P5" onclick="selectPreset('P5')">P5 · 10.5s</button>
+    <button id="b-P6" onclick="selectPreset('P6')">P6 · 14.0s</button>
+  </div>
+  <div id="desc">برای چرخش دوربین با موس بکشید و برای زوم اسکرول کنید.</div>
+</div>
+<div id="wrap"><div id="frame"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
+<script>
+const frameEl = document.getElementById('frame');
+const descEl = document.getElementById('desc');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1410);
+const camera = new THREE.PerspectiveCamera(45, 9/16, 0.1, 60);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+frameEl.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.AmbientLight(0xd8c3a5, 0.55));
+const ovenLight = new THREE.PointLight(0xff7b29, 2.2, 9);
+ovenLight.position.set(-0.35, 1.15, -3.55); scene.add(ovenLight);
+const winLight = new THREE.DirectionalLight(0xfff4e0, 1.25);
+winLight.position.set(1.5, 3.0, -6.5); winLight.target.position.set(-0.5, 0.2, -2.0);
+scene.add(winLight); scene.add(winLight.target);
+const doorLight = new THREE.DirectionalLight(0xffe8c2, 0.45);
+doorLight.position.set(0.2, 2.2, 4.0); scene.add(doorLight);
+
+function mat(hex, emissive=0x000000) { return new THREE.MeshLambertMaterial({ color: hex, emissive }); }
+function box(w,h,d,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
+function cyl(rt,rb,h,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,20),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
+
+box(5.4,0.1,6.2, 0,-0.05,-2.0, 0x8f523a);
+box(5.4,3.1,0.15, 0,1.55,-5.05, 0xb88b68);
+box(0.15,3.1,6.2, -2.65,1.55,-2.0, 0xc49570);
+box(0.15,3.1,6.2,  2.65,1.55,-2.0, 0xba8a66);
+box(5.4,0.15,6.2, 0,3.05,-2.0, 0x4a3425);
+for (let z=-4.2; z<=0.2; z+=1.4) box(5.2,0.18,0.22, 0,2.9,z, 0x3b2618);
+
+box(2.3,3.1,0.15,-1.45,1.55,1.0,0xb58865);
+box(1.5,3.1,0.15, 1.85,1.55,1.0,0xb58865);
+box(1.4,0.9,0.15, 0.40,2.65,1.0,0xb58865);
+const doorLeaf = box(1.2,2.15,0.08,-0.25,1.08,1.65,0x4d321f); doorLeaf.rotation.y = -1.25;
+box(14,0.08,10, 0,-0.08,6.2, 0xcbc6bc);
+box(3.5,1.6,0.3,-2.5,0.8,5.5,0x9e8268);
+box(3.5,1.6,0.3, 3.0,0.8,6.0,0x9e8268);
+
+box(2.3,0.85,1.2,-0.35,0.425,-4.4,0xc7a787);
+const dome = new THREE.Mesh(new THREE.SphereGeometry(0.9,24,16,0,Math.PI*2,0,Math.PI/2),mat(0xc9ac8e));
+dome.position.set(-0.35,0.85,-4.4); scene.add(dome);
+cyl(0.20,0.22,1.4,-0.35,2.35,-4.4,0x2c2b2c);
+const fire = new THREE.Mesh(new THREE.SphereGeometry(0.36,16,12),mat(0xff8c24,0xff5500));
+fire.scale.set(1.0,1.15,0.35); fire.position.set(-0.35,1.05,-3.62); scene.add(fire);
+
+box(0.75,0.65,0.1,0.95,1.95,-4.96,0xfff8e7);
+box(0.95,0.08,0.16,0.95,2.31,-4.92,0x5c402c);
+
+box(0.78,0.90,3.3,-2.05,0.45,-2.25,0x5c3a21);
+cyl(0.24,0.24,0.18,-1.95,0.99,-2.75,0xd99b43);
+cyl(0.24,0.24,0.22,-1.95,1.01,-3.25,0xd99b43);
+cyl(0.24,0.24,0.28,-1.95,1.04,-3.70,0xd99b43);
+const dough = new THREE.Mesh(new THREE.SphereGeometry(0.14,14,10),mat(0xefe3c8));
+dough.scale.set(1.2,0.5,1.2); dough.position.set(-1.95,0.95,-2.25); scene.add(dough);
+
+box(1.05,0.72,2.1,2.05,0.36,-1.4,0xb58662);
+cyl(0.26,0.18,0.14,1.95,0.79,-1.45,0x8c3b20);
+cyl(0.24,0.24,0.12,2.15,0.78,-0.85,0xd99b43);
+
+box(0.32,0.06,1.6,2.42,1.55,-2.5,0x5c3d28);
+box(0.32,0.06,1.6,2.42,2.05,-2.5,0x5c3d28);
+cyl(0.08,0.11,0.28,2.40,2.22,-2.2,0x8c4427);
+cyl(0.09,0.12,0.30,2.40,1.73,-2.6,0x453b34);
+
+box(1.1,0.55,0.7,1.65,0.275,-4.35,0x523724);
+cyl(0.18,0.22,0.42,1.40,0.76,-4.35,0xb39469);
+cyl(0.18,0.22,0.42,1.88,0.76,-4.35,0xb39469);
+cyl(0.18,0.22,0.44,1.55,0.22,-3.55,0xb39469);
+cyl(0.18,0.22,0.40,1.95,0.20,-3.35,0xb39469);
+
+box(0.42,0.46,0.42,-0.78,0.23,-3.15,0x6e472b);
+cyl(0.22,0.22,0.12,-0.78,0.52,-3.15,0xd99b43);
+
+const scaleGroup = new THREE.Group(); scaleGroup.position.set(-1.92,0.90,-1.25);
+box(0.26,0.08,0.22,0,0.04,0,0x8f7333,scaleGroup);
+cyl(0.03,0.04,0.22,0,0.18,0,0x8f7333,scaleGroup);
+const dial = cyl(0.11,0.11,0.04,0.02,0.20,0,0xfafaf5,scaleGroup); dial.rotation.z = Math.PI/2;
+box(0.01,0.03,0.025,0.045,0.28,0,0xd92626,scaleGroup);
+const needle = box(0.01,0.075,0.01,0.046,0.21,-0.025,0x111111,scaleGroup); needle.rotation.x = -0.65;
+cyl(0.14,0.11,0.03,0,0.33,0,0xa88a3e,scaleGroup);
+scene.add(scaleGroup);
+
+const basketGroup = new THREE.Group(); basketGroup.position.set(-1.95,0.90,-1.78);
+cyl(0.18,0.14,0.16,0,0.08,0,0xc9933b,basketGroup); scene.add(basketGroup);
+const butter1 = box(0.11,0.06,0.08,-1.98,1.00,-1.82,0xfff099);
+const butter2 = box(0.11,0.06,0.08,-1.90,1.00,-1.74,0xfff099);
+const butter3 = box(0.11,0.06,0.08,-1.94,1.06,-1.78,0xfff099);
+
+const asghar = new THREE.Group();
+const mOrange = mat(0xe66a17), mSkin = mat(0xf09248);
+const belly = new THREE.Mesh(new THREE.SphereGeometry(0.38,20,16),mOrange);
+belly.scale.set(1.0,1.15,0.95); belly.position.set(0,0.78,0); asghar.add(belly);
+const head = new THREE.Mesh(new THREE.SphereGeometry(0.17,18,14),mSkin);
+head.position.set(0,1.32,0.03); asghar.add(head);
+box(0.20,0.04,0.05,0,1.28,0.19,0x1a1a1a,asghar);
+cyl(0.09,0.08,0.48,-0.15,0.24,0,0x3d2c20,asghar);
+cyl(0.09,0.08,0.48, 0.15,0.24,0,0x3d2c20,asghar);
+const armL = new THREE.Group(); armL.position.set(-0.36,1.08,0); cyl(0.075,0.065,0.48,0,-0.22,0,mOrange,armL); asghar.add(armL);
+const armR = new THREE.Group(); armR.position.set( 0.36,1.08,0); cyl(0.075,0.065,0.48,0,-0.22,0,mOrange,armR); asghar.add(armR);
+const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.16,0.09,18),mat(0xf5f5f5));
+scene.add(skullcap); scene.add(asghar);
+
+const PRESETS = {
+  CAM_PLATE: { aspect:16/9, lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false, label:"CAM_PLATE", desc:"نمای واید کالیبراسیون تنور (۱۶:۹)" },
+  CAM_DOOR:  { aspect:16/9, lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false, label:"CAM_DOOR", desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)" },
+  P1: { aspect:9/16, lens:32, pos:[0.95,1.38,-0.20], aim:[-1.45,1.08,-2.05], showAsghar:true, aPos:[-1.20,0,-2.10], aRotY:-Math.PI/2, armL:[0.3,0,0], armR:[0.3,0,0], butterOnScale:false, capState:'head', label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — مکث اصغر و نگاه مشکوک به سبد کره." },
+  P2: { aspect:9/16, lens:38, pos:[0.55,1.35,-0.65], aim:[-1.40,1.15,-1.78], showAsghar:true, aPos:[-1.20,0,-1.78], aRotY:-Math.PI/2, armL:[0.15,0,0], armR:[-0.95,0,0.15], butterOnScale:false, capState:'head', label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی، دست سمت سبد کره." },
+  P3: { aspect:9/16, lens:50, pos:[0.20,1.35,-0.55], aim:[-1.85,1.12,-1.32], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2, armL:[0.1,0,0], armR:[-0.65,0,0], butterOnScale:true, capState:'head', label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل از مثلث قرمز." },
+  P4: { aspect:9/16, lens:48, pos:[0.15,1.18,-0.60], aim:[-1.25,1.25,-1.42], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.2, armL:[0.2,0,0], armR:[-2.2,0,-0.25], butterOnScale:true, capState:'head', label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — چهره برافروخته، دست روی لبه عرقچین." },
+  P5: { aspect:9/16, lens:36, pos:[0.55,1.25,-0.35], aim:[-1.25,1.18,-1.40], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.6, armL:[0.3,0,0], armR:[-1.1,0,0.35], butterOnScale:true, capState:'hand', label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین کنده شده در دست راست، سر برهنه." },
+  P6: { aspect:9/16, lens:28, pos:[1.15,1.32,0.75], aim:[-0.45,1.05,-0.60], showAsghar:true, aPos:[-0.45,0,-0.35], aRotY:0.25, armL:[-0.5,0,0], armR:[0.4,0,0.2], butterOnScale:true, capState:'hand', label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه سمت در." }
+};
+
+let currentKey = 'P1';
+function resizeStage(aspect) {
+  const wrap = document.getElementById('wrap');
+  const maxW = wrap.clientWidth - 24, maxH = wrap.clientHeight - 24;
+  let w = maxW, h = w / aspect;
+  if (h > maxH) { h = maxH; w = h * aspect; }
+  frameEl.style.width = Math.round(w)+'px'; frameEl.style.height = Math.round(h)+'px';
+  camera.aspect = aspect; camera.updateProjectionMatrix();
+  renderer.setSize(Math.round(w), Math.round(h), false);
+}
+function focalToFov(mm, aspect) {
+  const sH = aspect < 1 ? 36.0 : 20.25;
+  return 2 * Math.atan(sH / (2 * mm)) * (180 / Math.PI);
+}
+window.selectPreset = function(key) {
+  currentKey = key; const p = PRESETS[key];
+  document.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  const el = document.getElementById('b-'+key); if(el) el.classList.add('active');
+  resizeStage(p.aspect);
+  camera.fov = focalToFov(p.lens, p.aspect);
+  camera.position.set(...p.pos); controls.target.set(...p.aim);
+  camera.updateProjectionMatrix(); controls.update();
+  asghar.visible = p.showAsghar; skullcap.visible = p.showAsghar;
+  if (p.showAsghar) {
+    asghar.position.set(...p.aPos); asghar.rotation.y = p.aRotY;
+    armL.rotation.set(...p.armL); armR.rotation.set(...p.armR);
+    butter3.position.set(p.butterOnScale ? -1.92 : -1.94, p.butterOnScale ? 1.26 : 1.06, p.butterOnScale ? -1.25 : -1.78);
+    if (p.capState === 'head') skullcap.position.set(p.aPos[0], 1.49, p.aPos[2]);
+    else { asghar.updateMatrixWorld(true); skullcap.position.copy(new THREE.Vector3(0,-0.45,0).applyMatrix4(armR.matrixWorld)); }
+  }
+  descEl.textContent = p.desc;
+  window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label, aspect: p.aspect }, '*');
+};
+window.__CARIZMA_CAPTURE__ = function(w, h) {
+  const oldW = renderer.domElement.width, oldH = renderer.domElement.height;
+  renderer.setSize(w, h, false); renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  renderer.setSize(oldW, oldH, false);
+  return url;
+};
+window.addEventListener('resize', () => resizeStage(PRESETS[currentKey].aspect));
+selectPreset('P1');
+(function anim(){ requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); })();
+<\/script>
+</body>
+</html>`;
+
+const STORAGE_KEY = 'carizma_3d_studio_scenes_v1';
+let scenes = [];
+let currentSceneId = null;
+let editingNew = true;
+let plateVisible = false;
+let guides = { safezone: false, grid: false };
+let capturedPanels = [];
+let sheetCols = 3;
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// Auto-patch pasted Three.js code so WebGLRenderer always preserves drawing buffer for clean capture
+function prepareSceneCode(rawHtml) {
+  const patchScript = `<script>
+  (function(){
+    const _origGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function(type, attrs) {
+      if (type && (type.includes('webgl'))) {
+        attrs = Object.assign({}, attrs || {}, { preserveDrawingBuffer: true });
+      }
+      return _origGetContext.call(this, type, attrs);
+    };
+  })();
+  <\/script>`;
+  if (rawHtml.includes('<head>')) return rawHtml.replace('<head>', '<head>' + patchScript);
+  return patchScript + rawHtml;
+}
+
+function initScenes() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) scenes = JSON.parse(saved);
+  } catch(e) { scenes = []; }
+
+  if (!scenes.length) {
+    scenes = [{
+      id: 'default-bakery-s2',
+      name: 'صحنه ۲ — نانوایی سنگکی (پیش‌فرض)',
+      code: DEFAULT_SCENE_CODE
+    }];
+    persistScenes();
+  }
+  renderSceneDropdown();
+  selectScene(scenes[0].id);
+}
+
+function persistScenes() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(scenes)); } catch(e) {}
+}
+
+function renderSceneDropdown() {
+  const sel = document.getElementById('scene-select');
+  sel.innerHTML = '';
+  scenes.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id; opt.textContent = s.name;
+    if (s.id === currentSceneId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  document.getElementById('btn-del-scene').disabled = scenes.length <= 1;
+}
+
+function selectScene(id) {
+  const s = scenes.find(x => x.id === id) || scenes[0];
+  currentSceneId = s.id;
+  renderSceneDropdown();
+  const iframe = document.getElementById('scene-frame');
+  iframe.srcdoc = prepareSceneCode(s.code);
+  toast('صحنه اجرا شد: ' + s.name);
+}
+
+function loadSelectedScene() {
+  selectScene(document.getElementById('scene-select').value);
+}
+
+function deleteCurrentScene() {
+  if (scenes.length <= 1) return;
+  if (!confirm('این صحنه از لیست حذف شود؟')) return;
+  scenes = scenes.filter(x => x.id !== currentSceneId);
+  persistScenes();
+  selectScene(scenes[0].id);
+}
+
+// --- Code Modal ---
+function openCodeModal(isNew) {
+  editingNew = isNew;
+  document.getElementById('code-modal-title').textContent = isNew
+    ? 'جاگذاری کد یا آپلود فایل جدید'
+    : 'ویرایش کد صحنه فعلی';
+  if (isNew) {
+    document.getElementById('scene-name-in').value = '';
+    document.getElementById('scene-code-in').value = '';
+  } else {
+    const cur = scenes.find(x => x.id === currentSceneId);
+    document.getElementById('scene-name-in').value = cur ? cur.name : '';
+    document.getElementById('scene-code-in').value = cur ? cur.code : '';
+  }
+  document.getElementById('code-modal').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function handleHtmlFile(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('scene-code-in').value = e.target.result;
+    if (!document.getElementById('scene-name-in').value) {
+      document.getElementById('scene-name-in').value = file.name.replace(/\.html?$/i, '');
+    }
+    toast('فایل خوانده شد: ' + file.name);
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.background = 'rgba(56,189,248,0.22)'; });
+dz.addEventListener('dragleave', () => { dz.style.background = 'rgba(56,189,248,0.06)'; });
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.style.background = 'rgba(56,189,248,0.06)';
+  const file = e.dataTransfer.files[0];
+  if (file) handleHtmlFile({ target: { files: [file], value: '' } });
+});
+
+function saveAndRunCode() {
+  const code = document.getElementById('scene-code-in').value.trim();
+  if (!code) { toast('لطفاً کد HTML را وارد کن.'); return; }
+  const name = document.getElementById('scene-name-in').value.trim() || ('صحنه ' + (scenes.length + 1));
+  if (editingNew) {
+    const id = 'sc-' + Date.now();
+    scenes.unshift({ id, name, code });
+    persistScenes();
+    selectScene(id);
+  } else {
+    const cur = scenes.find(x => x.id === currentSceneId);
+    if (cur) { cur.name = name; cur.code = code; persistScenes(); selectScene(cur.id); }
+  }
+  closeModal('code-modal');
+}
+
+// --- Viewport Aspect Ratio ---
+function setStageAspect(mode) {
+  ['fill', '916', '169'].forEach(k => document.getElementById('asp-'+k).classList.remove('active'));
+  document.getElementById('asp-' + (mode === '9:16' ? '916' : mode === '16:9' ? '169' : 'fill')).classList.add('active');
+  const shell = document.getElementById('stage-shell');
+  const cont = document.getElementById('vp-container');
+  const maxW = cont.clientWidth - 28, maxH = cont.clientHeight - 28;
+  if (mode === 'fill') {
+    shell.style.width = '100%'; shell.style.height = '100%';
+  } else {
+    const ratio = mode === '9:16' ? (9/16) : (16/9);
+    let w = maxW, h = w / ratio;
+    if (h > maxH) { h = maxH; w = h * ratio; }
+    shell.style.width = Math.round(w) + 'px';
+    shell.style.height = Math.round(h) + 'px';
+  }
+}
+window.addEventListener('resize', () => {
+  if (document.getElementById('asp-916').classList.contains('active')) setStageAspect('9:16');
+  else if (document.getElementById('asp-169').classList.contains('active')) setStageAspect('16:9');
+});
+
+// --- Plate Calibration Overlay ---
+function handlePlateUpload(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  document.getElementById('plate-overlay').src = URL.createObjectURL(f);
+  plateVisible = true;
+  syncPlateUI();
+  toast('عکس پلیت برای کالیبراسیون بارگذاری شد.');
+}
+function togglePlateOverlay() {
+  if (!document.getElementById('plate-overlay').src) {
+    document.getElementById('plate-file').click(); return;
+  }
+  plateVisible = !plateVisible;
+  syncPlateUI();
+}
+function syncPlateUI() {
+  document.getElementById('plate-layer').style.display = plateVisible ? 'block' : 'none';
+  const b = document.getElementById('btn-ov-toggle');
+  b.textContent = plateVisible ? 'روشن' : 'خاموش';
+  b.classList.toggle('active', plateVisible);
+  updateOverlayStyle();
+}
+function updateOverlayStyle() {
+  const op = document.getElementById('ov-opacity').value;
+  const sp = document.getElementById('ov-split').value;
+  document.getElementById('ov-op-val').textContent = Math.round(op * 100) + '%';
+  document.getElementById('ov-sp-val').textContent = sp + '%';
+  const img = document.getElementById('plate-overlay');
+  img.style.opacity = op;
+  img.style.clipPath = `inset(0 ${100 - sp}% 0 0)`;
+}
+
+// --- Guides ---
+function toggleGuide(name) {
+  guides[name] = !guides[name];
+  document.getElementById(name + '-overlay').style.display = guides[name] ? 'block' : 'none';
+  document.getElementById(name === 'safezone' ? 'btn-sz' : 'btn-grid').classList.toggle('active', guides[name]);
+}
+
+// Listen to preset updates from embedded scene
+window.addEventListener('message', ev => {
+  if (ev.data && ev.data.type === 'CARIZMA_PRESET' && ev.data.label) {
+    document.getElementById('capture-label').value = ev.data.label;
+  }
+});
+
+// --- Capture Canvas from Iframe ---
+function grabCanvasDataURL() {
+  const iframe = document.getElementById('scene-frame');
+  try {
+    const win = iframe.contentWindow;
+    if (win && typeof win.__CARIZMA_CAPTURE__ === 'function') {
+      return win.__CARIZMA_CAPTURE__(1080, 1920);
+    }
+    const canvas = iframe.contentDocument && iframe.contentDocument.querySelector('canvas');
+    if (canvas) return canvas.toDataURL('image/png');
+  } catch (err) {
+    console.error(err);
+  }
+  return null;
+}
+
+function captureFrameToDock() {
+  const dataUrl = grabCanvasDataURL();
+  if (!dataUrl) { toast('بوم سه‌بعدی در صحنه پیدا نشد!'); return; }
+  const label = document.getElementById('capture-label').value.trim() || `P${capturedPanels.length + 1}`;
+  capturedPanels.push({ id: Date.now() + Math.random(), label, dataUrl });
+  renderDock();
+  toast('پنل ثبت شد: ' + label);
+  // Auto-increment label hint if it matches P1..P6
+  const m = label.match(/^P(\d+)/);
+  if (m) {
+    const next = parseInt(m[1], 10) + 1;
+    document.getElementById('capture-label').value = `P${next}`;
+  }
+}
+
+function downloadSingleFrame() {
+  const dataUrl = grabCanvasDataURL();
+  if (!dataUrl) { toast('بوم سه‌بعدی پیدا نشد!'); return; }
+  const label = (document.getElementById('capture-label').value.trim() || 'frame').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const a = document.createElement('a');
+  a.href = dataUrl; a.download = label + '.png'; a.click();
+}
+
+function importPanelImages(ev) {
+  const files = Array.from(ev.target.files);
+  files.forEach(f => {
+    const r = new FileReader();
+    r.onload = e => {
+      capturedPanels.push({
+        id: Date.now() + Math.random(),
+        label: f.name.replace(/\.[^.]+$/, ''),
+        dataUrl: e.target.result
+      });
+      renderDock();
+    };
+    r.readAsDataURL(f);
+  });
+  ev.target.value = '';
+}
+
+function removePanel(id) {
+  capturedPanels = capturedPanels.filter(p => p.id !== id);
+  renderDock();
+}
+
+function clearDock() {
+  if (!capturedPanels.length) return;
+  capturedPanels = [];
+  renderDock();
+}
+
+function renderDock() {
+  const strip = document.getElementById('dock-strip');
+  document.getElementById('hdr-count').textContent = capturedPanels.length;
+  document.getElementById('dock-status').textContent = `(${capturedPanels.length} پنل ثبت شده)`;
+  if (!capturedPanels.length) {
+    strip.innerHTML = '<div class="empty-dock">هنوز پنلی ثبت نشده. از پنل سمت راست دکمه «ثبت در استوری‌بورد» را بزن یا PNG وارد کن.</div>';
+    return;
+  }
+  strip.innerHTML = '';
+  capturedPanels.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'panel-thumb';
+    div.innerHTML = `
+      <img src="${p.dataUrl}" alt="${p.label}" />
+      <span class="panel-badge">${idx + 1} · ${p.label}</span>
+      <button class="panel-del" onclick="removePanel(${p.id})" title="حذف">×</button>
+    `;
+    strip.appendChild(div);
+  });
+}
+
+// --- Storyboard Sheet Assembler (Matches assemble_sheet.py 540x960 per panel) ---
+function setSheetCols(c) {
+  sheetCols = c;
+  document.getElementById('col-3').classList.toggle('active', c === 3);
+  document.getElementById('col-2').classList.toggle('active', c === 2);
+  buildSheetCanvas();
+}
+
+function openSheetModal() {
+  if (!capturedPanels.length) {
+    toast('اول حداقل یک پنل ثبت کن یا وارد کن.');
+    return;
+  }
+  document.getElementById('sheet-modal').classList.add('open');
+  buildSheetCanvas();
+}
+
+async function buildSheetCanvas() {
+  const PW = 540, PH = 960, GAP = 8;
+  const cols = sheetCols;
+  const rows = Math.ceil(capturedPanels.length / cols);
+  const W = cols * PW + (cols + 1) * GAP;
+  const H = rows * PH + (rows + 1) * GAP;
+
+  const canvas = document.getElementById('sheet-preview-canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#c8c8c8';
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < capturedPanels.length; i++) {
+    const p = capturedPanels[i];
+    const img = await new Promise(res => {
+      const im = new Image(); im.onload = () => res(im); im.src = p.dataUrl;
+    });
+    const c = i % cols, r = Math.floor(i / cols);
+    const x = GAP + c * (PW + GAP), y = GAP + r * (PH + GAP);
+
+    // Cover-crop into 540x960 (9:16)
+    const srcRatio = img.width / img.height, dstRatio = PW / PH;
+    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+    if (srcRatio > dstRatio) {
+      sw = img.height * dstRatio; sx = (img.width - sw) / 2;
+    } else {
+      sh = img.width / dstRatio; sy = (img.height - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, PW, PH);
+
+    // Top-left label badge (clean numeral + timestamp, no extra text)
+    const txt = `${i + 1} · ${p.label}`;
+    ctx.font = 'bold 28px JetBrains Mono, Arial, sans-serif';
+    const tw = ctx.measureText(txt).width;
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillRect(x, y, tw + 26, 46);
+    ctx.fillStyle = '#ffffff';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(txt, x + 13, y + 24);
+  }
+}
+
+function downloadAssembledSheet() {
+  const canvas = document.getElementById('sheet-preview-canvas');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'carizma_storyboard_sheet.png';
+  a.click();
+  toast('شیت استوری‌بورد دانلود شد!');
+}
+
+function openGuideModal() {
+  document.getElementById('guide-modal').classList.add('open');
+}
+
+initScenes();
+</script>
+</body>
+</html>
