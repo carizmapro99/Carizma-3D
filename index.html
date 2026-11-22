@@ -2,492 +2,334 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Carizma 3D Studio — Storyboard & Previz Workspace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Carizma 3D Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #07090e;
-    --bg-surface: rgba(16, 22, 33, 0.72);
-    --bg-glass: rgba(23, 31, 46, 0.58);
-    --bg-glass-hover: rgba(38, 52, 76, 0.65);
-    --border-subtle: rgba(148, 163, 184, 0.14);
-    --border-bright: rgba(56, 189, 248, 0.45);
+    --bg: #06080d;
+    --glass: rgba(16, 22, 34, 0.78);
+    --glass-card: rgba(24, 33, 50, 0.62);
+    --border: rgba(148, 163, 184, 0.16);
     --accent: #38bdf8;
-    --accent-teal: #2dd4bf;
-    --accent-glow: rgba(56, 189, 248, 0.25);
+    --teal: #2dd4bf;
     --danger: #f43f5e;
-    --success: #10b981;
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-    --radius-lg: 16px;
-    --radius-md: 10px;
-    --radius-sm: 7px;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-t: env(safe-area-inset-top, 0px);
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
     font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
-    background: radial-gradient(circle at 15% 10%, rgba(14, 165, 233, 0.12), transparent 40%),
-                radial-gradient(circle at 85% 90%, rgba(45, 212, 191, 0.09), transparent 40%),
-                var(--bg-base);
-    color: var(--text-main);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    user-select: none;
+    background: var(--bg); color: var(--text);
   }
 
-  /* --- Top Glass Header --- */
+  /* App Shell */
+  .app {
+    display: flex; flex-direction: column; width: 100%; height: 100dvh;
+    padding-top: var(--safe-t);
+  }
+
+  /* Clean Compact Top Bar */
   header {
-    height: 56px;
-    padding: 0 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-surface);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-subtle);
-    z-index: 30;
-    gap: 12px;
+    height: 52px; padding: 0 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border); z-index: 30;
   }
-  .brand {
-    display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: -0.2px;
-  }
-  .brand-logo {
-    width: 30px; height: 30px; border-radius: 9px;
-    background: linear-gradient(135deg, rgba(45,212,191,0.22), rgba(56,189,248,0.22));
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+  .logo {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(56,189,248,0.2));
     border: 1px solid rgba(45,212,191,0.4);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 18px rgba(45,212,191,0.2);
   }
-  .brand span.tag {
-    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px;
-    background: rgba(56,189,248,0.14); color: var(--accent); border: 1px solid rgba(56,189,248,0.3);
+  .scene-sel {
+    flex: 1; min-width: 0; max-width: 240px;
+    background: rgba(8, 12, 20, 0.8); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 6px 10px; font-family: inherit; font-size: 12px; outline: none;
   }
-
-  .header-center { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 460px; justify-content: center; }
-  .scene-select {
-    flex: 1; max-width: 280px;
-    background: rgba(10, 14, 22, 0.75); color: var(--text-main);
-    border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
-    padding: 7px 12px; font-family: inherit; font-size: 12.5px; outline: none; cursor: pointer;
-  }
-  .scene-select:focus { border-color: var(--accent); }
-
-  .header-actions { display: flex; align-items: center; gap: 8px; }
-
-  /* --- Liquid Glass Buttons --- */
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 7px 13px; border-radius: var(--radius-md);
-    font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
-    color: var(--text-main); background: var(--bg-glass);
-    border: 1px solid var(--border-subtle);
-    backdrop-filter: blur(12px); transition: all 0.16s ease; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 7px 12px; border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 600;
+    color: var(--text); background: var(--glass-card); border: 1px solid var(--border);
+    cursor: pointer; transition: 0.15s; white-space: nowrap;
   }
-  .btn:hover { background: var(--bg-glass-hover); border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
+  .btn:active { transform: scale(0.97); }
   .btn.primary {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.85), rgba(45, 212, 191, 0.85));
-    color: #04131c; font-weight: 700; border-color: rgba(255,255,255,0.25);
-    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.28);
+    background: linear-gradient(135deg, #0ea5e9, #2dd4bf);
+    color: #04131c; border-color: transparent; font-weight: 700;
   }
-  .btn.primary:hover { filter: brightness(1.08); }
-  .btn.active {
-    background: rgba(56, 189, 248, 0.22); border-color: var(--accent); color: #e0f2fe;
-    box-shadow: 0 0 12px var(--accent-glow);
-  }
-  .btn.danger { color: #fda4af; border-color: rgba(244,63,94,0.3); }
-  .btn.danger:hover { background: rgba(244,63,94,0.18); }
-  .btn.sm { padding: 5px 9px; font-size: 11px; border-radius: var(--radius-sm); }
-  .btn.icon-only { padding: 7px; width: 32px; height: 32px; }
+  .btn.active { background: rgba(56,189,248,0.24); border-color: var(--accent); color: #e0f2fe; }
+  .btn.danger { color: #fda4af; border-color: rgba(244,63,94,0.35); }
+  .btn.sm { padding: 5px 9px; font-size: 11px; border-radius: 8px; }
 
-  /* --- Main Body Layout --- */
-  .workspace {
-    flex: 1; display: flex; min-height: 0; overflow: hidden;
-  }
-
-  /* --- Inspector Sidebar (Right in RTL) --- */
-  aside.inspector {
-    width: 300px;
-    background: var(--bg-surface);
-    backdrop-filter: blur(18px);
-    border-left: 1px solid var(--border-subtle);
-    padding: 14px;
-    display: flex; flex-direction: column; gap: 14px;
-    overflow-y: auto; z-index: 15;
-  }
-  .card {
-    background: rgba(11, 16, 26, 0.55);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .card-title {
-    font-size: 11.5px; font-weight: 700; color: var(--accent);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .row { display: flex; align-items: center; gap: 8px; }
-  .row.between { justify-content: space-between; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-
-  label.field-lbl { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
-  input[type="text"], textarea {
-    width: 100%; background: rgba(7, 10, 16, 0.8); color: var(--text-main);
-    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
-    padding: 7px 10px; font-family: inherit; font-size: 12px; outline: none;
-  }
-  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
-  input[type="range"] {
-    flex: 1; accent-color: var(--accent); cursor: pointer; height: 4px;
-  }
-  .val-badge {
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-    color: var(--accent-teal); min-width: 36px; text-align: left;
-  }
-
-  /* --- Center Stage --- */
-  main.stage-area {
-    flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative;
-  }
-  .viewport-container {
-    flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
-    padding: 14px; overflow: hidden;
-    background-image: radial-gradient(rgba(148,163,184,0.12) 1px, transparent 1px);
-    background-size: 22px 22px;
+  /* Main Stage — Takes ALL remaining screen space! */
+  main {
+    flex: 1; position: relative; min-height: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 30%, #0f172a 0%, #06080d 75%);
   }
   .stage-shell {
     position: relative; width: 100%; height: 100%;
-    border-radius: 14px; overflow: hidden;
-    background: #05070a;
-    border: 1px solid rgba(148,163,184,0.2);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.65);
-    transition: width 0.25s ease, height 0.25s ease;
+    overflow: hidden; background: #05070a;
+    transition: width 0.2s ease, height 0.2s ease;
   }
-  iframe#scene-frame {
-    width: 100%; height: 100%; border: none; display: block; background: #05070a;
-  }
+  iframe#scene-frame { width: 100%; height: 100%; border: none; display: block; }
 
-  /* Overlays inside Stage Shell */
-  .overlay-layer {
-    position: absolute; inset: 0; pointer-events: none; z-index: 10; display: none;
-  }
-  #plate-overlay {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-    opacity: 0.5;
-  }
-
-  /* Reels 9:16 Safe Zone Guide */
-  #safezone-overlay {
-    border: 2px dashed rgba(45, 212, 191, 0.5);
-  }
-  .sz-top {
-    position: absolute; top: 0; left: 0; right: 0; height: 14%;
-    background: rgba(244, 63, 94, 0.16); border-bottom: 1px dashed rgba(244, 63, 94, 0.65);
-    display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fda4af;
-  }
-  .sz-bottom {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
-    background: rgba(244, 63, 94, 0.16); border-top: 1px dashed rgba(244, 63, 94, 0.65);
-    display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fda4af;
-  }
-  .sz-right {
-    position: absolute; top: 14%; bottom: 35%; right: 0; width: 14%;
-    background: rgba(251, 191, 36, 0.12); border-left: 1px dashed rgba(251, 191, 36, 0.55);
-  }
-
-  /* Rule of Thirds Grid */
-  #grid-overlay {
+  /* Overlays */
+  .ov-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; display: none; }
+  #plate-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.5; }
+  #sz-layer { border: 2px dashed rgba(45,212,191,0.5); }
+  .sz-t { position: absolute; top:0; left:0; right:0; height:14%; background:rgba(244,63,94,0.16); border-bottom:1px dashed rgba(244,63,94,0.6); }
+  .sz-b { position: absolute; bottom:0; left:0; right:0; height:35%; background:rgba(244,63,94,0.16); border-top:1px dashed rgba(244,63,94,0.6); }
+  .sz-r { position: absolute; top:14%; bottom:35%; right:0; width:14%; background:rgba(251,191,36,0.12); border-left:1px dashed rgba(251,191,36,0.5); }
+  #grid-layer {
     background-image:
-      linear-gradient(to right, rgba(255,255,255,0.16) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.16) 1px, transparent 1px);
+      linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
     background-size: 33.333% 33.333%;
   }
 
-  /* --- Bottom Storyboard Filmstrip Dock --- */
-  .filmstrip-dock {
-    height: 132px;
-    background: var(--bg-surface);
-    backdrop-filter: blur(18px);
-    border-top: 1px solid var(--border-subtle);
-    padding: 8px 14px;
-    display: flex; flex-direction: column; gap: 6px; z-index: 20;
-  }
-  .dock-header {
-    display: flex; align-items: center; justify-content: space-between; font-size: 11.5px;
-  }
-  .dock-strip {
-    flex: 1; display: flex; align-items: center; gap: 10px; overflow-x: auto; padding-bottom: 4px;
-  }
-  .panel-thumb {
-    position: relative; height: 82px; min-width: 56px; border-radius: 8px; overflow: hidden;
-    border: 1px solid var(--border-subtle); background: #0d1117; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .panel-thumb img { height: 100%; width: auto; max-width: 110px; object-fit: cover; display: block; }
-  .panel-badge {
-    position: absolute; top: 3px; left: 3px; background: rgba(0,0,0,0.78); color: #fff;
-    font-size: 9px; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
-  }
-  .panel-del {
-    position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(244,63,94,0.85); color: #fff; border: none; cursor: pointer;
-    font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: 0.15s;
-  }
-  .panel-thumb:hover .panel-del { opacity: 1; }
-  .empty-dock {
-    font-size: 11.5px; color: var(--text-muted); border: 1px dashed var(--border-subtle);
-    border-radius: 8px; padding: 10px 16px; width: 100%; text-align: center;
+  /* Floating Capture Pill (Top-Left of Viewport) */
+  .fab-capture {
+    position: absolute; top: 10px; left: 10px; z-index: 20;
+    display: flex; gap: 6px;
   }
 
-  /* --- Modals --- */
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(2, 6, 14, 0.78); backdrop-filter: blur(8px);
-    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  /* Slide-up Glass Drawer (Mobile & Desktop clean tool sheet) */
+  .drawer {
+    position: fixed; left: 0; right: 0; bottom: calc(58px + var(--safe-b));
+    max-height: 62dvh; overflow-y: auto; z-index: 40;
+    background: rgba(13, 19, 30, 0.92); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(148,163,184,0.22); border-radius: 20px 20px 0 0;
+    padding: 14px 16px 18px; display: none; flex-direction: column; gap: 12px;
+    box-shadow: 0 -16px 40px rgba(0,0,0,0.65);
   }
-  .modal-backdrop.open { display: flex; }
+  .drawer.open { display: flex; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; }
+  .drawer-head h3 { font-size: 13.5px; color: var(--accent); font-weight: 700; }
+
+  .row { display: flex; align-items: center; gap: 8px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  input[type="text"], textarea {
+    width: 100%; background: rgba(6, 9, 15, 0.85); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 11px; font-family: inherit; font-size: 12.5px; outline: none;
+  }
+  input[type="range"] { flex: 1; accent-color: var(--accent); }
+  .code-box {
+    min-height: 170px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    direction: ltr; text-align: left; resize: vertical;
+  }
+  .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); min-width: 34px; text-align: left; }
+
+  /* Storyboard Strip inside Drawer */
+  .strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
+  .thumb {
+    position: relative; height: 96px; min-width: 58px; border-radius: 9px; overflow: hidden;
+    border: 1px solid var(--border); background: #090d14; flex-shrink: 0;
+  }
+  .thumb img { height: 100%; width: auto; display: block; }
+  .thumb .tag {
+    position: absolute; bottom: 3px; left: 3px; background: rgba(0,0,0,0.78);
+    color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+  }
+  .thumb .del {
+    position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(244,63,94,0.9); color: #fff; border: none; font-size: 12px; cursor: pointer;
+  }
+
+  /* Bottom iOS-style Navigation Bar */
+  nav.bottom-bar {
+    height: calc(58px + var(--safe-b)); padding-bottom: var(--safe-b); flex-shrink: 0;
+    background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border-top: 1px solid var(--border); z-index: 50;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .nav-item {
+    background: none; border: none; color: var(--muted); font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    font-size: 10.5px; font-weight: 600; cursor: pointer; transition: 0.15s;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-item .badge {
+    background: var(--teal); color: #04131c; font-size: 9px; font-weight: 800;
+    padding: 0 5px; border-radius: 99px; margin-right: 3px;
+  }
+
+  /* Sheet Preview Modal */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(2,6,14,0.84); backdrop-filter: blur(10px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
+  }
+  .modal-bg.open { display: flex; }
   .modal {
-    width: 100%; max-width: 820px; max-height: 88vh;
-    background: #0e1420; border: 1px solid rgba(148,163,184,0.22);
-    border-radius: 18px; box-shadow: 0 25px 70px rgba(0,0,0,0.8);
-    display: flex; flex-direction: column; overflow: hidden;
+    width: 100%; max-width: 680px; max-height: 88dvh; background: #0e1420;
+    border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+    display: flex; flex-direction: column;
   }
-  .modal-head {
-    padding: 14px 18px; border-bottom: 1px solid var(--border-subtle);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .modal-head h2 { font-size: 14.5px; font-weight: 700; color: var(--accent); }
-  .modal-body { padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-  .modal-foot {
-    padding: 12px 18px; border-top: 1px solid var(--border-subtle);
-    display: flex; align-items: center; justify-content: flex-end; gap: 8px;
-  }
-  .code-editor {
-    min-height: 300px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    direction: ltr; text-align: left; line-height: 1.5; resize: vertical;
-  }
-  .drop-zone {
-    border: 1.5px dashed var(--border-bright); border-radius: 12px; padding: 14px;
-    text-align: center; font-size: 12px; color: var(--accent); background: rgba(56,189,248,0.06);
-    cursor: pointer; transition: 0.15s;
-  }
-  .drop-zone:hover { background: rgba(56,189,248,0.12); }
+  .modal-h, .modal-f { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .modal-f { border-bottom: none; border-top: 1px solid var(--border); justify-content: flex-end; gap: 8px; }
+  .modal-b { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  #sheet-canvas { max-width: 100%; max-height: 56dvh; margin: 0 auto; border-radius: 10px; display: block; }
 
-  #sheet-preview-canvas {
-    max-width: 100%; max-height: 55vh; border-radius: 10px;
-    border: 1px solid var(--border-subtle); margin: 0 auto; display: block;
-  }
-
-  /* Toast */
   #toast {
-    position: fixed; bottom: 146px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: rgba(15, 23, 42, 0.94); border: 1px solid var(--accent); color: #e0f2fe;
-    padding: 8px 16px; border-radius: 99px; font-size: 12px; opacity: 0; pointer-events: none;
-    transition: all 0.25s ease; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: fixed; top: 64px; left: 50%; transform: translateX(-50%) translateY(-10px);
+    background: rgba(15,23,42,0.95); border: 1px solid var(--accent); color: #e0f2fe;
+    padding: 7px 14px; border-radius: 99px; font-size: 11.5px; opacity: 0; pointer-events: none;
+    transition: 0.2s; z-index: 200; white-space: nowrap;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.25); border-radius: 99px; }
+  /* Desktop enhancement: centered floating drawer */
+  @media (min-width: 860px) {
+    .drawer { max-width: 520px; left: 50%; transform: translateX(-50%); border-radius: 18px; bottom: 72px; border: 1px solid var(--border); }
+  }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="brand">
-    <div class="brand-logo" title="Carizma">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3c-2 4-3 7-3 10a3 3 0 0 0 6 0c0-3-1-6-3-10Z"/>
-        <path d="M12 13c-3-1-6-3-8-6 0 4 2 8 8 10 6-2 8-6 8-10-2 3-5 5-8 6Z"/>
-      </svg>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.2">
+          <path d="M12 3c-2 4-3 7-3 10a3 3 0 0 0 6 0c0-3-1-6-3-10Z"/>
+          <path d="M12 13c-3-1-6-3-8-6 0 4 2 8 8 10 6-2 8-6 8-10-2 3-5 5-8 6Z"/>
+        </svg>
+      </div>
+      <span>Carizma 3D</span>
     </div>
-    <span>Carizma 3D Studio</span>
-    <span class="tag">GitHub Ready</span>
-  </div>
+    <select id="scene-sel" class="scene-sel" onchange="selectScene(this.value)"></select>
+    <button class="btn sm primary" onclick="openDrawer('code')">+ کد</button>
+  </header>
 
-  <div class="header-center">
-    <select id="scene-select" class="scene-select" onchange="loadSelectedScene()"></select>
-    <button class="btn sm" onclick="openCodeModal(false)" title="ویرایش کد صحنه فعلی">ویرایش کد</button>
-    <button class="btn sm danger" id="btn-del-scene" onclick="deleteCurrentScene()" title="حذف صحنه">حذف</button>
-  </div>
+  <main id="main-stage">
+    <div class="stage-shell" id="stage-shell">
+      <iframe id="scene-frame" allow="fullscreen"></iframe>
 
-  <div class="header-actions">
-    <button class="btn primary" onclick="openCodeModal(true)">+ جاگذاری کد / فایل</button>
-    <button class="btn" onclick="openSheetModal()">شیت استوری‌بورد (<span id="hdr-count">0</span>)</button>
-    <button class="btn sm" onclick="openGuideModal()">نصب در GitHub</button>
-  </div>
-</header>
+      <div class="ov-layer" id="plate-layer"><img id="plate-img" alt="plate" /></div>
+      <div class="ov-layer" id="sz-layer"><div class="sz-t"></div><div class="sz-r"></div><div class="sz-b"></div></div>
+      <div class="ov-layer" id="grid-layer"></div>
 
-<div class="workspace">
-  <!-- Right Inspector Panel -->
-  <aside class="inspector">
-    <div class="card">
-      <div class="card-title"><span>نسبت کادر نمایشگر</span></div>
-      <div class="grid-3">
-        <button class="btn sm active" id="asp-fill" onclick="setStageAspect('fill')">کامل</button>
-        <button class="btn sm" id="asp-916" onclick="setStageAspect('9:16')">۹:۱۶ ریلز</button>
-        <button class="btn sm" id="asp-169" onclick="setStageAspect('16:9')">۱۶:۹ واید</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span>کالیبراسیون با پلیت لوکیشن</span></div>
-      <div class="grid-2">
-        <button class="btn sm" onclick="document.getElementById('plate-file').click()">آپلود عکس پلیت</button>
-        <button class="btn sm" id="btn-ov-toggle" onclick="togglePlateOverlay()">خاموش</button>
-      </div>
-      <input type="file" id="plate-file" accept="image/*" style="display:none" onchange="handlePlateUpload(event)" />
-      <div class="row">
-        <span style="font-size:11px;color:var(--text-muted)">شفافیت</span>
-        <input type="range" id="ov-opacity" min="0" max="1" step="0.05" value="0.5" oninput="updateOverlayStyle()" />
-        <span class="val-badge" id="ov-op-val">50%</span>
-      </div>
-      <div class="row">
-        <span style="font-size:11px;color:var(--text-muted)">برش مقایسه</span>
-        <input type="range" id="ov-split" min="0" max="100" step="1" value="100" oninput="updateOverlayStyle()" />
-        <span class="val-badge" id="ov-sp-val">100%</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span>راهنماهای کادربندی (Guides)</span></div>
-      <div class="grid-2">
-        <button class="btn sm" id="btn-sz" onclick="toggleGuide('safezone')">Safe Zone 9:16</button>
-        <button class="btn sm" id="btn-grid" onclick="toggleGuide('grid')">یک‌سوم طلایی</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span>ثبت فریم استوری‌بورد</span></div>
-      <div>
-        <label class="field-lbl">برچسب پنل (شماره و زمان)</label>
-        <input type="text" id="capture-label" value="P1 · 0.0s" placeholder="مثلاً P1 · 0.0s" />
-      </div>
-      <button class="btn primary" onclick="captureFrameToDock()">ثبت در استوری‌بورد (1080×1920)</button>
-      <button class="btn sm" onclick="downloadSingleFrame()">دانلود تکی PNG همین نما</button>
-    </div>
-  </aside>
-
-  <!-- Center Stage + Bottom Dock -->
-  <main class="stage-area">
-    <div class="viewport-container" id="vp-container">
-      <div class="stage-shell" id="stage-shell">
-        <iframe id="scene-frame" allow="fullscreen"></iframe>
-
-        <!-- Calibration Plate Overlay -->
-        <div class="overlay-layer" id="plate-layer">
-          <img id="plate-overlay" alt="Location Plate" />
-        </div>
-
-        <!-- Reels Safe Zone Overlay -->
-        <div class="overlay-layer" id="safezone-overlay">
-          <div class="sz-top">ناحیه بالای ریلز (۱۴٪)</div>
-          <div class="sz-right"></div>
-          <div class="sz-bottom">ناحیه کپشن و دکمه‌های پایین (۳۵٪)</div>
-        </div>
-
-        <!-- Rule of Thirds Grid -->
-        <div class="overlay-layer" id="grid-overlay"></div>
-      </div>
-    </div>
-
-    <!-- Storyboard Filmstrip Dock -->
-    <div class="filmstrip-dock">
-      <div class="dock-header">
-        <div class="row">
-          <strong style="color:var(--accent-teal)">نوار پنل‌های استوری‌بورد</strong>
-          <span style="color:var(--text-muted);font-size:11px" id="dock-status">(۰ پنل ثبت شده)</span>
-        </div>
-        <div class="row">
-          <button class="btn sm" onclick="document.getElementById('import-panel-file').click()">+ افزودن PNG از سیستم</button>
-          <input type="file" id="import-panel-file" accept="image/*" multiple style="display:none" onchange="importPanelImages(event)" />
-          <button class="btn sm danger" onclick="clearDock()">پاک کردن همه</button>
-          <button class="btn sm primary" onclick="openSheetModal()">ساخت شیت نهایی ۳×۲</button>
-        </div>
-      </div>
-      <div class="dock-strip" id="dock-strip">
-        <div class="empty-dock">هنوز پنلی ثبت نشده. از پنل سمت راست دکمه «ثبت در استوری‌بورد» را بزن یا PNG وارد کن.</div>
+      <div class="fab-capture">
+        <button class="btn sm primary" onclick="captureFrame()">ثبت پنل</button>
       </div>
     </div>
   </main>
-</div>
 
-<!-- Modal 1: Paste / Upload Code -->
-<div class="modal-backdrop" id="code-modal">
-  <div class="modal">
-    <div class="modal-head">
-      <h2 id="code-modal-title">جاگذاری کد یا آپلود فایل HTML / Three.js</h2>
-      <button class="btn sm" onclick="closeModal('code-modal')">بستن ✕</button>
+  <!-- Drawer 1: Frame & Calibration -->
+  <div class="drawer" id="drawer-cal">
+    <div class="drawer-head">
+      <h3>کادر، راهنما و کالیبراسیون پلیت</h3>
+      <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
     </div>
-    <div class="modal-body">
-      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('html-file-in').click()">
-        فایل <strong>.html</strong> را اینجا بکش و رها کن یا کلیک کن تا انتخاب شود
-      </div>
-      <input type="file" id="html-file-in" accept=".html,.htm,.txt" style="display:none" onchange="handleHtmlFile(event)" />
-      <div>
-        <label class="field-lbl">نام صحنه (در حافظه مرورگر ذخیره می‌شود)</label>
-        <input type="text" id="scene-name-in" placeholder="مثلاً: صحنه ۳ — دادگاه" />
-      </div>
-      <div>
-        <label class="field-lbl">کد HTML / Three.js (مستقیماً از چت کپی و اینجا Paste کن)</label>
-        <textarea id="scene-code-in" class="code-editor" placeholder="<!DOCTYPE html>..."></textarea>
-      </div>
+    <div class="grid-3">
+      <button class="btn sm active" id="asp-fill" onclick="setAspect('fill')">کامل</button>
+      <button class="btn sm" id="asp-916" onclick="setAspect('9:16')">۹:۱۶ ریلز</button>
+      <button class="btn sm" id="asp-169" onclick="setAspect('16:9')">۱۶:۹ واید</button>
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('code-modal')">انصراف</button>
-      <button class="btn primary" onclick="saveAndRunCode()">ذخیره و اجرای زنده صحنه</button>
+    <div class="grid-2">
+      <button class="btn sm" id="btn-sz" onclick="toggleGuide('sz')">Safe Zone 9:16</button>
+      <button class="btn sm" id="btn-grid" onclick="toggleGuide('grid')">یک‌سوم طلایی</button>
+    </div>
+    <div class="grid-2">
+      <button class="btn sm" onclick="document.getElementById('plate-in').click()">آپلود عکس پلیت</button>
+      <button class="btn sm" id="btn-ov" onclick="togglePlate()">Overlay: خاموش</button>
+    </div>
+    <input type="file" id="plate-in" accept="image/*" style="display:none" onchange="onPlateFile(event)" />
+    <div class="row">
+      <span style="font-size:11px;color:var(--muted)">شفافیت</span>
+      <input type="range" id="ov-op" min="0" max="1" step="0.05" value="0.5" oninput="updateOv()" />
+      <span class="val" id="ov-op-v">50%</span>
+    </div>
+    <div class="row">
+      <span style="font-size:11px;color:var(--muted)">برش مقایسه</span>
+      <input type="range" id="ov-sp" min="0" max="100" step="1" value="100" oninput="updateOv()" />
+      <span class="val" id="ov-sp-v">100%</span>
     </div>
   </div>
-</div>
 
-<!-- Modal 2: Storyboard Sheet Assembler -->
-<div class="modal-backdrop" id="sheet-modal">
-  <div class="modal">
-    <div class="modal-head">
-      <h2>ساخت شیت نهایی استوری‌بورد (آماده ارسال به مدل تصویر)</h2>
-      <button class="btn sm" onclick="closeModal('sheet-modal')">بستن ✕</button>
+  <!-- Drawer 2: Storyboard Panels -->
+  <div class="drawer" id="drawer-sb">
+    <div class="drawer-head">
+      <h3>استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
+      <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
     </div>
-    <div class="modal-body">
-      <div class="row between">
-        <div class="row">
-          <span style="font-size:12px">تعداد ستون‌ها:</span>
-          <button class="btn sm active" id="col-3" onclick="setSheetCols(3)">۳ ستون (۳×۲)</button>
-          <button class="btn sm" id="col-2" onclick="setSheetCols(2)">۲ ستون (۲×۲)</button>
-        </div>
-        <span style="font-size:11px;color:var(--text-muted)">هر پنل ۵۴۰×۹۶۰ · کادر ۹:۱۶ · خوانش چپ به راست</span>
-      </div>
-      <canvas id="sheet-preview-canvas"></canvas>
+    <div class="row">
+      <input type="text" id="cap-lbl" value="P1 · 0.0s" placeholder="برچسب پنل" />
+      <button class="btn primary" onclick="captureFrame()">+ ثبت</button>
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal('sheet-modal')">بستن</button>
-      <button class="btn primary" onclick="downloadAssembledSheet()">دانلود شیت نهایی (storyboard_sheet.png)</button>
+    <div class="strip" id="sb-strip">
+      <div style="font-size:11.5px;color:var(--muted);padding:12px">هنوز پنلی ثبت نشده است.</div>
     </div>
+    <div class="grid-2">
+      <button class="btn sm" onclick="document.getElementById('imp-png').click()">+ افزودن PNG</button>
+      <button class="btn sm primary" onclick="openSheet()">ساخت شیت نهایی ۳×۲</button>
+    </div>
+    <input type="file" id="imp-png" accept="image/*" multiple style="display:none" onchange="importPngs(event)" />
   </div>
+
+  <!-- Drawer 3: Paste / Upload Code -->
+  <div class="drawer" id="drawer-code">
+    <div class="drawer-head">
+      <h3>جاگذاری کد یا فایل HTML / Three.js</h3>
+      <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
+    </div>
+    <div class="grid-2">
+      <button class="btn sm" onclick="document.getElementById('html-in').click()">انتخاب فایل .html</button>
+      <button class="btn sm danger" onclick="deleteScene()">حذف صحنه فعلی</button>
+    </div>
+    <input type="file" id="html-in" accept=".html,.htm,.txt" style="display:none" onchange="onHtmlFile(event)" />
+    <input type="text" id="sc-name" placeholder="نام صحنه (مثلاً صحنه ۳ — دادگاه)" />
+    <textarea id="sc-code" class="code-box" placeholder="کد HTML را اینجا Paste کن..."></textarea>
+    <button class="btn primary" onclick="saveNewScene()">ذخیره و اجرای زنده</button>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-bar">
+    <button class="nav-item active" id="nav-view" onclick="closeDrawers()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      <span>صحنه 3D</span>
+    </button>
+    <button class="nav-item" id="nav-cal" onclick="openDrawer('cal')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>کالیبراسیون</span>
+    </button>
+    <button class="nav-item" id="nav-sb" onclick="openDrawer('sb')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/><rect x="14" y="15" width="7" height="6" rx="1"/></svg>
+      <span>استوری‌بورد <span class="badge" id="nav-cnt">0</span></span>
+    </button>
+    <button class="nav-item" id="nav-code" onclick="openDrawer('code')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <span>کد / فایل</span>
+    </button>
+  </nav>
 </div>
 
-<!-- Modal 3: GitHub Pages Guide -->
-<div class="modal-backdrop" id="guide-modal">
-  <div class="modal" style="max-width:560px">
-    <div class="modal-head">
-      <h2>میزبانی رایگان روی GitHub Pages (۳ قدم)</h2>
-      <button class="btn sm" onclick="closeModal('guide-modal')">بستن ✕</button>
+<!-- Sheet Export Modal -->
+<div class="modal-bg" id="sheet-modal">
+  <div class="modal">
+    <div class="modal-h">
+      <strong style="font-size:13.5px;color:var(--accent)">شیت نهایی استوری‌بورد</strong>
+      <button class="btn sm" onclick="document.getElementById('sheet-modal').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-body" style="font-size:13px;line-height:1.8;color:#cbd5e1">
-      <p>۱. وارد اکانت GitHub خودت شو و یک Repository جدید (Public) مثلاً با نام <code>carizma-3d-studio</code> بساز.</p>
-      <p>۲. همین فایل را دقیقاً با نام <strong><code>index.html</code></strong> داخل آن آپلود (Commit) کن.</p>
-      <p>۳. به بخش <strong>Settings → Pages</strong> برو، در قسمت Branch گزینه <code>main</code> را انتخاب کن و Save بزن. بعد از ۱ دقیقه وب‌اپ تو روی لینک دائمی گیت‌هاب بالا می‌آید.</p>
+    <div class="modal-b">
+      <div class="row">
+        <button class="btn sm active" id="c3" onclick="setCols(3)">۳ ستون (۳×۲)</button>
+        <button class="btn sm" id="c2" onclick="setCols(2)">۲ ستون (۲×۲)</button>
+      </div>
+      <canvas id="sheet-canvas"></canvas>
     </div>
-    <div class="modal-foot">
-      <button class="btn primary" onclick="closeModal('guide-modal')">متوجه شدم</button>
+    <div class="modal-f">
+      <button class="btn primary" onclick="downloadSheet()">دانلود PNG شیت</button>
     </div>
   </div>
 </div>
@@ -495,68 +337,80 @@
 <div id="toast"></div>
 
 <script>
-const DEFAULT_SCENE_CODE = `<!DOCTYPE html>
+const DEFAULT_SCENE = `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Scene 2 — Bakery 3D</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-  body { background: #090b0f; color: #e6edf3; display: flex; height: 100vh; overflow: hidden; }
-  #panel-bar {
-    width: 220px; background: rgba(15, 19, 26, 0.92); border-left: 1px solid rgba(255,255,255,0.08);
-    padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; z-index: 5;
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #07090e; color: #f1f5f9; }
+  #canvas-wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #preset-bar {
+    position: fixed; bottom: 12px; left: 10px; right: 10px; z-index: 10;
+    display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px;
+    background: rgba(12, 17, 27, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 14px;
+    scrollbar-width: none;
   }
-  .lbl { font-size: 10.5px; color: #8b949e; margin-top: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 3px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-  button {
-    background: rgba(255,255,255,0.06); color: #e6edf3; border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 7px; padding: 7px 6px; font-size: 11px; cursor: pointer; transition: 0.15s;
+  #preset-bar::-webkit-scrollbar { display: none; }
+  .pill {
+    flex-shrink: 0; background: rgba(255,255,255,0.07); color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 9px;
+    padding: 6px 11px; font-size: 11.5px; font-weight: 500; cursor: pointer; transition: 0.15s;
   }
-  button:hover { background: rgba(56,189,248,0.18); border-color: rgba(56,189,248,0.45); }
-  button.active { background: rgba(14,165,233,0.35); border-color: #38bdf8; font-weight: 600; }
-  #desc { font-size: 11px; color: #cbd5e1; background: rgba(0,0,0,0.35); padding: 8px; border-radius: 7px; line-height: 1.5; }
-  #wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: #05070a; overflow: hidden; }
-  #frame { position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.12); }
-  canvas { display: block; width: 100%; height: 100%; }
+  .pill.active {
+    background: linear-gradient(135deg, rgba(14,165,233,0.85), rgba(45,212,191,0.85));
+    color: #04131c; font-weight: 700; border-color: transparent;
+  }
+  #hud-desc {
+    position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10; pointer-events: none;
+    display: flex; justify-content: center;
+  }
+  #hud-desc span {
+    background: rgba(10, 14, 22, 0.68); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 99px;
+    padding: 4px 12px; font-size: 11px; color: #cbd5e1; max-width: 95%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
 </style>
 </head>
 <body>
-<div id="panel-bar">
-  <div class="lbl">نمای مرجع (۱۶:۹)</div>
-  <div class="grid">
-    <button id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">CAM_PLATE</button>
-    <button id="b-CAM_DOOR" onclick="selectPreset('CAM_DOOR')">CAM_DOOR</button>
-  </div>
-  <div class="lbl">پنل‌های صحنه ۲ (۹:۱۶)</div>
-  <div class="grid">
-    <button id="b-P1" onclick="selectPreset('P1')">P1 · 0.0s</button>
-    <button id="b-P2" onclick="selectPreset('P2')">P2 · 3.0s</button>
-    <button id="b-P3" onclick="selectPreset('P3')">P3 · 6.2s</button>
-    <button id="b-P4" onclick="selectPreset('P4')">P4 · 8.8s</button>
-    <button id="b-P5" onclick="selectPreset('P5')">P5 · 10.5s</button>
-    <button id="b-P6" onclick="selectPreset('P6')">P6 · 14.0s</button>
-  </div>
-  <div id="desc">برای چرخش دوربین با موس بکشید و برای زوم اسکرول کنید.</div>
+<div id="hud-desc"><span id="desc">P1 · 0.0s (MS 32mm)</span></div>
+<div id="canvas-wrap"></div>
+<div id="preset-bar">
+  <button class="pill" id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">پلیت تنور</button>
+  <button class="pill" id="b-CAM_DOOR" onclick="selectPreset('CAM_DOOR')">دیوار در</button>
+  <button class="pill" id="b-P1" onclick="selectPreset('P1')">P1 · 0s</button>
+  <button class="pill" id="b-P2" onclick="selectPreset('P2')">P2 · 3s</button>
+  <button class="pill" id="b-P3" onclick="selectPreset('P3')">P3 · 6.2s</button>
+  <button class="pill" id="b-P4" onclick="selectPreset('P4')">P4 · 8.8s</button>
+  <button class="pill" id="b-P5" onclick="selectPreset('P5')">P5 · 10.5s</button>
+  <button class="pill" id="b-P6" onclick="selectPreset('P6')">P6 · 14s</button>
 </div>
-<div id="wrap"><div id="frame"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
 <script>
-const frameEl = document.getElementById('frame');
+const wrap = document.getElementById('canvas-wrap');
 const descEl = document.getElementById('desc');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1a1410);
-const camera = new THREE.PerspectiveCamera(45, 9/16, 0.1, 60);
+scene.background = new THREE.Color(0x16110e);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 60);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(1);
-frameEl.appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+wrap.appendChild(renderer.domElement);
+
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.dampingFactor = 0.08;
 
-scene.add(new THREE.AmbientLight(0xd8c3a5, 0.55));
+// Lights
+scene.add(new THREE.AmbientLight(0xd8c3a5, 0.58));
 const ovenLight = new THREE.PointLight(0xff7b29, 2.2, 9);
 ovenLight.position.set(-0.35, 1.15, -3.55); scene.add(ovenLight);
 const winLight = new THREE.DirectionalLight(0xfff4e0, 1.25);
@@ -569,6 +423,7 @@ function mat(hex, emissive=0x000000) { return new THREE.MeshLambertMaterial({ co
 function box(w,h,d,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 function cyl(rt,rb,h,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,20),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 
+// Bakery Room
 box(5.4,0.1,6.2, 0,-0.05,-2.0, 0x8f523a);
 box(5.4,3.1,0.15, 0,1.55,-5.05, 0xb88b68);
 box(0.15,3.1,6.2, -2.65,1.55,-2.0, 0xc49570);
@@ -576,24 +431,24 @@ box(0.15,3.1,6.2,  2.65,1.55,-2.0, 0xba8a66);
 box(5.4,0.15,6.2, 0,3.05,-2.0, 0x4a3425);
 for (let z=-4.2; z<=0.2; z+=1.4) box(5.2,0.18,0.22, 0,2.9,z, 0x3b2618);
 
+// Front Door Wall
 box(2.3,3.1,0.15,-1.45,1.55,1.0,0xb58865);
 box(1.5,3.1,0.15, 1.85,1.55,1.0,0xb58865);
 box(1.4,0.9,0.15, 0.40,2.65,1.0,0xb58865);
 const doorLeaf = box(1.2,2.15,0.08,-0.25,1.08,1.65,0x4d321f); doorLeaf.rotation.y = -1.25;
 box(14,0.08,10, 0,-0.08,6.2, 0xcbc6bc);
-box(3.5,1.6,0.3,-2.5,0.8,5.5,0x9e8268);
-box(3.5,1.6,0.3, 3.0,0.8,6.0,0x9e8268);
 
+// Oven + Window
 box(2.3,0.85,1.2,-0.35,0.425,-4.4,0xc7a787);
 const dome = new THREE.Mesh(new THREE.SphereGeometry(0.9,24,16,0,Math.PI*2,0,Math.PI/2),mat(0xc9ac8e));
 dome.position.set(-0.35,0.85,-4.4); scene.add(dome);
 cyl(0.20,0.22,1.4,-0.35,2.35,-4.4,0x2c2b2c);
 const fire = new THREE.Mesh(new THREE.SphereGeometry(0.36,16,12),mat(0xff8c24,0xff5500));
 fire.scale.set(1.0,1.15,0.35); fire.position.set(-0.35,1.05,-3.62); scene.add(fire);
-
 box(0.75,0.65,0.1,0.95,1.95,-4.96,0xfff8e7);
 box(0.95,0.08,0.16,0.95,2.31,-4.92,0x5c402c);
 
+// Counters, Stool, Shelves, Sacks
 box(0.78,0.90,3.3,-2.05,0.45,-2.25,0x5c3a21);
 cyl(0.24,0.24,0.18,-1.95,0.99,-2.75,0xd99b43);
 cyl(0.24,0.24,0.22,-1.95,1.01,-3.25,0xd99b43);
@@ -604,21 +459,15 @@ dough.scale.set(1.2,0.5,1.2); dough.position.set(-1.95,0.95,-2.25); scene.add(do
 box(1.05,0.72,2.1,2.05,0.36,-1.4,0xb58662);
 cyl(0.26,0.18,0.14,1.95,0.79,-1.45,0x8c3b20);
 cyl(0.24,0.24,0.12,2.15,0.78,-0.85,0xd99b43);
-
 box(0.32,0.06,1.6,2.42,1.55,-2.5,0x5c3d28);
 box(0.32,0.06,1.6,2.42,2.05,-2.5,0x5c3d28);
-cyl(0.08,0.11,0.28,2.40,2.22,-2.2,0x8c4427);
-cyl(0.09,0.12,0.30,2.40,1.73,-2.6,0x453b34);
-
 box(1.1,0.55,0.7,1.65,0.275,-4.35,0x523724);
 cyl(0.18,0.22,0.42,1.40,0.76,-4.35,0xb39469);
 cyl(0.18,0.22,0.42,1.88,0.76,-4.35,0xb39469);
-cyl(0.18,0.22,0.44,1.55,0.22,-3.55,0xb39469);
-cyl(0.18,0.22,0.40,1.95,0.20,-3.35,0xb39469);
-
 box(0.42,0.46,0.42,-0.78,0.23,-3.15,0x6e472b);
 cyl(0.22,0.22,0.12,-0.78,0.52,-3.15,0xd99b43);
 
+// Scale + Basket + 3 Butter blocks
 const scaleGroup = new THREE.Group(); scaleGroup.position.set(-1.92,0.90,-1.25);
 box(0.26,0.08,0.22,0,0.04,0,0x8f7333,scaleGroup);
 cyl(0.03,0.04,0.22,0,0.18,0,0x8f7333,scaleGroup);
@@ -634,6 +483,7 @@ const butter1 = box(0.11,0.06,0.08,-1.98,1.00,-1.82,0xfff099);
 const butter2 = box(0.11,0.06,0.08,-1.90,1.00,-1.74,0xfff099);
 const butter3 = box(0.11,0.06,0.08,-1.94,1.06,-1.78,0xfff099);
 
+// Asghar Mannequin
 const asghar = new THREE.Group();
 const mOrange = mat(0xe66a17), mSkin = mat(0xf09248);
 const belly = new THREE.Mesh(new THREE.SphereGeometry(0.38,20,16),mOrange);
@@ -649,36 +499,27 @@ const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.16,0.09,18),ma
 scene.add(skullcap); scene.add(asghar);
 
 const PRESETS = {
-  CAM_PLATE: { aspect:16/9, lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false, label:"CAM_PLATE", desc:"نمای واید کالیبراسیون تنور (۱۶:۹)" },
-  CAM_DOOR:  { aspect:16/9, lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false, label:"CAM_DOOR", desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)" },
-  P1: { aspect:9/16, lens:32, pos:[0.95,1.38,-0.20], aim:[-1.45,1.08,-2.05], showAsghar:true, aPos:[-1.20,0,-2.10], aRotY:-Math.PI/2, armL:[0.3,0,0], armR:[0.3,0,0], butterOnScale:false, capState:'head', label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — مکث اصغر و نگاه مشکوک به سبد کره." },
-  P2: { aspect:9/16, lens:38, pos:[0.55,1.35,-0.65], aim:[-1.40,1.15,-1.78], showAsghar:true, aPos:[-1.20,0,-1.78], aRotY:-Math.PI/2, armL:[0.15,0,0], armR:[-0.95,0,0.15], butterOnScale:false, capState:'head', label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی، دست سمت سبد کره." },
-  P3: { aspect:9/16, lens:50, pos:[0.20,1.35,-0.55], aim:[-1.85,1.12,-1.32], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2, armL:[0.1,0,0], armR:[-0.65,0,0], butterOnScale:true, capState:'head', label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل از مثلث قرمز." },
-  P4: { aspect:9/16, lens:48, pos:[0.15,1.18,-0.60], aim:[-1.25,1.25,-1.42], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.2, armL:[0.2,0,0], armR:[-2.2,0,-0.25], butterOnScale:true, capState:'head', label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — چهره برافروخته، دست روی لبه عرقچین." },
-  P5: { aspect:9/16, lens:36, pos:[0.55,1.25,-0.35], aim:[-1.25,1.18,-1.40], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.6, armL:[0.3,0,0], armR:[-1.1,0,0.35], butterOnScale:true, capState:'hand', label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین کنده شده در دست راست، سر برهنه." },
-  P6: { aspect:9/16, lens:28, pos:[1.15,1.32,0.75], aim:[-0.45,1.05,-0.60], showAsghar:true, aPos:[-0.45,0,-0.35], aRotY:0.25, armL:[-0.5,0,0], armR:[0.4,0,0.2], butterOnScale:true, capState:'hand', label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه سمت در." }
+  CAM_PLATE: { lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false, label:"CAM_PLATE", desc:"نمای واید کالیبراسیون تنور (۱۶:۹)" },
+  CAM_DOOR:  { lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false, label:"CAM_DOOR", desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)" },
+  P1: { lens:32, pos:[0.95,1.38,-0.20], aim:[-1.45,1.08,-2.05], showAsghar:true, aPos:[-1.20,0,-2.10], aRotY:-Math.PI/2, armL:[0.3,0,0], armR:[0.3,0,0], butterOnScale:false, capState:'head', label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره" },
+  P2: { lens:38, pos:[0.55,1.35,-0.65], aim:[-1.40,1.15,-1.78], showAsghar:true, aPos:[-1.20,0,-1.78], aRotY:-Math.PI/2, armL:[0.15,0,0], armR:[-0.95,0,0.15], butterOnScale:false, capState:'head', label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی، دست سمت کره" },
+  P3: { lens:50, pos:[0.20,1.35,-0.55], aim:[-1.85,1.12,-1.32], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2, armL:[0.1,0,0], armR:[-0.65,0,0], butterOnScale:true, capState:'head', label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل مثلث" },
+  P4: { lens:48, pos:[0.15,1.18,-0.60], aim:[-1.25,1.25,-1.42], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.2, armL:[0.2,0,0], armR:[-2.2,0,-0.25], butterOnScale:true, capState:'head', label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — خشم اصغر، دست روی عرقچین" },
+  P5: { lens:36, pos:[0.55,1.25,-0.35], aim:[-1.25,1.18,-1.40], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.6, armL:[0.3,0,0], armR:[-1.1,0,0.35], butterOnScale:true, capState:'hand', label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست، سر برهنه" },
+  P6: { lens:28, pos:[1.15,1.32,0.75], aim:[-0.45,1.05,-0.60], showAsghar:true, aPos:[-0.45,0,-0.35], aRotY:0.25, armL:[-0.5,0,0], armR:[0.4,0,0.2], butterOnScale:true, capState:'hand', label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی سمت در" }
 };
 
 let currentKey = 'P1';
-function resizeStage(aspect) {
-  const wrap = document.getElementById('wrap');
-  const maxW = wrap.clientWidth - 24, maxH = wrap.clientHeight - 24;
-  let w = maxW, h = w / aspect;
-  if (h > maxH) { h = maxH; w = h * aspect; }
-  frameEl.style.width = Math.round(w)+'px'; frameEl.style.height = Math.round(h)+'px';
-  camera.aspect = aspect; camera.updateProjectionMatrix();
-  renderer.setSize(Math.round(w), Math.round(h), false);
-}
-function focalToFov(mm, aspect) {
+function focalToFov(mm) {
+  const aspect = window.innerWidth / window.innerHeight;
   const sH = aspect < 1 ? 36.0 : 20.25;
   return 2 * Math.atan(sH / (2 * mm)) * (180 / Math.PI);
 }
 window.selectPreset = function(key) {
   currentKey = key; const p = PRESETS[key];
-  document.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
   const el = document.getElementById('b-'+key); if(el) el.classList.add('active');
-  resizeStage(p.aspect);
-  camera.fov = focalToFov(p.lens, p.aspect);
+  camera.fov = focalToFov(p.lens);
   camera.position.set(...p.pos); controls.target.set(...p.aim);
   camera.updateProjectionMatrix(); controls.update();
   asghar.visible = p.showAsghar; skullcap.visible = p.showAsghar;
@@ -690,402 +531,247 @@ window.selectPreset = function(key) {
     else { asghar.updateMatrixWorld(true); skullcap.position.copy(new THREE.Vector3(0,-0.45,0).applyMatrix4(armR.matrixWorld)); }
   }
   descEl.textContent = p.desc;
-  window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label, aspect: p.aspect }, '*');
+  window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label }, '*');
 };
 window.__CARIZMA_CAPTURE__ = function(w, h) {
-  const oldW = renderer.domElement.width, oldH = renderer.domElement.height;
+  const oldW = window.innerWidth, oldH = window.innerHeight;
+  const oldAspect = camera.aspect;
+  camera.aspect = w / h; camera.updateProjectionMatrix();
   renderer.setSize(w, h, false); renderer.render(scene, camera);
   const url = renderer.domElement.toDataURL('image/png');
+  camera.aspect = oldAspect; camera.updateProjectionMatrix();
   renderer.setSize(oldW, oldH, false);
   return url;
 };
-window.addEventListener('resize', () => resizeStage(PRESETS[currentKey].aspect));
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.fov = focalToFov(PRESETS[currentKey].lens);
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 selectPreset('P1');
 (function anim(){ requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); })();
 <\/script>
 </body>
 </html>`;
+const STORE = 'carizma_3d_v2_scenes';
+let scenes = [], curId = null, curBlobUrl = null;
+let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
 
-const STORAGE_KEY = 'carizma_3d_studio_scenes_v1';
-let scenes = [];
-let currentSceneId = null;
-let editingNew = true;
-let plateVisible = false;
-let guides = { safezone: false, grid: false };
-let capturedPanels = [];
-let sheetCols = 3;
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(() => el.classList.remove('show'), 2600);
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// Auto-patch pasted Three.js code so WebGLRenderer always preserves drawing buffer for clean capture
-function prepareSceneCode(rawHtml) {
-  const patchScript = `<script>
-  (function(){
-    const _origGetContext = HTMLCanvasElement.prototype.getContext;
-    HTMLCanvasElement.prototype.getContext = function(type, attrs) {
-      if (type && (type.includes('webgl'))) {
-        attrs = Object.assign({}, attrs || {}, { preserveDrawingBuffer: true });
-      }
-      return _origGetContext.call(this, type, attrs);
-    };
-  })();
-  <\/script>`;
-  if (rawHtml.includes('<head>')) return rawHtml.replace('<head>', '<head>' + patchScript);
-  return patchScript + rawHtml;
+function patchCode(html) {
+  const patch = `<script>(function(){const o=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(t&&t.includes('webgl'))a=Object.assign({},a||{},{preserveDrawingBuffer:true});return o.call(this,t,a);};})();<\/script>`;
+  return html.includes('<head>') ? html.replace('<head>', '<head>' + patch) : patch + html;
 }
 
-function initScenes() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) scenes = JSON.parse(saved);
-  } catch(e) { scenes = []; }
-
+function init() {
+  try { scenes = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { scenes = []; }
   if (!scenes.length) {
-    scenes = [{
-      id: 'default-bakery-s2',
-      name: 'صحنه ۲ — نانوایی سنگکی (پیش‌فرض)',
-      code: DEFAULT_SCENE_CODE
-    }];
-    persistScenes();
+    scenes = [{ id: 'bakery-s2', name: 'صحنه ۲ — نانوایی سنگکی', code: DEFAULT_SCENE }];
+    saveStore();
   }
-  renderSceneDropdown();
+  renderDropdown();
   selectScene(scenes[0].id);
 }
 
-function persistScenes() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(scenes)); } catch(e) {}
-}
+function saveStore() { try { localStorage.setItem(STORE, JSON.stringify(scenes)); } catch(e) {} }
 
-function renderSceneDropdown() {
-  const sel = document.getElementById('scene-select');
+function renderDropdown() {
+  const sel = document.getElementById('scene-sel');
   sel.innerHTML = '';
   scenes.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.id; opt.textContent = s.name;
-    if (s.id === currentSceneId) opt.selected = true;
-    sel.appendChild(opt);
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = s.name;
+    if (s.id === curId) o.selected = true;
+    sel.appendChild(o);
   });
-  document.getElementById('btn-del-scene').disabled = scenes.length <= 1;
 }
 
 function selectScene(id) {
   const s = scenes.find(x => x.id === id) || scenes[0];
-  currentSceneId = s.id;
-  renderSceneDropdown();
-  const iframe = document.getElementById('scene-frame');
-  iframe.srcdoc = prepareSceneCode(s.code);
-  toast('صحنه اجرا شد: ' + s.name);
+  curId = s.id; renderDropdown();
+  if (curBlobUrl) URL.revokeObjectURL(curBlobUrl);
+  const blob = new Blob([patchCode(s.code)], { type: 'text/html;charset=utf-8' });
+  curBlobUrl = URL.createObjectURL(blob);
+  document.getElementById('scene-frame').src = curBlobUrl;
 }
 
-function loadSelectedScene() {
-  selectScene(document.getElementById('scene-select').value);
-}
-
-function deleteCurrentScene() {
-  if (scenes.length <= 1) return;
-  if (!confirm('این صحنه از لیست حذف شود؟')) return;
-  scenes = scenes.filter(x => x.id !== currentSceneId);
-  persistScenes();
-  selectScene(scenes[0].id);
-}
-
-// --- Code Modal ---
-function openCodeModal(isNew) {
-  editingNew = isNew;
-  document.getElementById('code-modal-title').textContent = isNew
-    ? 'جاگذاری کد یا آپلود فایل جدید'
-    : 'ویرایش کد صحنه فعلی';
-  if (isNew) {
-    document.getElementById('scene-name-in').value = '';
-    document.getElementById('scene-code-in').value = '';
-  } else {
-    const cur = scenes.find(x => x.id === currentSceneId);
-    document.getElementById('scene-name-in').value = cur ? cur.name : '';
-    document.getElementById('scene-code-in').value = cur ? cur.code : '';
-  }
-  document.getElementById('code-modal').classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-function handleHtmlFile(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('scene-code-in').value = e.target.result;
-    if (!document.getElementById('scene-name-in').value) {
-      document.getElementById('scene-name-in').value = file.name.replace(/\.html?$/i, '');
-    }
-    toast('فایل خوانده شد: ' + file.name);
-  };
-  reader.readAsText(file);
-  ev.target.value = '';
-}
-
-const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.background = 'rgba(56,189,248,0.22)'; });
-dz.addEventListener('dragleave', () => { dz.style.background = 'rgba(56,189,248,0.06)'; });
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.style.background = 'rgba(56,189,248,0.06)';
-  const file = e.dataTransfer.files[0];
-  if (file) handleHtmlFile({ target: { files: [file], value: '' } });
-});
-
-function saveAndRunCode() {
-  const code = document.getElementById('scene-code-in').value.trim();
-  if (!code) { toast('لطفاً کد HTML را وارد کن.'); return; }
-  const name = document.getElementById('scene-name-in').value.trim() || ('صحنه ' + (scenes.length + 1));
-  if (editingNew) {
-    const id = 'sc-' + Date.now();
-    scenes.unshift({ id, name, code });
-    persistScenes();
-    selectScene(id);
-  } else {
-    const cur = scenes.find(x => x.id === currentSceneId);
-    if (cur) { cur.name = name; cur.code = code; persistScenes(); selectScene(cur.id); }
-  }
-  closeModal('code-modal');
-}
-
-// --- Viewport Aspect Ratio ---
-function setStageAspect(mode) {
-  ['fill', '916', '169'].forEach(k => document.getElementById('asp-'+k).classList.remove('active'));
-  document.getElementById('asp-' + (mode === '9:16' ? '916' : mode === '16:9' ? '169' : 'fill')).classList.add('active');
-  const shell = document.getElementById('stage-shell');
-  const cont = document.getElementById('vp-container');
-  const maxW = cont.clientWidth - 28, maxH = cont.clientHeight - 28;
-  if (mode === 'fill') {
-    shell.style.width = '100%'; shell.style.height = '100%';
-  } else {
-    const ratio = mode === '9:16' ? (9/16) : (16/9);
-    let w = maxW, h = w / ratio;
-    if (h > maxH) { h = maxH; w = h * ratio; }
-    shell.style.width = Math.round(w) + 'px';
-    shell.style.height = Math.round(h) + 'px';
+function openDrawer(name) {
+  const target = document.getElementById('drawer-' + name);
+  const wasOpen = target.classList.contains('open');
+  closeDrawers();
+  if (!wasOpen) {
+    target.classList.add('open');
+    document.getElementById('nav-view').classList.remove('active');
+    document.getElementById('nav-' + name).classList.add('active');
   }
 }
-window.addEventListener('resize', () => {
-  if (document.getElementById('asp-916').classList.contains('active')) setStageAspect('9:16');
-  else if (document.getElementById('asp-169').classList.contains('active')) setStageAspect('16:9');
-});
+function closeDrawers() {
+  document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-view').classList.add('active');
+}
 
-// --- Plate Calibration Overlay ---
-function handlePlateUpload(ev) {
+function onHtmlFile(ev) {
   const f = ev.target.files[0]; if (!f) return;
-  document.getElementById('plate-overlay').src = URL.createObjectURL(f);
-  plateVisible = true;
-  syncPlateUI();
-  toast('عکس پلیت برای کالیبراسیون بارگذاری شد.');
-}
-function togglePlateOverlay() {
-  if (!document.getElementById('plate-overlay').src) {
-    document.getElementById('plate-file').click(); return;
-  }
-  plateVisible = !plateVisible;
-  syncPlateUI();
-}
-function syncPlateUI() {
-  document.getElementById('plate-layer').style.display = plateVisible ? 'block' : 'none';
-  const b = document.getElementById('btn-ov-toggle');
-  b.textContent = plateVisible ? 'روشن' : 'خاموش';
-  b.classList.toggle('active', plateVisible);
-  updateOverlayStyle();
-}
-function updateOverlayStyle() {
-  const op = document.getElementById('ov-opacity').value;
-  const sp = document.getElementById('ov-split').value;
-  document.getElementById('ov-op-val').textContent = Math.round(op * 100) + '%';
-  document.getElementById('ov-sp-val').textContent = sp + '%';
-  const img = document.getElementById('plate-overlay');
-  img.style.opacity = op;
-  img.style.clipPath = `inset(0 ${100 - sp}% 0 0)`;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('sc-code').value = e.target.result;
+    if (!document.getElementById('sc-name').value) document.getElementById('sc-name').value = f.name.replace(/\.html?$/i,'');
+    toast('فایل خوانده شد');
+  };
+  r.readAsText(f); ev.target.value = '';
 }
 
-// --- Guides ---
-function toggleGuide(name) {
-  guides[name] = !guides[name];
-  document.getElementById(name + '-overlay').style.display = guides[name] ? 'block' : 'none';
-  document.getElementById(name === 'safezone' ? 'btn-sz' : 'btn-grid').classList.toggle('active', guides[name]);
+function saveNewScene() {
+  const code = document.getElementById('sc-code').value.trim();
+  if (!code) { toast('کد HTML را وارد کن'); return; }
+  const name = document.getElementById('sc-name').value.trim() || ('صحنه ' + (scenes.length + 1));
+  const id = 'sc-' + Date.now();
+  scenes.unshift({ id, name, code });
+  saveStore(); selectScene(id);
+  document.getElementById('sc-name').value = '';
+  document.getElementById('sc-code').value = '';
+  closeDrawers(); toast('صحنه جدید اجرا شد');
 }
 
-// Listen to preset updates from embedded scene
+function deleteScene() {
+  if (scenes.length <= 1) { toast('حداقل یک صحنه باید بماند'); return; }
+  scenes = scenes.filter(x => x.id !== curId);
+  saveStore(); selectScene(scenes[0].id); closeDrawers(); toast('حذف شد');
+}
+
+function setAspect(m) {
+  ['fill','916','169'].forEach(k => document.getElementById('asp-'+k).classList.remove('active'));
+  document.getElementById('asp-' + (m==='9:16'?'916':m==='16:9'?'169':'fill')).classList.add('active');
+  const shell = document.getElementById('stage-shell'), main = document.getElementById('main-stage');
+  if (m === 'fill') { shell.style.width = '100%'; shell.style.height = '100%'; return; }
+  const r = m === '9:16' ? 9/16 : 16/9;
+  let w = main.clientWidth, h = w / r;
+  if (h > main.clientHeight) { h = main.clientHeight; w = h * r; }
+  shell.style.width = Math.round(w)+'px'; shell.style.height = Math.round(h)+'px';
+}
+
+function toggleGuide(g) {
+  guides[g] = !guides[g];
+  document.getElementById(g + '-layer').style.display = guides[g] ? 'block' : 'none';
+  document.getElementById('btn-' + g).classList.toggle('active', guides[g]);
+}
+
+function onPlateFile(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  document.getElementById('plate-img').src = URL.createObjectURL(f);
+  plateOn = true; syncPlate(); toast('پلیت بارگذاری شد');
+}
+function togglePlate() {
+  if (!document.getElementById('plate-img').src) { document.getElementById('plate-in').click(); return; }
+  plateOn = !plateOn; syncPlate();
+}
+function syncPlate() {
+  document.getElementById('plate-layer').style.display = plateOn ? 'block' : 'none';
+  const b = document.getElementById('btn-ov');
+  b.textContent = plateOn ? 'Overlay: روشن' : 'Overlay: خاموش';
+  b.classList.toggle('active', plateOn);
+  updateOv();
+}
+function updateOv() {
+  const op = document.getElementById('ov-op').value, sp = document.getElementById('ov-sp').value;
+  document.getElementById('ov-op-v').textContent = Math.round(op*100)+'%';
+  document.getElementById('ov-sp-v').textContent = sp+'%';
+  const img = document.getElementById('plate-img');
+  img.style.opacity = op; img.style.clipPath = `inset(0 ${100-sp}% 0 0)`;
+}
+
 window.addEventListener('message', ev => {
   if (ev.data && ev.data.type === 'CARIZMA_PRESET' && ev.data.label) {
-    document.getElementById('capture-label').value = ev.data.label;
+    document.getElementById('cap-lbl').value = ev.data.label;
   }
 });
 
-// --- Capture Canvas from Iframe ---
-function grabCanvasDataURL() {
-  const iframe = document.getElementById('scene-frame');
+function captureFrame() {
+  const fr = document.getElementById('scene-frame');
+  let url = null;
   try {
-    const win = iframe.contentWindow;
-    if (win && typeof win.__CARIZMA_CAPTURE__ === 'function') {
-      return win.__CARIZMA_CAPTURE__(1080, 1920);
+    if (fr.contentWindow && typeof fr.contentWindow.__CARIZMA_CAPTURE__ === 'function')
+      url = fr.contentWindow.__CARIZMA_CAPTURE__(1080, 1920);
+    else {
+      const c = fr.contentDocument && fr.contentDocument.querySelector('canvas');
+      if (c) url = c.toDataURL('image/png');
     }
-    const canvas = iframe.contentDocument && iframe.contentDocument.querySelector('canvas');
-    if (canvas) return canvas.toDataURL('image/png');
-  } catch (err) {
-    console.error(err);
-  }
-  return null;
+  } catch(e) {}
+  if (!url) { toast('بوم سه‌بعدی پیدا نشد'); return; }
+  const label = document.getElementById('cap-lbl').value.trim() || ('P'+(panels.length+1));
+  panels.push({ id: Date.now()+Math.random(), label, url });
+  renderPanels(); toast('ثبت شد: ' + label);
 }
 
-function captureFrameToDock() {
-  const dataUrl = grabCanvasDataURL();
-  if (!dataUrl) { toast('بوم سه‌بعدی در صحنه پیدا نشد!'); return; }
-  const label = document.getElementById('capture-label').value.trim() || `P${capturedPanels.length + 1}`;
-  capturedPanels.push({ id: Date.now() + Math.random(), label, dataUrl });
-  renderDock();
-  toast('پنل ثبت شد: ' + label);
-  // Auto-increment label hint if it matches P1..P6
-  const m = label.match(/^P(\d+)/);
-  if (m) {
-    const next = parseInt(m[1], 10) + 1;
-    document.getElementById('capture-label').value = `P${next}`;
-  }
-}
-
-function downloadSingleFrame() {
-  const dataUrl = grabCanvasDataURL();
-  if (!dataUrl) { toast('بوم سه‌بعدی پیدا نشد!'); return; }
-  const label = (document.getElementById('capture-label').value.trim() || 'frame').replace(/[^a-zA-Z0-9._-]/g, '_');
-  const a = document.createElement('a');
-  a.href = dataUrl; a.download = label + '.png'; a.click();
-}
-
-function importPanelImages(ev) {
-  const files = Array.from(ev.target.files);
-  files.forEach(f => {
+function importPngs(ev) {
+  Array.from(ev.target.files).forEach(f => {
     const r = new FileReader();
-    r.onload = e => {
-      capturedPanels.push({
-        id: Date.now() + Math.random(),
-        label: f.name.replace(/\.[^.]+$/, ''),
-        dataUrl: e.target.result
-      });
-      renderDock();
-    };
+    r.onload = e => { panels.push({ id: Date.now()+Math.random(), label: f.name.replace(/\.[^.]+$/,''), url: e.target.result }); renderPanels(); };
     r.readAsDataURL(f);
   });
   ev.target.value = '';
 }
 
-function removePanel(id) {
-  capturedPanels = capturedPanels.filter(p => p.id !== id);
-  renderDock();
-}
+function removePanel(id) { panels = panels.filter(p => p.id !== id); renderPanels(); }
 
-function clearDock() {
-  if (!capturedPanels.length) return;
-  capturedPanels = [];
-  renderDock();
-}
-
-function renderDock() {
-  const strip = document.getElementById('dock-strip');
-  document.getElementById('hdr-count').textContent = capturedPanels.length;
-  document.getElementById('dock-status').textContent = `(${capturedPanels.length} پنل ثبت شده)`;
-  if (!capturedPanels.length) {
-    strip.innerHTML = '<div class="empty-dock">هنوز پنلی ثبت نشده. از پنل سمت راست دکمه «ثبت در استوری‌بورد» را بزن یا PNG وارد کن.</div>';
-    return;
-  }
-  strip.innerHTML = '';
-  capturedPanels.forEach((p, idx) => {
-    const div = document.createElement('div');
-    div.className = 'panel-thumb';
-    div.innerHTML = `
-      <img src="${p.dataUrl}" alt="${p.label}" />
-      <span class="panel-badge">${idx + 1} · ${p.label}</span>
-      <button class="panel-del" onclick="removePanel(${p.id})" title="حذف">×</button>
-    `;
-    strip.appendChild(div);
+function renderPanels() {
+  document.getElementById('sb-cnt').textContent = panels.length;
+  document.getElementById('nav-cnt').textContent = panels.length;
+  const st = document.getElementById('sb-strip');
+  if (!panels.length) { st.innerHTML = '<div style="font-size:11.5px;color:var(--muted);padding:12px">هنوز پنلی ثبت نشده است.</div>'; return; }
+  st.innerHTML = '';
+  panels.forEach((p, i) => {
+    const d = document.createElement('div'); d.className = 'thumb';
+    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button>`;
+    st.appendChild(d);
   });
 }
 
-// --- Storyboard Sheet Assembler (Matches assemble_sheet.py 540x960 per panel) ---
-function setSheetCols(c) {
+function setCols(c) {
   sheetCols = c;
-  document.getElementById('col-3').classList.toggle('active', c === 3);
-  document.getElementById('col-2').classList.toggle('active', c === 2);
-  buildSheetCanvas();
+  document.getElementById('c3').classList.toggle('active', c===3);
+  document.getElementById('c2').classList.toggle('active', c===2);
+  buildSheet();
 }
-
-function openSheetModal() {
-  if (!capturedPanels.length) {
-    toast('اول حداقل یک پنل ثبت کن یا وارد کن.');
-    return;
-  }
+function openSheet() {
+  if (!panels.length) { toast('اول حداقل یک پنل ثبت کن'); return; }
   document.getElementById('sheet-modal').classList.add('open');
-  buildSheetCanvas();
+  buildSheet();
 }
-
-async function buildSheetCanvas() {
-  const PW = 540, PH = 960, GAP = 8;
-  const cols = sheetCols;
-  const rows = Math.ceil(capturedPanels.length / cols);
-  const W = cols * PW + (cols + 1) * GAP;
-  const H = rows * PH + (rows + 1) * GAP;
-
-  const canvas = document.getElementById('sheet-preview-canvas');
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#c8c8c8';
-  ctx.fillRect(0, 0, W, H);
-
-  for (let i = 0; i < capturedPanels.length; i++) {
-    const p = capturedPanels[i];
-    const img = await new Promise(res => {
-      const im = new Image(); im.onload = () => res(im); im.src = p.dataUrl;
-    });
-    const c = i % cols, r = Math.floor(i / cols);
-    const x = GAP + c * (PW + GAP), y = GAP + r * (PH + GAP);
-
-    // Cover-crop into 540x960 (9:16)
-    const srcRatio = img.width / img.height, dstRatio = PW / PH;
-    let sx = 0, sy = 0, sw = img.width, sh = img.height;
-    if (srcRatio > dstRatio) {
-      sw = img.height * dstRatio; sx = (img.width - sw) / 2;
-    } else {
-      sh = img.width / dstRatio; sy = (img.height - sh) / 2;
-    }
-    ctx.drawImage(img, sx, sy, sw, sh, x, y, PW, PH);
-
-    // Top-left label badge (clean numeral + timestamp, no extra text)
-    const txt = `${i + 1} · ${p.label}`;
+async function buildSheet() {
+  const PW=540, PH=960, GAP=8, cols=sheetCols, rows=Math.ceil(panels.length/cols);
+  const cv = document.getElementById('sheet-canvas');
+  cv.width = cols*PW+(cols+1)*GAP; cv.height = rows*PH+(rows+1)*GAP;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#c8c8c8'; ctx.fillRect(0,0,cv.width,cv.height);
+  for (let i=0; i<panels.length; i++) {
+    const im = await new Promise(res => { const img = new Image(); img.onload=()=>res(img); img.src=panels[i].url; });
+    const x = GAP + (i%cols)*(PW+GAP), y = GAP + Math.floor(i/cols)*(PH+GAP);
+    const sr = im.width/im.height, dr = PW/PH;
+    let sx=0, sy=0, sw=im.width, sh=im.height;
+    if (sr > dr) { sw = im.height*dr; sx = (im.width-sw)/2; } else { sh = im.width/dr; sy = (im.height-sh)/2; }
+    ctx.drawImage(im, sx, sy, sw, sh, x, y, PW, PH);
+    const txt = `${i+1} · ${panels[i].label}`;
     ctx.font = 'bold 28px JetBrains Mono, Arial, sans-serif';
     const tw = ctx.measureText(txt).width;
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
-    ctx.fillRect(x, y, tw + 26, 46);
-    ctx.fillStyle = '#ffffff';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(txt, x + 13, y + 24);
+    ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(x, y, tw+24, 46);
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.fillText(txt, x+12, y+24);
   }
 }
-
-function downloadAssembledSheet() {
-  const canvas = document.getElementById('sheet-preview-canvas');
+function downloadSheet() {
   const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = 'carizma_storyboard_sheet.png';
-  a.click();
-  toast('شیت استوری‌بورد دانلود شد!');
+  a.href = document.getElementById('sheet-canvas').toDataURL('image/png');
+  a.download = 'carizma_storyboard_sheet.png'; a.click();
 }
 
-function openGuideModal() {
-  document.getElementById('guide-modal').classList.add('open');
-}
-
-initScenes();
+init();
 </script>
 </body>
 </html>
