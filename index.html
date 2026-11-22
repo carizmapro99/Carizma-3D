@@ -368,13 +368,13 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
     color: #04131c; font-weight: 700; border-color: transparent;
   }
   #hud-desc {
-    position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10; pointer-events: none;
+    position: fixed; top: 44px; left: 10px; right: 10px; z-index: 9; pointer-events: none;
     display: flex; justify-content: center;
   }
   #hud-desc span {
-    background: rgba(10, 14, 22, 0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 99px;
-    padding: 4px 12px; font-size: 11px; color: #cbd5e1; max-width: 95%;
+    background: rgba(10, 14, 22, 0.76); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 99px;
+    padding: 4px 12px; font-size: 10.5px; color: #e2e8f0; max-width: 96%;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 </style>
@@ -514,13 +514,31 @@ asghar.add(fallbackGroup);
 const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.14,0.08,18), mat(0xf5f5f5));
 scene.add(skullcap);
 
-// GLTF Rigged Model Loader
+// GLTF Rigged Model Loader with rest-pose deltas & calibrated baker scale
 let gltfModel = null;
 let bones = {};
+let restRot = {};
+let modelHeadTopY = 1.62;
 const loader = new THREE.GLTFLoader();
+
+function captureRestRot(bone) {
+  if (!bone) return;
+  restRot[bone.uuid] = bone.rotation.clone();
+}
+
+function addPoseDelta(bone, deltaXYZ) {
+  if (!bone || !deltaXYZ) return;
+  const base = restRot[bone.uuid];
+  if (!base) return;
+  bone.rotation.set(
+    base.x + (deltaXYZ[0] || 0),
+    base.y + (deltaXYZ[1] || 0),
+    base.z + (deltaXYZ[2] || 0)
+  );
+}
+
 loader.load('./scene.gltf', (gltf) => {
   gltfModel = gltf.scene;
-  // Apply flat matte orange material (prevents nudity filter issues & locks baker silhouette)
   const matteMat = new THREE.MeshLambertMaterial({ color: 0xe66a17 });
   gltfModel.traverse(obj => {
     if (obj.isMesh) {
@@ -529,45 +547,55 @@ loader.load('./scene.gltf', (gltf) => {
       obj.receiveShadow = false;
     }
     if (obj.isBone) {
-      const n = obj.name.toLowerCase();
-      if (n.includes('right') || n.endsWith('_r') || n.endsWith('.r')) {
-        if (n.includes('forearm') || n.includes('lowerarm')) bones.rForeArm = obj;
-        else if (n.includes('arm') || n.includes('upperarm')) bones.rArm = obj;
+      const n = obj.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const isRight = n.includes('right') || n.endsWith('r');
+      const isLeft  = n.includes('left')  || n.endsWith('l');
+      if (isRight && !isLeft) {
+        if ((n.includes('forearm') || n.includes('lowerarm')) && !bones.rForeArm) {
+          bones.rForeArm = obj; captureRestRot(obj);
+        } else if ((n.includes('upperarm') || n.includes('arm')) && !n.includes('shoulder') && !bones.rArm) {
+          bones.rArm = obj; captureRestRot(obj);
+        }
       }
-      if (n.includes('left') || n.endsWith('_l') || n.endsWith('.l')) {
-        if (n.includes('forearm') || n.includes('lowerarm')) bones.lForeArm = obj;
-        else if (n.includes('arm') || n.includes('upperarm')) bones.lArm = obj;
+      if (isLeft && !isRight) {
+        if ((n.includes('forearm') || n.includes('lowerarm')) && !bones.lForeArm) {
+          bones.lForeArm = obj; captureRestRot(obj);
+        } else if ((n.includes('upperarm') || n.includes('arm')) && !n.includes('shoulder') && !bones.lArm) {
+          bones.lArm = obj; captureRestRot(obj);
+        }
       }
-      if (n.includes('head')) bones.head = obj;
-      if (n.includes('spine')) bones.spine = obj;
+      if (n.includes('head') && !bones.head) {
+        bones.head = obj; captureRestRot(obj);
+      }
     }
   });
-  // Normalize height to ~1.62m and ground feet at y=0
+
+  // Calibrate character height (~1.58m) & pear-like baker width relative to 0.90m counter
   const bb = new THREE.Box3().setFromObject(gltfModel);
   const sz = bb.getSize(new THREE.Vector3());
-  const scale = 1.62 / Math.max(sz.y, 0.01);
-  gltfModel.scale.setScalar(scale);
+  const baseScale = 1.58 / Math.max(sz.y, 0.01);
+  gltfModel.scale.set(baseScale * 1.24, baseScale, baseScale * 1.16);
+  gltfModel.updateMatrixWorld(true);
   const bb2 = new THREE.Box3().setFromObject(gltfModel);
   gltfModel.position.y = -bb2.min.y;
-  // Slightly widen torso X/Z for baker build
-  gltfModel.scale.x *= 1.18;
-  gltfModel.scale.z *= 1.18;
+  gltfModel.updateMatrixWorld(true);
+  const bb3 = new THREE.Box3().setFromObject(gltfModel);
+  modelHeadTopY = bb3.max.y;
 
   fallbackGroup.visible = false;
   asghar.add(gltfModel);
   selectPreset(currentKey);
 }, undefined, () => {
-  // Fallback stays visible if scene.gltf is not uploaded yet
   selectPreset(currentKey);
 });
 
 function applyBonePose(pose) {
   if (!gltfModel) return;
-  if (bones.rArm)     bones.rArm.rotation.set(...(pose.rArm || [0,0,0]));
-  if (bones.rForeArm) bones.rForeArm.rotation.set(...(pose.rForeArm || [0,0,0]));
-  if (bones.lArm)     bones.lArm.rotation.set(...(pose.lArm || [0,0,0]));
-  if (bones.lForeArm) bones.lForeArm.rotation.set(...(pose.lForeArm || [0,0,0]));
-  if (bones.head)     bones.head.rotation.set(...(pose.head || [0,0,0]));
+  addPoseDelta(bones.rArm,     pose.rArm);
+  addPoseDelta(bones.rForeArm, pose.rForeArm);
+  addPoseDelta(bones.lArm,     pose.lArm);
+  addPoseDelta(bones.lForeArm, pose.lForeArm);
+  addPoseDelta(bones.head,     pose.head);
 }
 
 // --- IMPROVED 8-PRESET CAMERA LEDGER (P2 & P5 face oven depth, P3 clean, needle locked) ---
@@ -583,48 +611,45 @@ const PRESETS = {
     desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)"
   },
   P1: {
-    lens:32, pos:[0.95,1.42,-0.10], aim:[-1.35,1.15,-2.10], showAsghar:true,
-    aPos:[-1.22,0,-2.05], aRotY:-Math.PI/2,
+    lens:32, pos:[1.05,1.40,0.05], aim:[-1.35,1.12,-2.05], showAsghar:true,
+    aPos:[-1.25,0,-2.05], aRotY:-Math.PI/2,
     butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    pose:{ rArm:[0.2,0,-0.4], rForeArm:[0.4,0,0], lArm:[0.2,0,0.4], head:[0.15,0.2,0] },
+    pose:{ rArm:[0.15,0,-0.15], rForeArm:[0.25,0,0], lArm:[0.15,0,0.15], head:[0.08,0.15,0] },
     label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره (ترازو خالی)"
   },
   P2: {
-    // Camera angled toward oven & window (NO blank wall!)
-    lens:38, pos:[-0.35,1.42,-0.25], aim:[-1.10,1.32,-2.35], showAsghar:true,
-    aPos:[-1.22,0,-1.85], aRotY:-Math.PI/3.2,
+    lens:38, pos:[-0.35,1.40,-0.25], aim:[-1.12,1.28,-2.35], showAsghar:true,
+    aPos:[-1.25,0,-1.85], aRotY:-Math.PI/3.2,
     butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    pose:{ rArm:[-0.5,0,-0.2], rForeArm:[-0.6,0,0], lArm:[0.1,0,0.3], head:[0.1,-0.15,0] },
+    pose:{ rArm:[-0.25,0,-0.1], rForeArm:[-0.35,0,0], lArm:[0.08,0,0.12], head:[0.06,-0.12,0] },
     label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی با پس‌زمینه تنور و پنجره"
   },
   P3: {
-    // Clean close-up on scale & basket (NO foreground arm!)
     lens:50, pos:[-0.55,1.26,-0.72], aim:[-1.92,1.12,-1.32], showAsghar:true,
-    aPos:[-1.18,0,-1.80], aRotY:-Math.PI/2.4,
+    aPos:[-1.22,0,-1.82], aRotY:-Math.PI/2.4,
     butterOnScale:true, needleAngle: 0.55, capState:'head',
-    pose:{ rArm:[0.1,0,-0.3], lArm:[0.1,0,0.3], head:[0.2,0.2,0] },
+    pose:{ rArm:[0.05,0,-0.12], lArm:[0.05,0,0.12], head:[0.12,0.15,0] },
     label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه نیمه چپ قبل از مثلث قرمز"
   },
   P4: {
-    lens:48, pos:[0.10,1.28,-0.65], aim:[-1.22,1.42,-1.55], showAsghar:true,
-    aPos:[-1.22,0,-1.55], aRotY:-Math.PI/2.3,
+    lens:48, pos:[0.15,1.26,-0.65], aim:[-1.25,1.38,-1.55], showAsghar:true,
+    aPos:[-1.25,0,-1.55], aRotY:-Math.PI/2.3,
     butterOnScale:true, needleAngle: 0.55, capState:'head',
-    pose:{ rArm:[-1.8,0,-0.2], rForeArm:[-0.9,0,0], lArm:[0.2,0,0.4], head:[0.12,0,0] },
+    pose:{ rArm:[-0.55,0,-0.12], rForeArm:[-0.45,0,0], lArm:[0.1,0,0.15], head:[0.08,0,0] },
     label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — خشم اصغر، دست روی لبه عرقچین"
   },
   P5: {
-    // Angled toward oven & window depth (NO blank wall!)
-    lens:36, pos:[0.25,1.35,-0.15], aim:[-1.25,1.20,-2.10], showAsghar:true,
-    aPos:[-1.22,0,-1.55], aRotY:-Math.PI/2.8,
+    lens:36, pos:[0.25,1.35,-0.15], aim:[-1.25,1.18,-2.10], showAsghar:true,
+    aPos:[-1.25,0,-1.55], aRotY:-Math.PI/2.8,
     butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    pose:{ rArm:[-0.7,0,-0.3], rForeArm:[-0.5,0,0], lArm:[0.2,0,0.4], head:[0.1,0.1,0] },
+    pose:{ rArm:[-0.35,0,-0.15], rForeArm:[-0.3,0,0], lArm:[0.1,0,0.15], head:[0.06,0.08,0] },
     label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست راست، سر برهنه، عمق تنور"
   },
   P6: {
     lens:28, pos:[0.35,1.38,-1.75], aim:[0.15,1.15,1.25], showAsghar:true,
     aPos:[0.10,0,-0.35], aRotY: 0.08,
     butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    pose:{ rArm:[0.3,0,-0.2], lArm:[-0.3,0,0.2], head:[0,0,0] },
+    pose:{ rArm:[0.15,0,-0.1], lArm:[-0.15,0,0.1], head:[0,0,0] },
     label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه به سمت درِ باز"
   }
 };
@@ -654,7 +679,7 @@ window.selectPreset = function(key) {
     asghar.rotation.y = p.aRotY;
     applyBonePose(p.pose || {});
     if (p.capState === 'head') {
-      skullcap.position.set(p.aPos[0], gltfModel ? 1.63 : 1.49, p.aPos[2]);
+      skullcap.position.set(p.aPos[0], gltfModel ? (modelHeadTopY - 0.02) : 1.49, p.aPos[2]);
     } else {
       // Held near right hand
       const dx = Math.cos(p.aRotY) * 0.42, dz = -Math.sin(p.aRotY) * 0.42;
@@ -688,7 +713,7 @@ selectPreset('P1');
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v3_scenes';
+const STORE = 'carizma_3d_v4_scenes';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
 
