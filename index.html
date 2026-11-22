@@ -260,19 +260,23 @@
   <!-- Drawer 2: Storyboard Panels -->
   <div class="drawer" id="drawer-sb">
     <div class="drawer-head">
-      <h3>استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
+      <h3>خروجی و استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
       <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
+    </div>
+    <div class="grid-2">
+      <button class="btn sm active" id="mode-single" onclick="setSaveMode('single')">حالت: ذخیره تک‌تک</button>
+      <button class="btn sm" id="mode-sheet" onclick="setSaveMode('sheet')">حالت: ذخیره پنلی (شیت)</button>
     </div>
     <div class="row">
       <input type="text" id="cap-lbl" value="P1 · 0.0s" placeholder="برچسب پنل" />
-      <button class="btn primary" onclick="captureFrame()">+ ثبت</button>
+      <button class="btn primary" id="btn-cap-action" onclick="handleCaptureButton()">ذخیره تک PNG</button>
     </div>
     <div class="strip" id="sb-strip">
       <div style="font-size:11.5px;color:var(--muted);padding:12px">هنوز پنلی ثبت نشده است.</div>
     </div>
     <div class="grid-2">
       <button class="btn sm" onclick="document.getElementById('imp-png').click()">+ افزودن PNG</button>
-      <button class="btn sm primary" onclick="openSheet()">ساخت شیت نهایی ۳×۲</button>
+      <button class="btn sm primary" onclick="openSheet()">ساخت شیت پنلی ۳×۲</button>
     </div>
     <input type="file" id="imp-png" accept="image/*" multiple style="display:none" onchange="importPngs(event)" />
   </div>
@@ -381,7 +385,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 </style>
 </head>
 <body>
-<div id="hud-desc"><span id="desc">در حال بارگذاری مدل...</span></div>
+<div id="hud-desc"><span id="desc">P1 · 0.0s (MS 32mm)</span></div>
 <div id="canvas-wrap"></div>
 <div id="preset-bar">
   <button class="pill" id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">پلیت تنور</button>
@@ -396,7 +400,6 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\/script>
 <script>
 const wrap = document.getElementById('canvas-wrap');
 const descEl = document.getElementById('desc');
@@ -515,48 +518,10 @@ asghar.add(fallbackGroup);
 const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.14,0.08,18), mat(0xf5f5f5));
 scene.add(skullcap);
 
-// GLTF Rigged Model Loader (keeps clean rest pose without twisting bones, calibrates height & head center)
+// Pure standalone 3D scene (no external GLTF file dependency)
 let gltfModel = null;
-let modelHeadTopY = 1.56;
+let modelHeadTopY = 1.49;
 let modelHeadCenterX = 0, modelHeadCenterZ = 0;
-const loader = new THREE.GLTFLoader();
-
-loader.load('./scene.gltf', (gltf) => {
-  gltfModel = gltf.scene;
-  const matteMat = new THREE.MeshLambertMaterial({ color: 0xe66a17 });
-  gltfModel.traverse(obj => {
-    if (obj.isMesh) {
-      obj.material = matteMat;
-      obj.castShadow = false;
-      obj.receiveShadow = false;
-    }
-  });
-
-  // Calibrate character height to ~1.54m (matching counter height 0.90m naturally)
-  const bb = new THREE.Box3().setFromObject(gltfModel);
-  const sz = bb.getSize(new THREE.Vector3());
-  const baseScale = 1.54 / Math.max(sz.y, 0.01);
-  gltfModel.scale.set(baseScale * 1.22, baseScale, baseScale * 1.15);
-  gltfModel.updateMatrixWorld(true);
-  const bb2 = new THREE.Box3().setFromObject(gltfModel);
-  gltfModel.position.y = -bb2.min.y;
-  // Center X/Z around local origin
-  const cx = (bb2.min.x + bb2.max.x) * 0.5;
-  const cz = (bb2.min.z + bb2.max.z) * 0.5;
-  gltfModel.position.x -= cx;
-  gltfModel.position.z -= cz;
-  gltfModel.updateMatrixWorld(true);
-  const bb3 = new THREE.Box3().setFromObject(gltfModel);
-  modelHeadTopY = bb3.max.y;
-  modelHeadCenterX = (bb3.min.x + bb3.max.x) * 0.5;
-  modelHeadCenterZ = (bb3.min.z + bb3.max.z) * 0.5;
-
-  fallbackGroup.visible = false;
-  asghar.add(gltfModel);
-  selectPreset(currentKey);
-}, undefined, () => {
-  selectPreset(currentKey);
-});
 
 // --- CALIBRATED 8-PRESET CAMERA LEDGER (clear 3/4 & front/side views, no back-facing P4) ---
 const PRESETS = {
@@ -665,9 +630,55 @@ selectPreset('P1');
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v5_scenes';
+const STORE = 'carizma_3d_v6_scenes';
 let scenes = [], curId = null, curBlobUrl = null;
-let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
+let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false }, saveMode = 'single';
+
+function setSaveMode(mode) {
+  saveMode = mode;
+  document.getElementById('mode-single').classList.toggle('active', mode === 'single');
+  document.getElementById('mode-sheet').classList.toggle('active', mode === 'sheet');
+  document.getElementById('btn-cap-action').textContent = mode === 'single' ? 'ذخیره تک PNG' : '+ ثبت پنل';
+  toast(mode === 'single' ? 'حالت ذخیره تک‌تک فعال شد' : 'حالت ذخیره پنلی (شیت) فعال شد');
+}
+
+async function exportBlobOrDataUrl(dataUrl, filename) {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const file = new File([blob], filename, { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: filename });
+      toast('ذخیره شد: ' + filename);
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast('دانلود شد: ' + filename);
+}
+
+async function handleCaptureButton() {
+  const url = captureFrame();
+  if (!url) return;
+  if (saveMode === 'single') {
+    const rawLbl = document.getElementById('cap-lbl').value.trim() || ('panel_' + panels.length);
+    const safeName = rawLbl.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
+    await exportBlobOrDataUrl(url, safeName + '.png');
+  }
+}
+
+function downloadSinglePanel(id) {
+  const p = panels.find(x => x.id === id);
+  if (!p) return;
+  const safeName = (p.label || 'panel').replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
+  exportBlobOrDataUrl(p.url, safeName + '.png');
+}
 
 function toast(m) {
   const t = document.getElementById('toast');
@@ -817,10 +828,12 @@ function captureFrame() {
       if (c) url = c.toDataURL('image/png');
     }
   } catch(e) {}
-  if (!url) { toast('بوم سه‌بعدی پیدا نشد'); return; }
+  if (!url) { toast('بوم سه‌بعدی پیدا نشد'); return null; }
   const label = document.getElementById('cap-lbl').value.trim() || ('P'+(panels.length+1));
   panels.push({ id: Date.now()+Math.random(), label, url });
-  renderPanels(); toast('ثبت شد: ' + label);
+  renderPanels();
+  if (saveMode !== 'single') toast('پنل ثبت شد: ' + label);
+  return url;
 }
 
 function importPngs(ev) {
@@ -842,7 +855,7 @@ function renderPanels() {
   st.innerHTML = '';
   panels.forEach((p, i) => {
     const d = document.createElement('div'); d.className = 'thumb';
-    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button>`;
+    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button><button class="del" style="top:3px;left:3px;right:auto;background:rgba(14,165,233,0.9)" onclick="downloadSinglePanel(${p.id})" title="دانلود تک PNG">↓</button>`;
     st.appendChild(d);
   });
 }
