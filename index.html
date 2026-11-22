@@ -326,10 +326,12 @@
         <button class="btn sm active" id="c3" onclick="setCols(3)">۳ ستون (۳×۲)</button>
         <button class="btn sm" id="c2" onclick="setCols(2)">۲ ستون (۲×۲)</button>
       </div>
-      <canvas id="sheet-canvas"></canvas>
+      <canvas id="sheet-canvas" style="display:none"></canvas>
+      <img id="sheet-preview-img" alt="Storyboard Sheet" style="max-width:100%;max-height:54dvh;margin:0 auto;border-radius:10px;display:block;-webkit-touch-callout:default;" />
+      <div style="font-size:11px;color:var(--muted);text-align:center">در آیفون: دکمه زیر را بزن یا انگشتت را روی عکس نگه دار و Save to Photos بزن</div>
     </div>
     <div class="modal-f">
-      <button class="btn primary" onclick="downloadSheet()">دانلود PNG شیت</button>
+      <button class="btn primary" onclick="downloadSheet()">ذخیره / دانلود PNG شیت</button>
     </div>
   </div>
 </div>
@@ -759,16 +761,55 @@ async function buildSheet() {
     if (sr > dr) { sw = im.height*dr; sx = (im.width-sw)/2; } else { sh = im.width/dr; sy = (im.height-sh)/2; }
     ctx.drawImage(im, sx, sy, sw, sh, x, y, PW, PH);
     const txt = `${i+1} · ${panels[i].label}`;
+    ctx.direction = 'ltr';
+    ctx.textAlign = 'left';
     ctx.font = 'bold 28px JetBrains Mono, Arial, sans-serif';
     const tw = ctx.measureText(txt).width;
     ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(x, y, tw+24, 46);
     ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.fillText(txt, x+12, y+24);
   }
+  _syncSheetImg();
 }
-function downloadSheet() {
+let _lastSheetBlob = null;
+function _syncSheetImg() {
+  const cv = document.getElementById('sheet-canvas');
+  cv.toBlob(blob => {
+    _lastSheetBlob = blob;
+    const imgEl = document.getElementById('sheet-preview-img');
+    if (imgEl.dataset.url) URL.revokeObjectURL(imgEl.dataset.url);
+    const u = URL.createObjectURL(blob);
+    imgEl.dataset.url = u;
+    imgEl.src = u;
+  }, 'image/png');
+}
+
+async function downloadSheet() {
+  const cv = document.getElementById('sheet-canvas');
+  const blob = _lastSheetBlob || await new Promise(res => cv.toBlob(res, 'image/png'));
+  if (!blob) { toast('خطا در ساخت عکس'); return; }
+  const file = new File([blob], 'carizma_storyboard_sheet.png', { type: 'image/png' });
+
+  // iOS Safari / PWA native Share Sheet (Save Image to Photos)
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'Carizma Storyboard Sheet' });
+      toast('ذخیره شد!');
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+
+  // Desktop / Android fallback via Blob URL
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = document.getElementById('sheet-canvas').toDataURL('image/png');
-  a.download = 'carizma_storyboard_sheet.png'; a.click();
+  a.href = url;
+  a.download = 'carizma_storyboard_sheet.png';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast('شیت دانلود شد!');
 }
 
 init();
