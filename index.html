@@ -344,7 +344,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Scene 2 — Bakery 3D</title>
+<title>Scene 2 — Bakery 3D (Rigged Mannequin)</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
   html, body { width: 100%; height: 100%; overflow: hidden; background: #07090e; color: #f1f5f9; }
@@ -372,7 +372,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
     display: flex; justify-content: center;
   }
   #hud-desc span {
-    background: rgba(10, 14, 22, 0.68); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    background: rgba(10, 14, 22, 0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 99px;
     padding: 4px 12px; font-size: 11px; color: #cbd5e1; max-width: 95%;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -380,7 +380,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 </style>
 </head>
 <body>
-<div id="hud-desc"><span id="desc">P1 · 0.0s (MS 32mm)</span></div>
+<div id="hud-desc"><span id="desc">در حال بارگذاری مدل...</span></div>
 <div id="canvas-wrap"></div>
 <div id="preset-bar">
   <button class="pill" id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">پلیت تنور</button>
@@ -395,6 +395,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\/script>
 <script>
 const wrap = document.getElementById('canvas-wrap');
 const descEl = document.getElementById('desc');
@@ -412,7 +413,7 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.08;
 
 // Lights
-scene.add(new THREE.AmbientLight(0xd8c3a5, 0.58));
+scene.add(new THREE.AmbientLight(0xd8c3a5, 0.62));
 const ovenLight = new THREE.PointLight(0xff7b29, 2.2, 9);
 ovenLight.position.set(-0.35, 1.15, -3.55); scene.add(ovenLight);
 const winLight = new THREE.DirectionalLight(0xfff4e0, 1.25);
@@ -425,7 +426,7 @@ function mat(hex, emissive=0x000000) { return new THREE.MeshLambertMaterial({ co
 function box(w,h,d,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 function cyl(rt,rb,h,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,20),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 
-// Bakery Room
+// --- BAKERY ROOM (LOCKED TO IMG_3557.png) ---
 box(5.4,0.1,6.2, 0,-0.05,-2.0, 0x8f523a);
 box(5.4,3.1,0.15, 0,1.55,-5.05, 0xb88b68);
 box(0.15,3.1,6.2, -2.65,1.55,-2.0, 0xc49570);
@@ -433,7 +434,7 @@ box(0.15,3.1,6.2,  2.65,1.55,-2.0, 0xba8a66);
 box(5.4,0.15,6.2, 0,3.05,-2.0, 0x4a3425);
 for (let z=-4.2; z<=0.2; z+=1.4) box(5.2,0.18,0.22, 0,2.9,z, 0x3b2618);
 
-// Front Door Wall
+// Front Door Wall (no windows, single outward leaf)
 box(2.3,3.1,0.15,-1.45,1.55,1.0,0xb58865);
 box(1.5,3.1,0.15, 1.85,1.55,1.0,0xb58865);
 box(1.4,0.9,0.15, 0.40,2.65,1.0,0xb58865);
@@ -450,7 +451,7 @@ fire.scale.set(1.0,1.15,0.35); fire.position.set(-0.35,1.05,-3.62); scene.add(fi
 box(0.75,0.65,0.1,0.95,1.95,-4.96,0xfff8e7);
 box(0.95,0.08,0.16,0.95,2.31,-4.92,0x5c402c);
 
-// Counters, Stool, Shelves, Sacks
+// ONE continuous left counter (LOCKED)
 box(0.78,0.90,3.3,-2.05,0.45,-2.25,0x5c3a21);
 cyl(0.24,0.24,0.18,-1.95,0.99,-2.75,0xd99b43);
 cyl(0.24,0.24,0.22,-1.95,1.01,-3.25,0xd99b43);
@@ -458,6 +459,7 @@ cyl(0.24,0.24,0.28,-1.95,1.04,-3.70,0xd99b43);
 const dough = new THREE.Mesh(new THREE.SphereGeometry(0.14,14,10),mat(0xefe3c8));
 dough.scale.set(1.2,0.5,1.2); dough.position.set(-1.95,0.95,-2.25); scene.add(dough);
 
+// Right platform, shelves, sacks, stool
 box(1.05,0.72,2.1,2.05,0.36,-1.4,0xb58662);
 cyl(0.26,0.18,0.14,1.95,0.79,-1.45,0x8c3b20);
 cyl(0.24,0.24,0.12,2.15,0.78,-0.85,0xd99b43);
@@ -469,46 +471,162 @@ cyl(0.18,0.22,0.42,1.88,0.76,-4.35,0xb39469);
 box(0.42,0.46,0.42,-0.78,0.23,-3.15,0x6e472b);
 cyl(0.22,0.22,0.12,-0.78,0.52,-3.15,0xd99b43);
 
-// Scale + Basket + 3 Butter blocks
-const scaleGroup = new THREE.Group(); scaleGroup.position.set(-1.92,0.90,-1.25);
+// --- LOCKED BRASS SCALE (Dial always faces +X, slightly angled toward room center) ---
+const scaleGroup = new THREE.Group();
+scaleGroup.position.set(-1.92, 0.90, -1.25);
+scaleGroup.rotation.y = 0.22; // Fixed forever across all panels!
 box(0.26,0.08,0.22,0,0.04,0,0x8f7333,scaleGroup);
 cyl(0.03,0.04,0.22,0,0.18,0,0x8f7333,scaleGroup);
 const dial = cyl(0.11,0.11,0.04,0.02,0.20,0,0xfafaf5,scaleGroup); dial.rotation.z = Math.PI/2;
-box(0.01,0.03,0.025,0.045,0.28,0,0xd92626,scaleGroup);
-const needle = box(0.01,0.075,0.01,0.046,0.21,-0.025,0x111111,scaleGroup); needle.rotation.x = -0.65;
+// Red triangle at 12 o'clock
+box(0.01,0.028,0.024,0.045,0.285,0,0xd92626,scaleGroup);
+// Needle pivot at dial center (0.046, 0.20, 0)
+const needlePivot = new THREE.Group();
+needlePivot.position.set(0.046, 0.20, 0);
+const needleBar = box(0.01, 0.08, 0.01, 0, 0.035, 0, 0x111111, needlePivot);
+scaleGroup.add(needlePivot);
 cyl(0.14,0.11,0.03,0,0.33,0,0xa88a3e,scaleGroup);
 scene.add(scaleGroup);
 
+// Basket + 3 Butter blocks
 const basketGroup = new THREE.Group(); basketGroup.position.set(-1.95,0.90,-1.78);
 cyl(0.18,0.14,0.16,0,0.08,0,0xc9933b,basketGroup); scene.add(basketGroup);
 const butter1 = box(0.11,0.06,0.08,-1.98,1.00,-1.82,0xfff099);
 const butter2 = box(0.11,0.06,0.08,-1.90,1.00,-1.74,0xfff099);
 const butter3 = box(0.11,0.06,0.08,-1.94,1.06,-1.78,0xfff099);
 
-// Asghar Mannequin
+// --- CHARACTER ROOT (Loads ./scene.gltf, falls back to primitive mannequin if unavailable) ---
 const asghar = new THREE.Group();
-const mOrange = mat(0xe66a17), mSkin = mat(0xf09248);
-const belly = new THREE.Mesh(new THREE.SphereGeometry(0.38,20,16),mOrange);
-belly.scale.set(1.0,1.15,0.95); belly.position.set(0,0.78,0); asghar.add(belly);
-const head = new THREE.Mesh(new THREE.SphereGeometry(0.17,18,14),mSkin);
-head.position.set(0,1.32,0.03); asghar.add(head);
-box(0.20,0.04,0.05,0,1.28,0.19,0x1a1a1a,asghar);
-cyl(0.09,0.08,0.48,-0.15,0.24,0,0x3d2c20,asghar);
-cyl(0.09,0.08,0.48, 0.15,0.24,0,0x3d2c20,asghar);
-const armL = new THREE.Group(); armL.position.set(-0.36,1.08,0); cyl(0.075,0.065,0.48,0,-0.22,0,mOrange,armL); asghar.add(armL);
-const armR = new THREE.Group(); armR.position.set( 0.36,1.08,0); cyl(0.075,0.065,0.48,0,-0.22,0,mOrange,armR); asghar.add(armR);
-const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.16,0.09,18),mat(0xf5f5f5));
-scene.add(skullcap); scene.add(asghar);
+scene.add(asghar);
 
+// Fallback primitive mannequin (hidden automatically when scene.gltf loads)
+const fallbackGroup = new THREE.Group();
+const mOrange = mat(0xe66a17), mSkin = mat(0xf09248);
+const fbBelly = new THREE.Mesh(new THREE.SphereGeometry(0.36,20,16),mOrange);
+fbBelly.scale.set(1.0,1.15,0.95); fbBelly.position.set(0,0.78,0); fallbackGroup.add(fbBelly);
+const fbHead = new THREE.Mesh(new THREE.SphereGeometry(0.16,18,14),mSkin);
+fbHead.position.set(0,1.32,0.03); fallbackGroup.add(fbHead);
+cyl(0.09,0.08,0.48,-0.15,0.24,0,0x3d2c20,fallbackGroup);
+cyl(0.09,0.08,0.48, 0.15,0.24,0,0x3d2c20,fallbackGroup);
+asghar.add(fallbackGroup);
+
+// White skullcap (moves from head to hand)
+const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.14,0.08,18), mat(0xf5f5f5));
+scene.add(skullcap);
+
+// GLTF Rigged Model Loader
+let gltfModel = null;
+let bones = {};
+const loader = new THREE.GLTFLoader();
+loader.load('./scene.gltf', (gltf) => {
+  gltfModel = gltf.scene;
+  // Apply flat matte orange material (prevents nudity filter issues & locks baker silhouette)
+  const matteMat = new THREE.MeshLambertMaterial({ color: 0xe66a17 });
+  gltfModel.traverse(obj => {
+    if (obj.isMesh) {
+      obj.material = matteMat;
+      obj.castShadow = false;
+      obj.receiveShadow = false;
+    }
+    if (obj.isBone) {
+      const n = obj.name.toLowerCase();
+      if (n.includes('right') || n.endsWith('_r') || n.endsWith('.r')) {
+        if (n.includes('forearm') || n.includes('lowerarm')) bones.rForeArm = obj;
+        else if (n.includes('arm') || n.includes('upperarm')) bones.rArm = obj;
+      }
+      if (n.includes('left') || n.endsWith('_l') || n.endsWith('.l')) {
+        if (n.includes('forearm') || n.includes('lowerarm')) bones.lForeArm = obj;
+        else if (n.includes('arm') || n.includes('upperarm')) bones.lArm = obj;
+      }
+      if (n.includes('head')) bones.head = obj;
+      if (n.includes('spine')) bones.spine = obj;
+    }
+  });
+  // Normalize height to ~1.62m and ground feet at y=0
+  const bb = new THREE.Box3().setFromObject(gltfModel);
+  const sz = bb.getSize(new THREE.Vector3());
+  const scale = 1.62 / Math.max(sz.y, 0.01);
+  gltfModel.scale.setScalar(scale);
+  const bb2 = new THREE.Box3().setFromObject(gltfModel);
+  gltfModel.position.y = -bb2.min.y;
+  // Slightly widen torso X/Z for baker build
+  gltfModel.scale.x *= 1.18;
+  gltfModel.scale.z *= 1.18;
+
+  fallbackGroup.visible = false;
+  asghar.add(gltfModel);
+  selectPreset(currentKey);
+}, undefined, () => {
+  // Fallback stays visible if scene.gltf is not uploaded yet
+  selectPreset(currentKey);
+});
+
+function applyBonePose(pose) {
+  if (!gltfModel) return;
+  if (bones.rArm)     bones.rArm.rotation.set(...(pose.rArm || [0,0,0]));
+  if (bones.rForeArm) bones.rForeArm.rotation.set(...(pose.rForeArm || [0,0,0]));
+  if (bones.lArm)     bones.lArm.rotation.set(...(pose.lArm || [0,0,0]));
+  if (bones.lForeArm) bones.lForeArm.rotation.set(...(pose.lForeArm || [0,0,0]));
+  if (bones.head)     bones.head.rotation.set(...(pose.head || [0,0,0]));
+}
+
+// --- IMPROVED 8-PRESET CAMERA LEDGER (P2 & P5 face oven depth, P3 clean, needle locked) ---
 const PRESETS = {
-  CAM_PLATE: { lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false, label:"CAM_PLATE", desc:"نمای واید کالیبراسیون تنور (۱۶:۹)" },
-  CAM_DOOR:  { lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false, label:"CAM_DOOR", desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)" },
-  P1: { lens:32, pos:[0.95,1.38,-0.20], aim:[-1.45,1.08,-2.05], showAsghar:true, aPos:[-1.20,0,-2.10], aRotY:-Math.PI/2, armL:[0.3,0,0], armR:[0.3,0,0], butterOnScale:false, capState:'head', label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره" },
-  P2: { lens:38, pos:[0.55,1.35,-0.65], aim:[-1.40,1.15,-1.78], showAsghar:true, aPos:[-1.20,0,-1.78], aRotY:-Math.PI/2, armL:[0.15,0,0], armR:[-0.95,0,0.15], butterOnScale:false, capState:'head', label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی، دست سمت کره" },
-  P3: { lens:50, pos:[0.20,1.35,-0.55], aim:[-1.85,1.12,-1.32], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2, armL:[0.1,0,0], armR:[-0.65,0,0], butterOnScale:true, capState:'head', label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل مثلث" },
-  P4: { lens:48, pos:[0.15,1.18,-0.60], aim:[-1.25,1.25,-1.42], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.2, armL:[0.2,0,0], armR:[-2.2,0,-0.25], butterOnScale:true, capState:'head', label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — خشم اصغر، دست روی عرقچین" },
-  P5: { lens:36, pos:[0.55,1.25,-0.35], aim:[-1.25,1.18,-1.40], showAsghar:true, aPos:[-1.20,0,-1.40], aRotY:-Math.PI/2.6, armL:[0.3,0,0], armR:[-1.1,0,0.35], butterOnScale:true, capState:'hand', label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست، سر برهنه" },
-  P6: { lens:28, pos:[1.15,1.32,0.75], aim:[-0.45,1.05,-0.60], showAsghar:true, aPos:[-0.45,0,-0.35], aRotY:0.25, armL:[-0.5,0,0], armR:[0.4,0,0.2], butterOnScale:true, capState:'hand', label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی سمت در" }
+  CAM_PLATE: {
+    lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false,
+    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_PLATE",
+    desc:"نمای واید کالیبراسیون تنور (۱۶:۹)"
+  },
+  CAM_DOOR: {
+    lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false,
+    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_DOOR",
+    desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)"
+  },
+  P1: {
+    lens:32, pos:[0.95,1.42,-0.10], aim:[-1.35,1.15,-2.10], showAsghar:true,
+    aPos:[-1.22,0,-2.05], aRotY:-Math.PI/2,
+    butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
+    pose:{ rArm:[0.2,0,-0.4], rForeArm:[0.4,0,0], lArm:[0.2,0,0.4], head:[0.15,0.2,0] },
+    label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره (ترازو خالی)"
+  },
+  P2: {
+    // Camera angled toward oven & window (NO blank wall!)
+    lens:38, pos:[-0.35,1.42,-0.25], aim:[-1.10,1.32,-2.35], showAsghar:true,
+    aPos:[-1.22,0,-1.85], aRotY:-Math.PI/3.2,
+    butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
+    pose:{ rArm:[-0.5,0,-0.2], rForeArm:[-0.6,0,0], lArm:[0.1,0,0.3], head:[0.1,-0.15,0] },
+    label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی با پس‌زمینه تنور و پنجره"
+  },
+  P3: {
+    // Clean close-up on scale & basket (NO foreground arm!)
+    lens:50, pos:[-0.55,1.26,-0.72], aim:[-1.92,1.12,-1.32], showAsghar:true,
+    aPos:[-1.18,0,-1.80], aRotY:-Math.PI/2.4,
+    butterOnScale:true, needleAngle: 0.55, capState:'head',
+    pose:{ rArm:[0.1,0,-0.3], lArm:[0.1,0,0.3], head:[0.2,0.2,0] },
+    label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه نیمه چپ قبل از مثلث قرمز"
+  },
+  P4: {
+    lens:48, pos:[0.10,1.28,-0.65], aim:[-1.22,1.42,-1.55], showAsghar:true,
+    aPos:[-1.22,0,-1.55], aRotY:-Math.PI/2.3,
+    butterOnScale:true, needleAngle: 0.55, capState:'head',
+    pose:{ rArm:[-1.8,0,-0.2], rForeArm:[-0.9,0,0], lArm:[0.2,0,0.4], head:[0.12,0,0] },
+    label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 48mm) — خشم اصغر، دست روی لبه عرقچین"
+  },
+  P5: {
+    // Angled toward oven & window depth (NO blank wall!)
+    lens:36, pos:[0.25,1.35,-0.15], aim:[-1.25,1.20,-2.10], showAsghar:true,
+    aPos:[-1.22,0,-1.55], aRotY:-Math.PI/2.8,
+    butterOnScale:true, needleAngle: 0.55, capState:'hand',
+    pose:{ rArm:[-0.7,0,-0.3], rForeArm:[-0.5,0,0], lArm:[0.2,0,0.4], head:[0.1,0.1,0] },
+    label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست راست، سر برهنه، عمق تنور"
+  },
+  P6: {
+    lens:28, pos:[0.35,1.38,-1.75], aim:[0.15,1.15,1.25], showAsghar:true,
+    aPos:[0.10,0,-0.35], aRotY: 0.08,
+    butterOnScale:true, needleAngle: 0.55, capState:'hand',
+    pose:{ rArm:[0.3,0,-0.2], lArm:[-0.3,0,0.2], head:[0,0,0] },
+    label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه به سمت درِ باز"
+  }
 };
 
 let currentKey = 'P1';
@@ -517,6 +635,7 @@ function focalToFov(mm) {
   const sH = aspect < 1 ? 36.0 : 20.25;
   return 2 * Math.atan(sH / (2 * mm)) * (180 / Math.PI);
 }
+
 window.selectPreset = function(key) {
   currentKey = key; const p = PRESETS[key];
   document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
@@ -524,17 +643,28 @@ window.selectPreset = function(key) {
   camera.fov = focalToFov(p.lens);
   camera.position.set(...p.pos); controls.target.set(...p.aim);
   camera.updateProjectionMatrix(); controls.update();
+
+  // Scale needle & butter state
+  needlePivot.rotation.x = p.needleAngle; // +pi/2 = 9 o'clock (left), +0.55 = ~10:30 (left half before 12)
+  butter3.position.set(p.butterOnScale ? -1.92 : -1.94, p.butterOnScale ? 1.26 : 1.06, p.butterOnScale ? -1.25 : -1.78);
+
   asghar.visible = p.showAsghar; skullcap.visible = p.showAsghar;
   if (p.showAsghar) {
-    asghar.position.set(...p.aPos); asghar.rotation.y = p.aRotY;
-    armL.rotation.set(...p.armL); armR.rotation.set(...p.armR);
-    butter3.position.set(p.butterOnScale ? -1.92 : -1.94, p.butterOnScale ? 1.26 : 1.06, p.butterOnScale ? -1.25 : -1.78);
-    if (p.capState === 'head') skullcap.position.set(p.aPos[0], 1.49, p.aPos[2]);
-    else { asghar.updateMatrixWorld(true); skullcap.position.copy(new THREE.Vector3(0,-0.45,0).applyMatrix4(armR.matrixWorld)); }
+    asghar.position.set(...p.aPos);
+    asghar.rotation.y = p.aRotY;
+    applyBonePose(p.pose || {});
+    if (p.capState === 'head') {
+      skullcap.position.set(p.aPos[0], gltfModel ? 1.63 : 1.49, p.aPos[2]);
+    } else {
+      // Held near right hand
+      const dx = Math.cos(p.aRotY) * 0.42, dz = -Math.sin(p.aRotY) * 0.42;
+      skullcap.position.set(p.aPos[0] + dx, 0.92, p.aPos[2] + dz);
+    }
   }
-  descEl.textContent = p.desc;
+  descEl.textContent = p.desc + (gltfModel ? ' · [GLTF]' : ' · [Fallback]');
   window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label }, '*');
 };
+
 window.__CARIZMA_CAPTURE__ = function(w, h) {
   const oldW = window.innerWidth, oldH = window.innerHeight;
   const oldAspect = camera.aspect;
@@ -545,18 +675,20 @@ window.__CARIZMA_CAPTURE__ = function(w, h) {
   renderer.setSize(oldW, oldH, false);
   return url;
 };
+
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.fov = focalToFov(PRESETS[currentKey].lens);
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
 selectPreset('P1');
 (function anim(){ requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); })();
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v2_scenes';
+const STORE = 'carizma_3d_v3_scenes';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
 
@@ -567,7 +699,9 @@ function toast(m) {
 }
 
 function patchCode(html) {
-  const patch = `<script>(function(){const o=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(t&&t.includes('webgl'))a=Object.assign({},a||{},{preserveDrawingBuffer:true});return o.call(this,t,a);};})();<\/script>`;
+  const baseHref = window.location.href.replace(/[^/]*$/, '');
+  const baseTag = `<base href="${baseHref}">`;
+  const patch = baseTag + `<script>(function(){const o=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(t&&t.includes('webgl'))a=Object.assign({},a||{},{preserveDrawingBuffer:true});return o.call(this,t,a);};})();<\/script>`;
   return html.includes('<head>') ? html.replace('<head>', '<head>' + patch) : patch + html;
 }
 
