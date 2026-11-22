@@ -5,76 +5,118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<title>Carizma 3D Studio</title>
+<title>Carizma 3D Studio — Liquid Glass</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #06080d;
-    --glass: rgba(16, 22, 34, 0.78);
-    --glass-card: rgba(24, 33, 50, 0.62);
-    --border: rgba(148, 163, 184, 0.16);
+    --bg: #070a11;
+    --bg-grad: radial-gradient(circle at 20% 0%, rgba(56,189,248,0.16), transparent 45%), radial-gradient(circle at 80% 100%, rgba(45,212,191,0.12), transparent 45%);
+    --glass: rgba(15, 22, 34, 0.72);
+    --glass-card: rgba(255, 255, 255, 0.08);
+    --glass-card-hover: rgba(255, 255, 255, 0.14);
+    --border: rgba(255, 255, 255, 0.18);
+    --specular: inset 0 1px 1px rgba(255, 255, 255, 0.28);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     --accent: #38bdf8;
     --teal: #2dd4bf;
-    --danger: #f43f5e;
+    --danger: #fb7185;
     --text: #f8fafc;
     --muted: #94a3b8;
+    --input-bg: rgba(7, 11, 18, 0.72);
     --safe-b: env(safe-area-inset-bottom, 0px);
     --safe-t: env(safe-area-inset-top, 0px);
   }
+  body.light-theme {
+    --bg: #e8edf5;
+    --bg-grad: radial-gradient(circle at 15% 10%, rgba(125,211,252,0.35), transparent 45%), radial-gradient(circle at 85% 90%, rgba(167,243,208,0.35), transparent 45%);
+    --glass: rgba(255, 255, 255, 0.68);
+    --glass-card: rgba(255, 255, 255, 0.62);
+    --glass-card-hover: rgba(255, 255, 255, 0.85);
+    --border: rgba(255, 255, 255, 0.85);
+    --specular: inset 0 1.5px 2px rgba(255, 255, 255, 0.95), 0 4px 14px rgba(15, 23, 42, 0.07);
+    --shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+    --accent: #0284c7;
+    --teal: #0d9488;
+    --danger: #e11d48;
+    --text: #0f172a;
+    --muted: #475569;
+    --input-bg: rgba(255, 255, 255, 0.72);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
     width: 100%; height: 100%; overflow: hidden;
     font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
-    background: var(--bg); color: var(--text);
+    background: var(--bg); background-image: var(--bg-grad); color: var(--text);
+    transition: background 0.25s ease, color 0.25s ease;
   }
 
-  /* App Shell */
-  .app {
-    display: flex; flex-direction: column; width: 100%; height: 100dvh;
-    padding-top: var(--safe-t);
-  }
+  .app { display: flex; flex-direction: column; width: 100%; height: 100dvh; padding-top: var(--safe-t); }
 
-  /* Clean Compact Top Bar */
+  /* Liquid Glass Header */
   header {
-    height: 52px; padding: 0 12px; flex-shrink: 0;
+    height: 54px; padding: 0 12px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border); z-index: 30;
+    background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border); box-shadow: var(--specular); z-index: 30;
   }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+  .brand { display: flex; align-items: center; gap: 7px; font-weight: 800; font-size: 13.5px; flex-shrink: 0; }
   .logo {
-    width: 28px; height: 28px; border-radius: 8px;
-    background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(56,189,248,0.2));
-    border: 1px solid rgba(45,212,191,0.4);
+    width: 30px; height: 30px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(45,212,191,0.28), rgba(56,189,248,0.28));
+    border: 1px solid rgba(45,212,191,0.5); box-shadow: var(--specular);
     display: flex; align-items: center; justify-content: center;
   }
   .scene-sel {
-    flex: 1; min-width: 0; max-width: 240px;
-    background: rgba(8, 12, 20, 0.8); color: var(--text);
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px 10px; font-family: inherit; font-size: 12px; outline: none;
+    flex: 1; min-width: 0; max-width: 220px;
+    background: var(--input-bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 99px;
+    padding: 6px 12px; font-family: inherit; font-size: 11.5px; outline: none;
+    box-shadow: var(--specular);
   }
+
+  /* Liquid Glass Pill Buttons */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-    padding: 7px 12px; border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 600;
+    padding: 7px 13px; border-radius: 99px; font-family: inherit; font-size: 11.5px; font-weight: 600;
     color: var(--text); background: var(--glass-card); border: 1px solid var(--border);
-    cursor: pointer; transition: 0.15s; white-space: nowrap;
+    box-shadow: var(--specular); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    cursor: pointer; transition: all 0.16s ease; white-space: nowrap;
   }
-  .btn:active { transform: scale(0.97); }
+  .btn:hover { background: var(--glass-card-hover); }
+  .btn:active { transform: scale(0.96); }
   .btn.primary {
-    background: linear-gradient(135deg, #0ea5e9, #2dd4bf);
-    color: #04131c; border-color: transparent; font-weight: 700;
+    background: linear-gradient(135deg, rgba(14,165,233,0.92), rgba(45,212,191,0.92));
+    color: #04131c; border-color: rgba(255,255,255,0.55); font-weight: 700;
+    box-shadow: 0 6px 18px rgba(14,165,233,0.32), inset 0 1px 2px rgba(255,255,255,0.75);
   }
-  .btn.active { background: rgba(56,189,248,0.24); border-color: var(--accent); color: #e0f2fe; }
-  .btn.danger { color: #fda4af; border-color: rgba(244,63,94,0.35); }
-  .btn.sm { padding: 5px 9px; font-size: 11px; border-radius: 8px; }
+  .btn.active {
+    background: linear-gradient(135deg, rgba(56,189,248,0.30), rgba(45,212,191,0.24));
+    border-color: var(--accent); color: var(--text);
+  }
+  .btn.danger { color: var(--danger); border-color: rgba(244,63,94,0.35); }
+  .btn.sm { padding: 5px 10px; font-size: 11px; }
 
-  /* Main Stage — Takes ALL remaining screen space! */
+  /* Segmented Control (like IMG_3304.png) */
+  .seg {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px;
+    background: var(--input-bg); border: 1px solid var(--border); border-radius: 99px;
+    box-shadow: var(--specular);
+  }
+  .seg button {
+    border: none; background: transparent; color: var(--muted); font-family: inherit;
+    font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 99px; cursor: pointer; transition: 0.16s;
+  }
+  .seg button.active {
+    background: var(--glass-card-hover); color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.14), inset 0 1px 1px rgba(255,255,255,0.6);
+  }
+
+  /* Main Stage */
   main {
     flex: 1; position: relative; min-height: 0; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(circle at 50% 30%, #0f172a 0%, #06080d 75%);
   }
   .stage-shell {
     position: relative; width: 100%; height: 100%;
@@ -86,112 +128,105 @@
   /* Overlays */
   .ov-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; display: none; }
   #plate-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.5; }
-  #sz-layer { border: 2px dashed rgba(45,212,191,0.5); }
+  #sz-layer { border: 2px dashed rgba(45,212,191,0.55); }
   .sz-t { position: absolute; top:0; left:0; right:0; height:14%; background:rgba(244,63,94,0.16); border-bottom:1px dashed rgba(244,63,94,0.6); }
   .sz-b { position: absolute; bottom:0; left:0; right:0; height:35%; background:rgba(244,63,94,0.16); border-top:1px dashed rgba(244,63,94,0.6); }
   .sz-r { position: absolute; top:14%; bottom:35%; right:0; width:14%; background:rgba(251,191,36,0.12); border-left:1px dashed rgba(251,191,36,0.5); }
   #grid-layer {
-    background-image:
-      linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
+    background-image: linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
     background-size: 33.333% 33.333%;
   }
 
-  /* Floating Capture Pill (Top-Left of Viewport) */
-  .fab-capture {
-    position: absolute; top: 10px; left: 10px; z-index: 20;
-    display: flex; gap: 6px;
-  }
+  .fab-capture { position: absolute; top: 10px; left: 10px; z-index: 20; display: flex; gap: 6px; }
 
-  /* Slide-up Glass Drawer (Mobile & Desktop clean tool sheet) */
+  /* Liquid Glass Slide-up Drawer */
   .drawer {
-    position: fixed; left: 0; right: 0; bottom: calc(58px + var(--safe-b));
-    max-height: 62dvh; overflow-y: auto; z-index: 40;
-    background: rgba(13, 19, 30, 0.92); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border-top: 1px solid rgba(148,163,184,0.22); border-radius: 20px 20px 0 0;
-    padding: 14px 16px 18px; display: none; flex-direction: column; gap: 12px;
-    box-shadow: 0 -16px 40px rgba(0,0,0,0.65);
+    position: fixed; left: 8px; right: 8px; bottom: calc(66px + var(--safe-b));
+    max-height: 64dvh; overflow-y: auto; z-index: 40;
+    background: var(--glass); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border); border-radius: 24px;
+    padding: 15px 16px 18px; display: none; flex-direction: column; gap: 11px;
+    box-shadow: var(--shadow), var(--specular);
   }
   .drawer.open { display: flex; }
   .drawer-head { display: flex; align-items: center; justify-content: space-between; }
-  .drawer-head h3 { font-size: 13.5px; color: var(--accent); font-weight: 700; }
+  .drawer-head h3 { font-size: 13.5px; color: var(--accent); font-weight: 800; }
 
   .row { display: flex; align-items: center; gap: 8px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  input[type="text"], textarea {
-    width: 100%; background: rgba(6, 9, 15, 0.85); color: var(--text);
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 9px 11px; font-family: inherit; font-size: 12.5px; outline: none;
+
+  input[type="text"], select.inp, textarea {
+    width: 100%; background: var(--input-bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 8px 12px; font-family: inherit; font-size: 12px; outline: none;
+    box-shadow: var(--specular);
   }
   input[type="range"] { flex: 1; accent-color: var(--accent); }
-  .code-box {
-    min-height: 170px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
-    direction: ltr; text-align: left; resize: vertical;
-  }
-  .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); min-width: 34px; text-align: left; }
+  .code-box { min-height: 150px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; direction: ltr; text-align: left; resize: vertical; }
+  .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); min-width: 36px; text-align: left; }
+  .lbl { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
-  /* Storyboard Strip inside Drawer */
+  /* Storyboard Strip */
   .strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
   .thumb {
-    position: relative; height: 96px; min-width: 58px; border-radius: 9px; overflow: hidden;
+    position: relative; height: 96px; min-width: 58px; border-radius: 12px; overflow: hidden;
     border: 1px solid var(--border); background: #090d14; flex-shrink: 0;
   }
   .thumb img { height: 100%; width: auto; display: block; }
   .thumb .tag {
     position: absolute; bottom: 3px; left: 3px; background: rgba(0,0,0,0.78);
-    color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 5px; font-family: 'JetBrains Mono', monospace;
   }
   .thumb .del {
     position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
     background: rgba(244,63,94,0.9); color: #fff; border: none; font-size: 12px; cursor: pointer;
   }
 
-  /* Bottom iOS-style Navigation Bar */
+  /* Floating Bottom Liquid Glass Nav Bar (5 tabs) */
   nav.bottom-bar {
     height: calc(58px + var(--safe-b)); padding-bottom: var(--safe-b); flex-shrink: 0;
-    background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-    border-top: 1px solid var(--border); z-index: 50;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--glass); backdrop-filter: blur(26px); -webkit-backdrop-filter: blur(26px);
+    border-top: 1px solid var(--border); box-shadow: var(--specular); z-index: 50;
+    display: grid; grid-template-columns: repeat(5, 1fr);
   }
   .nav-item {
     background: none; border: none; color: var(--muted); font-family: inherit;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    font-size: 10.5px; font-weight: 600; cursor: pointer; transition: 0.15s;
+    font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.15s;
   }
-  .nav-item.active { color: var(--accent); }
+  .nav-item.active { color: var(--accent); font-weight: 800; }
   .nav-item .badge {
     background: var(--teal); color: #04131c; font-size: 9px; font-weight: 800;
-    padding: 0 5px; border-radius: 99px; margin-right: 3px;
+    padding: 0 5px; border-radius: 99px;
   }
 
-  /* Sheet Preview Modal */
+  /* Modal */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(2,6,14,0.84); backdrop-filter: blur(10px);
+    position: fixed; inset: 0; background: rgba(2,6,14,0.72); backdrop-filter: blur(12px);
     display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
   }
   .modal-bg.open { display: flex; }
   .modal {
-    width: 100%; max-width: 680px; max-height: 88dvh; background: #0e1420;
-    border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
-    display: flex; flex-direction: column;
+    width: 100%; max-width: 680px; max-height: 88dvh; background: var(--glass);
+    backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border); border-radius: 22px; overflow: hidden;
+    display: flex; flex-direction: column; box-shadow: var(--shadow), var(--specular);
   }
   .modal-h, .modal-f { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
   .modal-f { border-bottom: none; border-top: 1px solid var(--border); justify-content: flex-end; gap: 8px; }
   .modal-b { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-  #sheet-canvas { max-width: 100%; max-height: 56dvh; margin: 0 auto; border-radius: 10px; display: block; }
 
   #toast {
-    position: fixed; top: 64px; left: 50%; transform: translateX(-50%) translateY(-10px);
-    background: rgba(15,23,42,0.95); border: 1px solid var(--accent); color: #e0f2fe;
+    position: fixed; top: 62px; left: 50%; transform: translateX(-50%) translateY(-10px);
+    background: var(--glass); backdrop-filter: blur(18px); border: 1px solid var(--accent); color: var(--text);
     padding: 7px 14px; border-radius: 99px; font-size: 11.5px; opacity: 0; pointer-events: none;
-    transition: 0.2s; z-index: 200; white-space: nowrap;
+    transition: 0.2s; z-index: 200; white-space: nowrap; box-shadow: var(--shadow);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* Desktop enhancement: centered floating drawer */
   @media (min-width: 860px) {
-    .drawer { max-width: 520px; left: 50%; transform: translateX(-50%); border-radius: 18px; bottom: 72px; border: 1px solid var(--border); }
+    .drawer { max-width: 540px; left: 50%; transform: translateX(-50%); bottom: 72px; }
   }
 </style>
 </head>
@@ -208,27 +243,99 @@
       <span>Carizma 3D</span>
     </div>
     <select id="scene-sel" class="scene-sel" onchange="selectScene(this.value)"></select>
-    <button class="btn sm primary" onclick="openDrawer('code')">+ کد</button>
+    <div class="row" style="gap:6px">
+      <button class="btn sm" id="btn-theme" onclick="toggleTheme()" title="تغییر تم تاریک/روشن">☀️</button>
+      <button class="btn sm primary" onclick="openDrawer('code')">+ کد</button>
+    </div>
   </header>
 
   <main id="main-stage">
     <div class="stage-shell" id="stage-shell">
       <iframe id="scene-frame" allow="fullscreen"></iframe>
-
       <div class="ov-layer" id="plate-layer"><img id="plate-img" alt="plate" /></div>
       <div class="ov-layer" id="sz-layer"><div class="sz-t"></div><div class="sz-r"></div><div class="sz-b"></div></div>
       <div class="ov-layer" id="grid-layer"></div>
-
       <div class="fab-capture">
-        <button class="btn sm primary" onclick="captureFrame()">ثبت پنل</button>
+        <button class="btn sm primary" onclick="handleCaptureButton()">ثبت پنل</button>
       </div>
     </div>
   </main>
 
-  <!-- Drawer 1: Frame & Calibration -->
+  <!-- Drawer 1: Camera Motion (Between 2 Views + Combined + Collision Guard) -->
+  <div class="drawer" id="drawer-motion">
+    <div class="drawer-head">
+      <h3>حرکت دوربین بین دو نما</h3>
+      <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="lbl" style="margin-bottom:4px">نمای شروع (A)</div>
+        <select id="mot-from" class="inp" onchange="syncMotionCfg()"></select>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:4px">نمای مقصد (B)</div>
+        <select id="mot-to" class="inp" onchange="syncMotionCfg()"></select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="lbl" style="margin-bottom:4px">نوع حرکت (آماده و ترکیبی)</div>
+        <select id="mot-type" class="inp" onchange="syncMotionCfg()">
+          <option value="push_orbit">ترکیبی: دالی + چرخش کمانی</option>
+          <option value="crane_pan_dolly">ترکیبی: کرین + پن + دالی</option>
+          <option value="linear">دالی خطی ساده (Linear)</option>
+          <option value="arc">چرخش کمانی (Arc Orbit)</option>
+          <option value="crane">کرین بالا/پایین (Crane)</option>
+          <option value="dolly_zoom">دالی زوم (Vertigo)</option>
+          <option value="handheld">روی دست (Handheld)</option>
+        </select>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:4px">نرمی حرکت (Easing)</div>
+        <select id="mot-ease" class="inp" onchange="syncMotionCfg()">
+          <option value="easeInOut">نرم دوطرفه (Ease In-Out)</option>
+          <option value="easeOut">توقف نرم (Ease Out)</option>
+          <option value="easeIn">شروع نرم (Ease In)</option>
+          <option value="linear">ثابت (Linear)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl">مدت (ثانیه)</span>
+      <input type="range" id="mot-dur" min="1" max="10" step="0.5" value="3.5" oninput="syncMotionCfg()" />
+      <span class="val" id="mot-dur-v">3.5s</span>
+    </div>
+    <div class="row">
+      <span class="lbl">قوس چرخش</span>
+      <input type="range" id="mot-curve" min="-1" max="1" step="0.05" value="0.45" oninput="syncMotionCfg()" />
+      <span class="val" id="mot-curve-v">0.45</span>
+    </div>
+    <div class="row">
+      <span class="lbl">ارتفاع کرین</span>
+      <input type="range" id="mot-crane" min="-0.6" max="0.8" step="0.05" value="0.25" oninput="syncMotionCfg()" />
+      <span class="val" id="mot-crane-v">0.25</span>
+    </div>
+    <div class="row">
+      <span class="lbl">لرزش دست</span>
+      <input type="range" id="mot-shake" min="0" max="1" step="0.05" value="0" oninput="syncMotionCfg()" />
+      <span class="val" id="mot-shake-v">0.00</span>
+    </div>
+    <div class="row">
+      <span class="lbl">تایم‌لاین</span>
+      <input type="range" id="mot-scrub" min="0" max="1" step="0.01" value="0" oninput="scrubMotion(this.value)" />
+      <span class="val" id="mot-t-v">0%</span>
+    </div>
+    <div class="grid-3">
+      <button class="btn sm primary" id="btn-play" onclick="togglePlayMotion()">▶ پخش حرکت</button>
+      <button class="btn sm" onclick="resetMotion()">↺ ریست</button>
+      <button class="btn sm active" id="btn-col" onclick="toggleCollision()">محافظ دیوار: روشن</button>
+    </div>
+  </div>
+
+  <!-- Drawer 2: Calibration (overlay_compare.py native engine) -->
   <div class="drawer" id="drawer-cal">
     <div class="drawer-head">
-      <h3>کادر، راهنما و کالیبراسیون پلیت</h3>
+      <h3>کالیبراسیون (overlay_compare)</h3>
       <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
     </div>
     <div class="grid-3">
@@ -246,26 +353,27 @@
     </div>
     <input type="file" id="plate-in" accept="image/*" style="display:none" onchange="onPlateFile(event)" />
     <div class="row">
-      <span style="font-size:11px;color:var(--muted)">شفافیت</span>
+      <span class="lbl">شفافیت (alpha)</span>
       <input type="range" id="ov-op" min="0" max="1" step="0.05" value="0.5" oninput="updateOv()" />
       <span class="val" id="ov-op-v">50%</span>
     </div>
     <div class="row">
-      <span style="font-size:11px;color:var(--muted)">برش مقایسه</span>
+      <span class="lbl">برش مقایسه</span>
       <input type="range" id="ov-sp" min="0" max="100" step="1" value="100" oninput="updateOv()" />
       <span class="val" id="ov-sp-v">100%</span>
     </div>
+    <button class="btn sm primary" onclick="exportOverlayCompare()">ذخیره عکس مقایسه ترکیب‌شده (Blend PNG)</button>
   </div>
 
-  <!-- Drawer 2: Storyboard Panels -->
+  <!-- Drawer 3: Storyboard Panels (assemble_sheet.py native engine + Single/Sheet Modes) -->
   <div class="drawer" id="drawer-sb">
     <div class="drawer-head">
       <h3>خروجی و استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
       <button class="btn sm" onclick="closeDrawers()">بستن ✕</button>
     </div>
-    <div class="grid-2">
-      <button class="btn sm active" id="mode-single" onclick="setSaveMode('single')">حالت: ذخیره تک‌تک</button>
-      <button class="btn sm" id="mode-sheet" onclick="setSaveMode('sheet')">حالت: ذخیره پنلی (شیت)</button>
+    <div class="seg">
+      <button class="active" id="mode-single" onclick="setSaveMode('single')">ذخیره تک‌تک (PNG)</button>
+      <button id="mode-sheet" onclick="setSaveMode('sheet')">ذخیره پنلی (شیت)</button>
     </div>
     <div class="row">
       <input type="text" id="cap-lbl" value="P1 · 0.0s" placeholder="برچسب پنل" />
@@ -276,12 +384,12 @@
     </div>
     <div class="grid-2">
       <button class="btn sm" onclick="document.getElementById('imp-png').click()">+ افزودن PNG</button>
-      <button class="btn sm primary" onclick="openSheet()">ساخت شیت پنلی ۳×۲</button>
+      <button class="btn sm primary" onclick="openSheet()">ساخت شیت نهایی (assemble_sheet)</button>
     </div>
     <input type="file" id="imp-png" accept="image/*" multiple style="display:none" onchange="importPngs(event)" />
   </div>
 
-  <!-- Drawer 3: Paste / Upload Code -->
+  <!-- Drawer 4: Paste / Upload Code -->
   <div class="drawer" id="drawer-code">
     <div class="drawer-head">
       <h3>جاگذاری کد یا فایل HTML / Three.js</h3>
@@ -297,22 +405,26 @@
     <button class="btn primary" onclick="saveNewScene()">ذخیره و اجرای زنده</button>
   </div>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Liquid Glass Navigation Bar -->
   <nav class="bottom-bar">
     <button class="nav-item active" id="nav-view" onclick="closeDrawers()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       <span>صحنه 3D</span>
     </button>
+    <button class="nav-item" id="nav-motion" onclick="openDrawer('motion')">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <span>حرکت دوربین</span>
+    </button>
     <button class="nav-item" id="nav-cal" onclick="openDrawer('cal')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
       <span>کالیبراسیون</span>
     </button>
     <button class="nav-item" id="nav-sb" onclick="openDrawer('sb')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/><rect x="14" y="15" width="7" height="6" rx="1"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/><rect x="14" y="15" width="7" height="6" rx="1"/></svg>
       <span>استوری‌بورد <span class="badge" id="nav-cnt">0</span></span>
     </button>
     <button class="nav-item" id="nav-code" onclick="openDrawer('code')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <span>کد / فایل</span>
     </button>
   </nav>
@@ -322,7 +434,7 @@
 <div class="modal-bg" id="sheet-modal">
   <div class="modal">
     <div class="modal-h">
-      <strong style="font-size:13.5px;color:var(--accent)">شیت نهایی استوری‌بورد</strong>
+      <strong style="font-size:13.5px;color:var(--accent)">شیت نهایی استوری‌بورد (assemble_sheet)</strong>
       <button class="btn sm" onclick="document.getElementById('sheet-modal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-b">
@@ -331,8 +443,7 @@
         <button class="btn sm" id="c2" onclick="setCols(2)">۲ ستون (۲×۲)</button>
       </div>
       <canvas id="sheet-canvas" style="display:none"></canvas>
-      <img id="sheet-preview-img" alt="Storyboard Sheet" style="max-width:100%;max-height:54dvh;margin:0 auto;border-radius:10px;display:block;-webkit-touch-callout:default;" />
-      <div style="font-size:11px;color:var(--muted);text-align:center">در آیفون: دکمه زیر را بزن یا انگشتت را روی عکس نگه دار و Save to Photos بزن</div>
+      <img id="sheet-preview-img" alt="Storyboard Sheet" style="max-width:100%;max-height:54dvh;margin:0 auto;border-radius:12px;display:block;-webkit-touch-callout:default;" />
     </div>
     <div class="modal-f">
       <button class="btn primary" onclick="downloadSheet()">ذخیره / دانلود PNG شیت</button>
@@ -348,65 +459,83 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Scene 2 — Bakery 3D (Rigged Mannequin)</title>
+<title>Scene 2 — Bakery 3D Pro</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #07090e; color: #f1f5f9; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0d14; color: #f1f5f9; }
   #canvas-wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
   canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   #preset-bar {
     position: fixed; bottom: 12px; left: 10px; right: 10px; z-index: 10;
     display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px;
-    background: rgba(12, 17, 27, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 14px;
+    background: rgba(15, 22, 34, 0.62); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 99px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.28);
     scrollbar-width: none;
   }
   #preset-bar::-webkit-scrollbar { display: none; }
+  body.light-theme #preset-bar {
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 8px 24px rgba(15,23,42,0.12), inset 0 1px 2px rgba(255,255,255,0.95);
+  }
   .pill {
-    flex-shrink: 0; background: rgba(255,255,255,0.07); color: #e2e8f0;
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 9px;
-    padding: 6px 11px; font-size: 11.5px; font-weight: 500; cursor: pointer; transition: 0.15s;
+    flex-shrink: 0; background: rgba(255,255,255,0.10); color: #f1f5f9;
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 99px;
+    padding: 6px 12px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: 0.18s;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.22);
+  }
+  body.light-theme .pill {
+    background: rgba(255,255,255,0.65); color: #1e293b;
+    border: 1px solid rgba(148,163,184,0.28);
+    box-shadow: 0 2px 6px rgba(15,23,42,0.06), inset 0 1px 1px #fff;
   }
   .pill.active {
-    background: linear-gradient(135deg, rgba(14,165,233,0.85), rgba(45,212,191,0.85));
-    color: #04131c; font-weight: 700; border-color: transparent;
+    background: linear-gradient(135deg, rgba(56,189,248,0.92), rgba(45,212,191,0.92));
+    color: #04131c !important; font-weight: 700; border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 4px 14px rgba(56,189,248,0.38), inset 0 1px 2px rgba(255,255,255,0.7);
+  }
+  .pill.add-btn {
+    background: rgba(56,189,248,0.20); border-color: rgba(56,189,248,0.5); color: #7dd3fc;
+  }
+  body.light-theme .pill.add-btn {
+    background: rgba(14,165,233,0.14); color: #0284c7; border-color: rgba(14,165,233,0.4);
   }
   #hud-desc {
-    position: fixed; top: 44px; left: 10px; right: 10px; z-index: 9; pointer-events: none;
+    position: fixed; top: 48px; left: 10px; right: 10px; z-index: 9; pointer-events: none;
     display: flex; justify-content: center;
   }
   #hud-desc span {
-    background: rgba(10, 14, 22, 0.78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 99px;
-    padding: 4px 12px; font-size: 10.5px; color: #e2e8f0; max-width: 96%;
+    background: rgba(12, 18, 28, 0.66); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 99px;
+    padding: 5px 14px; font-size: 10.5px; color: #e2e8f0; max-width: 96%;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     unicode-bidi: isolate; text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.22);
+  }
+  body.light-theme #hud-desc span {
+    background: rgba(255, 255, 255, 0.72); color: #0f172a;
+    border-color: rgba(255,255,255,0.9);
+    box-shadow: 0 4px 16px rgba(15,23,42,0.1), inset 0 1px 2px #fff;
   }
 </style>
 </head>
 <body>
 <div id="hud-desc"><span id="desc">P1 · 0.0s (MS 32mm)</span></div>
 <div id="canvas-wrap"></div>
-<div id="preset-bar">
-  <button class="pill" id="b-CAM_PLATE" onclick="selectPreset('CAM_PLATE')">پلیت تنور</button>
-  <button class="pill" id="b-CAM_DOOR" onclick="selectPreset('CAM_DOOR')">دیوار در</button>
-  <button class="pill" id="b-P1" onclick="selectPreset('P1')">P1 · 0s</button>
-  <button class="pill" id="b-P2" onclick="selectPreset('P2')">P2 · 3s</button>
-  <button class="pill" id="b-P3" onclick="selectPreset('P3')">P3 · 6.2s</button>
-  <button class="pill" id="b-P4" onclick="selectPreset('P4')">P4 · 8.8s</button>
-  <button class="pill" id="b-P5" onclick="selectPreset('P5')">P5 · 10.5s</button>
-  <button class="pill" id="b-P6" onclick="selectPreset('P6')">P6 · 14s</button>
-</div>
+<div id="preset-bar"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>
 <script>
 const wrap = document.getElementById('canvas-wrap');
 const descEl = document.getElementById('desc');
+const presetBar = document.getElementById('preset-bar');
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x16110e);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 60);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.08, 60);
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -415,20 +544,23 @@ wrap.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+controls.minDistance = 0.35;
+controls.maxDistance = 6.5;
 
 // Lights
-scene.add(new THREE.AmbientLight(0xd8c3a5, 0.62));
+scene.add(new THREE.AmbientLight(0xd8c3a5, 0.65));
 const ovenLight = new THREE.PointLight(0xff7b29, 2.2, 9);
 ovenLight.position.set(-0.35, 1.15, -3.55); scene.add(ovenLight);
 const winLight = new THREE.DirectionalLight(0xfff4e0, 1.25);
 winLight.position.set(1.5, 3.0, -6.5); winLight.target.position.set(-0.5, 0.2, -2.0);
 scene.add(winLight); scene.add(winLight.target);
-const doorLight = new THREE.DirectionalLight(0xffe8c2, 0.45);
+const doorLight = new THREE.DirectionalLight(0xffe8c2, 0.48);
 doorLight.position.set(0.2, 2.2, 4.0); scene.add(doorLight);
 
 function mat(hex, emissive=0x000000) { return new THREE.MeshLambertMaterial({ color: hex, emissive }); }
 function box(w,h,d,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 function cyl(rt,rb,h,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,20),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
+function sph(r,x,y,z,hex,p=scene) { const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat(hex)); m.position.set(x,y,z); p.add(m); return m; }
 
 // --- BAKERY ROOM (LOCKED TO IMG_3557.png) ---
 box(5.4,0.1,6.2, 0,-0.05,-2.0, 0x8f523a);
@@ -438,7 +570,7 @@ box(0.15,3.1,6.2,  2.65,1.55,-2.0, 0xba8a66);
 box(5.4,0.15,6.2, 0,3.05,-2.0, 0x4a3425);
 for (let z=-4.2; z<=0.2; z+=1.4) box(5.2,0.18,0.22, 0,2.9,z, 0x3b2618);
 
-// Front Door Wall (no windows, single outward leaf)
+// Front Door Wall
 box(2.3,3.1,0.15,-1.45,1.55,1.0,0xb58865);
 box(1.5,3.1,0.15, 1.85,1.55,1.0,0xb58865);
 box(1.4,0.9,0.15, 0.40,2.65,1.0,0xb58865);
@@ -455,7 +587,7 @@ fire.scale.set(1.0,1.15,0.35); fire.position.set(-0.35,1.05,-3.62); scene.add(fi
 box(0.75,0.65,0.1,0.95,1.95,-4.96,0xfff8e7);
 box(0.95,0.08,0.16,0.95,2.31,-4.92,0x5c402c);
 
-// ONE continuous left counter (LOCKED)
+// Left Counter
 box(0.78,0.90,3.3,-2.05,0.45,-2.25,0x5c3a21);
 cyl(0.24,0.24,0.18,-1.95,0.99,-2.75,0xd99b43);
 cyl(0.24,0.24,0.22,-1.95,1.01,-3.25,0xd99b43);
@@ -475,19 +607,17 @@ cyl(0.18,0.22,0.42,1.88,0.76,-4.35,0xb39469);
 box(0.42,0.46,0.42,-0.78,0.23,-3.15,0x6e472b);
 cyl(0.22,0.22,0.12,-0.78,0.52,-3.15,0xd99b43);
 
-// --- LOCKED BRASS SCALE (Dial always faces +X, slightly angled toward room center) ---
+// Brass Scale (Locked orientation)
 const scaleGroup = new THREE.Group();
 scaleGroup.position.set(-1.92, 0.90, -1.25);
-scaleGroup.rotation.y = 0.22; // Fixed forever across all panels!
+scaleGroup.rotation.y = 0.22;
 box(0.26,0.08,0.22,0,0.04,0,0x8f7333,scaleGroup);
 cyl(0.03,0.04,0.22,0,0.18,0,0x8f7333,scaleGroup);
 const dial = cyl(0.11,0.11,0.04,0.02,0.20,0,0xfafaf5,scaleGroup); dial.rotation.z = Math.PI/2;
-// Red triangle at 12 o'clock
 box(0.01,0.028,0.024,0.045,0.285,0,0xd92626,scaleGroup);
-// Needle pivot at dial center (0.046, 0.20, 0)
 const needlePivot = new THREE.Group();
 needlePivot.position.set(0.046, 0.20, 0);
-const needleBar = box(0.01, 0.08, 0.01, 0, 0.035, 0, 0x111111, needlePivot);
+box(0.01, 0.08, 0.01, 0, 0.035, 0, 0x111111, needlePivot);
 scaleGroup.add(needlePivot);
 cyl(0.14,0.11,0.03,0,0.33,0,0xa88a3e,scaleGroup);
 scene.add(scaleGroup);
@@ -499,113 +629,359 @@ const butter1 = box(0.11,0.06,0.08,-1.98,1.00,-1.82,0xfff099);
 const butter2 = box(0.11,0.06,0.08,-1.90,1.00,-1.74,0xfff099);
 const butter3 = box(0.11,0.06,0.08,-1.94,1.06,-1.78,0xfff099);
 
-// --- CHARACTER ROOT (Loads ./scene.gltf, falls back to primitive mannequin if unavailable) ---
+// --- ASGHAR CHARACTER (CLEAR FACE + NATURAL 2-SEGMENT ARTICULATED ARMS) ---
 const asghar = new THREE.Group();
 scene.add(asghar);
+const mShirt = mat(0xe66a17), mApron = mat(0xd45b12), mSkin = mat(0xf3a76b), mDark = mat(0x1b1614);
 
-// Fallback primitive mannequin (hidden automatically when scene.gltf loads)
-const fallbackGroup = new THREE.Group();
-const mOrange = mat(0xe66a17), mSkin = mat(0xf09248);
-const fbBelly = new THREE.Mesh(new THREE.SphereGeometry(0.36,20,16),mOrange);
-fbBelly.scale.set(1.0,1.15,0.95); fbBelly.position.set(0,0.78,0); fallbackGroup.add(fbBelly);
-const fbHead = new THREE.Mesh(new THREE.SphereGeometry(0.16,18,14),mSkin);
-fbHead.position.set(0,1.32,0.03); fallbackGroup.add(fbHead);
-cyl(0.09,0.08,0.48,-0.15,0.24,0,0x3d2c20,fallbackGroup);
-cyl(0.09,0.08,0.48, 0.15,0.24,0,0x3d2c20,fallbackGroup);
-asghar.add(fallbackGroup);
+// Pear torso + subtle apron front marker
+const belly = sph(0.36, 0, 0.78, 0, 0xe66a17, asghar);
+belly.scale.set(1.0, 1.15, 0.94);
+const apronFront = box(0.34, 0.44, 0.06, 0, 0.68, 0.31, 0xeadbc5, asghar);
+// Red sash belt
+cyl(0.34, 0.35, 0.07, 0, 0.92, 0, 0xa83226, asghar);
 
-// White skullcap (moves from head to hand)
-const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.14,0.08,18), mat(0xf5f5f5));
+// Legs & boots
+cyl(0.095, 0.08, 0.46, -0.14, 0.23, 0, 0x3b2a1e, asghar);
+cyl(0.095, 0.08, 0.46,  0.14, 0.23, 0, 0x3b2a1e, asghar);
+
+// Head Group (Front is +Z!)
+const headGroup = new THREE.Group();
+headGroup.position.set(0, 1.32, 0.02);
+asghar.add(headGroup);
+sph(0.175, 0, 0, 0, 0xf3a76b, headGroup);
+// Ears (left/right)
+sph(0.035, -0.17, 0, -0.01, 0xeb985b, headGroup);
+sph(0.035,  0.17, 0, -0.01, 0xeb985b, headGroup);
+// Eyes (white sclera + dark pupils)
+sph(0.028, -0.058, 0.035, 0.155, 0xffffff, headGroup);
+sph(0.028,  0.058, 0.035, 0.155, 0xffffff, headGroup);
+sph(0.015, -0.058, 0.035, 0.175, 0x111111, headGroup);
+sph(0.015,  0.058, 0.035, 0.175, 0x111111, headGroup);
+// Heavy black unibrow
+box(0.17, 0.026, 0.03, 0, 0.072, 0.165, 0x1a1512, headGroup);
+// Button nose
+sph(0.036, 0, 0.005, 0.185, 0xe88a55, headGroup);
+// Rosy cheeks
+sph(0.032, -0.095, -0.015, 0.145, 0xd95f4e, headGroup);
+sph(0.032,  0.095, -0.015, 0.145, 0xd95f4e, headGroup);
+// Big black handlebar mustache (unmistakable front!)
+box(0.22, 0.038, 0.04, 0, -0.042, 0.175, 0x161312, headGroup);
+const mTipL = box(0.05, 0.024, 0.03, -0.12, -0.028, 0.168, 0x161312, headGroup); mTipL.rotation.z = -0.55;
+const mTipR = box(0.05, 0.024, 0.03,  0.12, -0.028, 0.168, 0x161312, headGroup); mTipR.rotation.z =  0.55;
+// Back hair cap so back of head is also clear
+const hairBack = sph(0.165, 0, 0.02, -0.03, 0x221b17, headGroup);
+hairBack.scale.set(0.98, 0.95, 0.92);
+
+// Two-Segment Articulated Arms (Shoulder -> UpperArm -> Elbow -> Forearm -> Hand)
+function makeArm(side) {
+  const shoulder = new THREE.Group();
+  shoulder.position.set(side * 0.35, 1.07, 0);
+  sph(0.085, 0, 0, 0, 0xe66a17, shoulder);
+  cyl(0.072, 0.064, 0.26, 0, -0.13, 0, 0xe66a17, shoulder);
+  const elbow = new THREE.Group();
+  elbow.position.set(0, -0.26, 0);
+  sph(0.062, 0, 0, 0, 0xf3a76b, elbow);
+  cyl(0.060, 0.050, 0.24, 0, -0.12, 0, 0xf3a76b, elbow);
+  sph(0.058, 0, -0.25, 0, 0xf3a76b, elbow); // Hand
+  shoulder.add(elbow);
+  asghar.add(shoulder);
+  return { shoulder, elbow };
+}
+const armL = makeArm(-1);
+const armR = makeArm(1);
+
+// White skullcap
+const skullcap = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.155, 0.085, 20), mat(0xf6f6f4));
 scene.add(skullcap);
 
-// Pure standalone 3D scene (no external GLTF file dependency)
-let gltfModel = null;
-let modelHeadTopY = 1.49;
-let modelHeadCenterX = 0, modelHeadCenterZ = 0;
+// --- COLLISION & OBSTACLE AVOIDANCE ENGINE ---
+const ROOM_BOUNDS = { minX: -2.32, maxX: 2.32, minY: 0.35, maxY: 2.72, minZ: -4.72, maxZ: 0.72 };
+const OBSTACLES = [
+  { name: 'leftCounter', minX: -2.65, maxX: -1.48, minY: 0, maxY: 1.28, minZ: -4.05, maxZ: -0.45 },
+  { name: 'oven',        minX: -1.65, maxX:  0.95, minY: 0, maxY: 2.95, minZ: -5.15, maxZ: -3.45 },
+  { name: 'rightPlat',   minX:  1.35, maxX:  2.65, minY: 0, maxY: 1.10, minZ: -2.65, maxZ: -0.20 },
+  { name: 'stool',       minX: -1.12, maxX: -0.44, minY: 0, maxY: 0.75, minZ: -3.50, maxZ: -2.80 }
+];
+let collisionEnabled = true;
 
-// --- CALIBRATED 8-PRESET CAMERA LEDGER (clear 3/4 & front/side views, no back-facing P4) ---
+function clampCameraSafe(posVec) {
+  if (!collisionEnabled) return posVec;
+  // Allow going slightly past Z=0.72 only through the open door corridor
+  const inDoorway = posVec.x > -0.20 && posVec.x < 1.00 && posVec.y < 2.05;
+  posVec.x = Math.max(ROOM_BOUNDS.minX, Math.min(ROOM_BOUNDS.maxX, posVec.x));
+  posVec.y = Math.max(ROOM_BOUNDS.minY, Math.min(ROOM_BOUNDS.maxY, posVec.y));
+  posVec.z = Math.max(ROOM_BOUNDS.minZ, Math.min(inDoorway ? 1.8 : ROOM_BOUNDS.maxZ, posVec.z));
+
+  // Push out of static obstacles with 0.14m padding
+  const pad = 0.14;
+  for (const ob of OBSTACLES) {
+    if (posVec.x > ob.minX - pad && posVec.x < ob.maxX + pad &&
+        posVec.y > ob.minY - pad && posVec.y < ob.maxY + pad &&
+        posVec.z > ob.minZ - pad && posVec.z < ob.maxZ + pad) {
+      const dx1 = Math.abs(posVec.x - (ob.minX - pad));
+      const dx2 = Math.abs((ob.maxX + pad) - posVec.x);
+      const dy2 = Math.abs((ob.maxY + pad) - posVec.y);
+      const dz1 = Math.abs(posVec.z - (ob.minZ - pad));
+      const dz2 = Math.abs((ob.maxZ + pad) - posVec.z);
+      const m = Math.min(dx1, dx2, dy2, dz1, dz2);
+      if (m === dy2) posVec.y = ob.maxY + pad;
+      else if (m === dx2) posVec.x = ob.maxX + pad;
+      else if (m === dx1) posVec.x = ob.minX - pad;
+      else if (m === dz2) posVec.z = ob.maxZ + pad;
+      else posVec.z = ob.minZ - pad;
+    }
+  }
+  // Keep minimum clearance from Asghar's torso so camera never clips inside him
+  if (asghar.visible) {
+    const cPos = new THREE.Vector3(asghar.position.x, 1.05, asghar.position.z);
+    const diff = posVec.clone().sub(cPos);
+    const minClear = 0.62;
+    if (diff.length() < minClear && diff.length() > 0.001) {
+      diff.normalize().multiplyScalar(minClear);
+      posVec.copy(cPos).add(diff);
+    }
+  }
+  return posVec;
+}
+
+// --- PRESETS (6 Default Panels + 2 Calibration + User Custom Panels) ---
 const PRESETS = {
   CAM_PLATE: {
     lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false,
-    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_PLATE",
+    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_PLATE", short:"پلیت تنور",
     desc:"نمای واید کالیبراسیون تنور (۱۶:۹)"
   },
   CAM_DOOR: {
     lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false,
-    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_DOOR",
+    butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_DOOR", short:"دیوار در",
     desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)"
   },
   P1: {
-    lens:32, pos:[0.85,1.38,-0.25], aim:[-1.35,1.12,-1.95], showAsghar:true,
-    aPos:[-1.22,0,-2.05], aRotY: Math.PI * 0.42,
-    butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    label:"P1 · 0.0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره و ترازو"
+    lens:32, pos:[0.85,1.42,-0.15], aim:[-1.30,1.15,-2.00], showAsghar:true,
+    aPos:[-1.22,0,-2.05], aRotY: -Math.PI * 0.45,
+    armL:[[0.15,0,0.12],[-0.35,0,0]], armR:[[0.20,0,-0.12],[-0.45,0,0]],
+    headRot:[0.12, 0.18, 0], butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
+    label:"P1 · 0.0s", short:"P1 · 0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره و ترازو"
   },
   P2: {
-    lens:38, pos:[-0.25,1.38,-0.35], aim:[-1.15,1.22,-2.15], showAsghar:true,
-    aPos:[-1.22,0,-1.85], aRotY: Math.PI * 0.35,
-    butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    label:"P2 · 3.0s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی با عمق تنور و پنجره"
+    lens:38, pos:[-0.25,1.40,-0.32], aim:[-1.18,1.24,-2.10], showAsghar:true,
+    aPos:[-1.22,0,-1.85], aRotY: -Math.PI * 0.30,
+    armL:[[0.10,0,0.15],[-0.25,0,0]], armR:[[-0.55,0.15,-0.10],[-0.75,0,0]],
+    headRot:[0.08, -0.15, 0], butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
+    label:"P2 · 3.0s", short:"P2 · 3s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی با دست خم سمت سبد"
   },
   P3: {
     lens:50, pos:[-0.65,1.28,-0.75], aim:[-1.92,1.10,-1.35], showAsghar:true,
-    aPos:[-1.22,0,-1.85], aRotY: Math.PI * 0.42,
-    butterOnScale:true, needleAngle: 0.55, capState:'head',
-    label:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه نیمه چپ قبل از مثلث"
+    aPos:[-1.22,0,-1.85], aRotY: -Math.PI * 0.45,
+    armL:[[0.12,0,0.12],[-0.30,0,0]], armR:[[-0.25,0,-0.10],[-0.40,0,0]],
+    headRot:[0.18, 0.12, 0], butterOnScale:true, needleAngle: 0.55, capState:'head',
+    label:"P3 · 6.2s", short:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل از مثلث قرمز"
   },
   P4: {
-    // Camera positioned so Asghar's face & front/3-4 side are visible (not back!)
-    lens:46, pos:[-0.35,1.36,-2.35], aim:[-1.22,1.35,-1.55], showAsghar:true,
-    aPos:[-1.22,0,-1.55], aRotY: -Math.PI * 0.25,
-    butterOnScale:true, needleAngle: 0.55, capState:'head',
-    label:"P4 · 8.8s", desc:"P4 · 8.8s (CU 46mm) — خشم اصغر و دست روی لبه عرقچین"
+    lens:46, pos:[-0.30,1.34,-2.45], aim:[-1.22,1.32,-1.55], showAsghar:true,
+    aPos:[-1.22,0,-1.55], aRotY: -Math.PI * 0.72,
+    armL:[[0.15,0,0.18],[-0.40,0,0]], armR:[[-1.75,-0.20,-0.25],[-1.15,0,0]],
+    headRot:[0.05, 0.10, 0], butterOnScale:true, needleAngle: 0.55, capState:'head',
+    label:"P4 · 8.8s", short:"P4 · 8.8s", desc:"P4 · 8.8s (CU 46mm) — خشم اصغر و دست روی لبه عرقچین"
   },
   P5: {
-    lens:36, pos:[0.30,1.35,-0.25], aim:[-1.20,1.18,-2.10], showAsghar:true,
-    aPos:[-1.22,0,-1.55], aRotY: Math.PI * 0.32,
-    butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    label:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست، سر برهنه، عمق تنور"
+    lens:36, pos:[0.35,1.35,-0.20], aim:[-1.20,1.18,-2.05], showAsghar:true,
+    aPos:[-1.22,0,-1.55], aRotY: -Math.PI * 0.35,
+    armL:[[0.18,0,0.18],[-0.35,0,0]], armR:[[-0.65,0,-0.22],[-0.75,0,0]],
+    headRot:[0.08, 0.08, 0], butterOnScale:true, needleAngle: 0.55, capState:'hand',
+    label:"P5 · 10.5s", short:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست راست، سر برهنه"
   },
   P6: {
     lens:28, pos:[0.45,1.38,-1.85], aim:[0.15,1.12,1.25], showAsghar:true,
-    aPos:[0.10,0,-0.35], aRotY: 0.0,
-    butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    label:"P6 · 14.0s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه سمت در"
+    aPos:[0.10,0,-0.35], aRotY: 0.05,
+    armL:[[-0.35,0,0.15],[-0.35,0,0]], armR:[[0.30,0,-0.15],[-0.45,0,0]],
+    headRot:[0, 0, 0], butterOnScale:true, needleAngle: 0.55, capState:'hand',
+    label:"P6 · 14.0s", short:"P6 · 14s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه سمت در"
   }
 };
 
+let presetOrder = ['CAM_PLATE','CAM_DOOR','P1','P2','P3','P4','P5','P6'];
 let currentKey = 'P1';
+let customCount = 0;
+
+function renderPresetBar() {
+  presetBar.innerHTML = '';
+  presetOrder.forEach(k => {
+    const p = PRESETS[k];
+    const b = document.createElement('button');
+    b.className = 'pill' + (k === currentKey ? ' active' : '');
+    b.id = 'b-' + k;
+    b.textContent = p.short || p.label;
+    b.onclick = () => selectPreset(k);
+    presetBar.appendChild(b);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'pill add-btn';
+  addBtn.textContent = '+ پنل دلخواه';
+  addBtn.onclick = () => saveCustomPreset();
+  presetBar.appendChild(addBtn);
+  notifyPresetList();
+}
+
+function notifyPresetList() {
+  const list = presetOrder.map(k => ({ key: k, label: PRESETS[k].label, short: PRESETS[k].short || PRESETS[k].label }));
+  window.parent.postMessage({ type: 'CARIZMA_PRESET_LIST', list, currentKey }, '*');
+}
+
+function saveCustomPreset(customLabel) {
+  customCount++;
+  const key = 'C' + customCount;
+  const base = PRESETS[currentKey] || PRESETS.P1;
+  const lbl = customLabel || ('P' + (6 + customCount) + ' · Custom');
+  PRESETS[key] = Object.assign({}, base, {
+    pos: [camera.position.x, camera.position.y, camera.position.z],
+    aim: [controls.target.x, controls.target.y, controls.target.z],
+    lens: fovToFocal(camera.fov),
+    label: lbl,
+    short: 'P' + (6 + customCount),
+    desc: lbl + ' (نمای سفارشی ذخیره شده)'
+  });
+  presetOrder.push(key);
+  currentKey = key;
+  renderPresetBar();
+  window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: lbl }, '*');
+}
+
 function focalToFov(mm) {
   const aspect = window.innerWidth / window.innerHeight;
   const sH = aspect < 1 ? 36.0 : 20.25;
   return 2 * Math.atan(sH / (2 * mm)) * (180 / Math.PI);
 }
+function fovToFocal(fovDeg) {
+  const aspect = window.innerWidth / window.innerHeight;
+  const sH = aspect < 1 ? 36.0 : 20.25;
+  return Math.round(sH / (2 * Math.tan((fovDeg * Math.PI / 180) / 2)));
+}
 
-window.selectPreset = function(key) {
-  currentKey = key; const p = PRESETS[key];
-  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
-  const el = document.getElementById('b-'+key); if(el) el.classList.add('active');
-  camera.fov = focalToFov(p.lens);
-  camera.position.set(...p.pos); controls.target.set(...p.aim);
-  camera.updateProjectionMatrix(); controls.update();
-
+function applyCharacterState(p) {
   needlePivot.rotation.x = p.needleAngle;
   butter3.position.set(p.butterOnScale ? -1.92 : -1.94, p.butterOnScale ? 1.26 : 1.06, p.butterOnScale ? -1.25 : -1.78);
-
   asghar.visible = p.showAsghar; skullcap.visible = p.showAsghar;
   if (p.showAsghar) {
     asghar.position.set(...p.aPos);
     asghar.rotation.y = p.aRotY;
+    if (p.armL) { armL.shoulder.rotation.set(...p.armL[0]); armL.elbow.rotation.set(...p.armL[1]); }
+    if (p.armR) { armR.shoulder.rotation.set(...p.armR[0]); armR.elbow.rotation.set(...p.armR[1]); }
+    if (p.headRot) headGroup.rotation.set(...p.headRot);
+    asghar.updateMatrixWorld(true);
     if (p.capState === 'head') {
-      skullcap.position.set(p.aPos[0] + modelHeadCenterX, gltfModel ? (modelHeadTopY - 0.03) : 1.49, p.aPos[2] + modelHeadCenterZ);
+      skullcap.position.set(p.aPos[0], 1.50, p.aPos[2]);
     } else {
-      const dx = Math.cos(p.aRotY) * 0.36, dz = -Math.sin(p.aRotY) * 0.36;
-      skullcap.position.set(p.aPos[0] + dx, 0.90, p.aPos[2] + dz);
+      const handWorld = new THREE.Vector3(0, -0.26, 0).applyMatrix4(armR.elbow.matrixWorld);
+      skullcap.position.copy(handWorld);
     }
   }
-  descEl.textContent = p.desc + (gltfModel ? ' · [GLTF]' : ' · [Fallback]');
+}
+
+window.selectPreset = function(key) {
+  if (!PRESETS[key]) return;
+  stopMotion();
+  currentKey = key;
+  const p = PRESETS[key];
+  camera.fov = focalToFov(p.lens);
+  const safePos = clampCameraSafe(new THREE.Vector3(...p.pos));
+  camera.position.copy(safePos);
+  controls.target.set(...p.aim);
+  camera.updateProjectionMatrix();
+  controls.update();
+  applyCharacterState(p);
+  descEl.textContent = p.desc;
+  renderPresetBar();
   window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label }, '*');
 };
+
+// --- CAMERA MOTION ENGINE (Between View A & View B with Combined Moves + Collision Guard) ---
+let motionState = {
+  playing: false, t: 0, duration: 3.5, fromKey: 'P1', toKey: 'P2',
+  type: 'push_orbit', easing: 'easeInOut', curve: 0.45, crane: 0.25, shake: 0.0, loop: true
+};
+
+function easeVal(t, mode) {
+  if (mode === 'linear') return t;
+  if (mode === 'easeIn') return t * t;
+  if (mode === 'easeOut') return 1 - (1 - t) * (1 - t);
+  return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+}
+
+function evalCameraMotion(rawT) {
+  const A = PRESETS[motionState.fromKey] || PRESETS.P1;
+  const B = PRESETS[motionState.toKey]   || PRESETS.P2;
+  const u = easeVal(Math.max(0, Math.min(1, rawT)), motionState.easing);
+  const bell = Math.sin(u * Math.PI); // 0 at ends, 1 at midpoint
+
+  const pA = new THREE.Vector3(...A.pos), pB = new THREE.Vector3(...B.pos);
+  const tA = new THREE.Vector3(...A.aim), tB = new THREE.Vector3(...B.aim);
+  const pos = pA.clone().lerp(pB, u);
+  const aim = tA.clone().lerp(tB, u);
+  let lens = A.lens + (B.lens - A.lens) * u;
+
+  const sideDir = pB.clone().sub(pA).cross(new THREE.Vector3(0,1,0)).normalize();
+  if (sideDir.lengthSq() < 0.001) sideDir.set(1,0,0);
+
+  const mType = motionState.type;
+  if (mType === 'arc' || mType === 'push_orbit' || mType === 'crane_pan_dolly') {
+    pos.addScaledVector(sideDir, bell * motionState.curve * 1.1);
+  }
+  if (mType === 'crane' || mType === 'crane_pan_dolly') {
+    pos.y += bell * motionState.crane * 0.9;
+  }
+  if (mType === 'dolly_zoom') {
+    lens = Math.max(18, Math.min(85, lens + bell * 16));
+  }
+  if (mType === 'handheld' || motionState.shake > 0) {
+    const amp = (mType === 'handheld' ? Math.max(0.03, motionState.shake) : motionState.shake) * 0.06;
+    pos.x += Math.sin(rawT * 28.0) * amp;
+    pos.y += Math.cos(rawT * 21.0) * amp;
+  }
+
+  // Enforce room walls & obstacle avoidance on every single frame!
+  clampCameraSafe(pos);
+
+  camera.position.copy(pos);
+  controls.target.copy(aim);
+  camera.fov = focalToFov(lens);
+  camera.updateProjectionMatrix();
+  controls.update();
+
+  // Switch character pose at midpoint cleanly
+  applyCharacterState(u < 0.5 ? A : B);
+}
+
+function stopMotion() { motionState.playing = false; }
+
+window.addEventListener('message', ev => {
+  const d = ev.data || {};
+  if (d.type === 'CARIZMA_THEME') {
+    document.body.classList.toggle('light-theme', d.theme === 'light');
+  } else if (d.type === 'CARIZMA_ADD_CUSTOM') {
+    saveCustomPreset(d.label);
+  } else if (d.type === 'CARIZMA_COLLISION') {
+    collisionEnabled = !!d.enabled;
+  } else if (d.type === 'CARIZMA_MOTION_CFG') {
+    Object.assign(motionState, d.cfg || {});
+    if (typeof d.scrub === 'number') {
+      motionState.t = d.scrub;
+      motionState.playing = false;
+      evalCameraMotion(motionState.t);
+    }
+    if (d.action === 'play') {
+      motionState.playing = true;
+      if (motionState.t >= 0.99) motionState.t = 0;
+    } else if (d.action === 'pause') {
+      motionState.playing = false;
+    } else if (d.action === 'reset') {
+      motionState.playing = false;
+      motionState.t = 0;
+      evalCameraMotion(0);
+    }
+  }
+});
 
 window.__CARIZMA_CAPTURE__ = function(w, h) {
   const oldW = window.innerWidth, oldH = window.innerHeight;
@@ -620,65 +996,44 @@ window.__CARIZMA_CAPTURE__ = function(w, h) {
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
-  camera.fov = focalToFov(PRESETS[currentKey].lens);
+  camera.fov = focalToFov((PRESETS[currentKey] || PRESETS.P1).lens);
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 selectPreset('P1');
-(function anim(){ requestAnimationFrame(anim); controls.update(); renderer.render(scene, camera); })();
+let lastTs = performance.now();
+(function anim(now){
+  requestAnimationFrame(anim);
+  const dt = Math.min(0.05, (now - lastTs) / 1000);
+  lastTs = now;
+  if (motionState.playing) {
+    motionState.t += dt / Math.max(0.5, motionState.duration);
+    if (motionState.t >= 1) {
+      if (motionState.loop) motionState.t = 0;
+      else { motionState.t = 1; motionState.playing = false; }
+    }
+    evalCameraMotion(motionState.t);
+    window.parent.postMessage({ type: 'CARIZMA_MOTION_TICK', t: motionState.t, playing: motionState.playing }, '*');
+  } else {
+    controls.update();
+    if (collisionEnabled) {
+      const clamped = clampCameraSafe(camera.position.clone());
+      if (clamped.distanceToSquared(camera.position) > 0.0001) {
+        camera.position.copy(clamped);
+      }
+    }
+  }
+  renderer.render(scene, camera);
+})(performance.now());
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v6_scenes';
+const STORE = 'carizma_3d_v7_scenes';
+const THEME_KEY = 'carizma_3d_theme';
 let scenes = [], curId = null, curBlobUrl = null;
-let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false }, saveMode = 'single';
-
-function setSaveMode(mode) {
-  saveMode = mode;
-  document.getElementById('mode-single').classList.toggle('active', mode === 'single');
-  document.getElementById('mode-sheet').classList.toggle('active', mode === 'sheet');
-  document.getElementById('btn-cap-action').textContent = mode === 'single' ? 'ذخیره تک PNG' : '+ ثبت پنل';
-  toast(mode === 'single' ? 'حالت ذخیره تک‌تک فعال شد' : 'حالت ذخیره پنلی (شیت) فعال شد');
-}
-
-async function exportBlobOrDataUrl(dataUrl, filename) {
-  const res = await fetch(dataUrl);
-  const blob = await res.blob();
-  const file = new File([blob], filename, { type: 'image/png' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: filename });
-      toast('ذخیره شد: ' + filename);
-      return;
-    } catch (e) {
-      if (e.name === 'AbortError') return;
-    }
-  }
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 4000);
-  toast('دانلود شد: ' + filename);
-}
-
-async function handleCaptureButton() {
-  const url = captureFrame();
-  if (!url) return;
-  if (saveMode === 'single') {
-    const rawLbl = document.getElementById('cap-lbl').value.trim() || ('panel_' + panels.length);
-    const safeName = rawLbl.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
-    await exportBlobOrDataUrl(url, safeName + '.png');
-  }
-}
-
-function downloadSinglePanel(id) {
-  const p = panels.find(x => x.id === id);
-  if (!p) return;
-  const safeName = (p.label || 'panel').replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
-  exportBlobOrDataUrl(p.url, safeName + '.png');
-}
+let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
+let saveMode = 'single', isPlaying = false, collisionOn = true;
 
 function toast(m) {
   const t = document.getElementById('toast');
@@ -686,14 +1041,27 @@ function toast(m) {
   clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// --- Theme (Dark / Light Liquid Glass) ---
+function applyTheme(th) {
+  document.body.classList.toggle('light-theme', th === 'light');
+  document.getElementById('btn-theme').textContent = th === 'light' ? '🌙' : '☀️';
+  try { localStorage.setItem(THEME_KEY, th); } catch(e) {}
+  const fr = document.getElementById('scene-frame');
+  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_THEME', theme: th }, '*');
+}
+function toggleTheme() {
+  applyTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light');
+}
+
 function patchCode(html) {
   const baseHref = window.location.href.replace(/[^/]*$/, '');
-  const baseTag = `<base href="${baseHref}">`;
-  const patch = baseTag + `<script>(function(){const o=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(t&&t.includes('webgl'))a=Object.assign({},a||{},{preserveDrawingBuffer:true});return o.call(this,t,a);};})();<\/script>`;
+  const patch = `<base href="${baseHref}"><script>(function(){const o=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(t&&t.includes('webgl'))a=Object.assign({},a||{},{preserveDrawingBuffer:true});return o.call(this,t,a);};})();<\/script>`;
   return html.includes('<head>') ? html.replace('<head>', '<head>' + patch) : patch + html;
 }
 
 function init() {
+  const savedTh = localStorage.getItem(THEME_KEY) || 'dark';
+  applyTheme(savedTh);
   try { scenes = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { scenes = []; }
   if (!scenes.length) {
     scenes = [{ id: 'bakery-s2', name: 'صحنه ۲ — نانوایی سنگکی', code: DEFAULT_SCENE }];
@@ -704,25 +1072,21 @@ function init() {
 }
 
 function saveStore() { try { localStorage.setItem(STORE, JSON.stringify(scenes)); } catch(e) {} }
-
 function renderDropdown() {
-  const sel = document.getElementById('scene-sel');
-  sel.innerHTML = '';
+  const sel = document.getElementById('scene-sel'); sel.innerHTML = '';
   scenes.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s.id; o.textContent = s.name;
-    if (s.id === curId) o.selected = true;
-    sel.appendChild(o);
+    const o = document.createElement('option'); o.value = s.id; o.textContent = s.name;
+    if (s.id === curId) o.selected = true; sel.appendChild(o);
   });
 }
-
 function selectScene(id) {
   const s = scenes.find(x => x.id === id) || scenes[0];
   curId = s.id; renderDropdown();
   if (curBlobUrl) URL.revokeObjectURL(curBlobUrl);
-  const blob = new Blob([patchCode(s.code)], { type: 'text/html;charset=utf-8' });
-  curBlobUrl = URL.createObjectURL(blob);
-  document.getElementById('scene-frame').src = curBlobUrl;
+  curBlobUrl = URL.createObjectURL(new Blob([patchCode(s.code)], { type: 'text/html;charset=utf-8' }));
+  const fr = document.getElementById('scene-frame');
+  fr.onload = () => applyTheme(document.body.classList.contains('light-theme') ? 'light' : 'dark');
+  fr.src = curBlobUrl;
 }
 
 function openDrawer(name) {
@@ -741,6 +1105,55 @@ function closeDrawers() {
   document.getElementById('nav-view').classList.add('active');
 }
 
+// --- Camera Motion Controls ---
+function postMotion(extra) {
+  const fr = document.getElementById('scene-frame');
+  if (!fr || !fr.contentWindow) return;
+  const cfg = {
+    fromKey: document.getElementById('mot-from').value,
+    toKey: document.getElementById('mot-to').value,
+    type: document.getElementById('mot-type').value,
+    easing: document.getElementById('mot-ease').value,
+    duration: parseFloat(document.getElementById('mot-dur').value),
+    curve: parseFloat(document.getElementById('mot-curve').value),
+    crane: parseFloat(document.getElementById('mot-crane').value),
+    shake: parseFloat(document.getElementById('mot-shake').value)
+  };
+  document.getElementById('mot-dur-v').textContent = cfg.duration.toFixed(1) + 's';
+  document.getElementById('mot-curve-v').textContent = cfg.curve.toFixed(2);
+  document.getElementById('mot-crane-v').textContent = cfg.crane.toFixed(2);
+  document.getElementById('mot-shake-v').textContent = cfg.shake.toFixed(2);
+  fr.contentWindow.postMessage(Object.assign({ type: 'CARIZMA_MOTION_CFG', cfg }, extra || {}), '*');
+}
+function syncMotionCfg() { postMotion(); }
+function scrubMotion(v) {
+  isPlaying = false;
+  document.getElementById('btn-play').textContent = '▶ پخش حرکت';
+  document.getElementById('mot-t-v').textContent = Math.round(v * 100) + '%';
+  postMotion({ scrub: parseFloat(v) });
+}
+function togglePlayMotion() {
+  isPlaying = !isPlaying;
+  document.getElementById('btn-play').textContent = isPlaying ? '⏸ توقف' : '▶ پخش حرکت';
+  postMotion({ action: isPlaying ? 'play' : 'pause' });
+}
+function resetMotion() {
+  isPlaying = false;
+  document.getElementById('btn-play').textContent = '▶ پخش حرکت';
+  document.getElementById('mot-scrub').value = 0;
+  document.getElementById('mot-t-v').textContent = '0%';
+  postMotion({ action: 'reset' });
+}
+function toggleCollision() {
+  collisionOn = !collisionOn;
+  const b = document.getElementById('btn-col');
+  b.textContent = collisionOn ? 'محافظ دیوار: روشن' : 'محافظ دیوار: خاموش';
+  b.classList.toggle('active', collisionOn);
+  const fr = document.getElementById('scene-frame');
+  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_COLLISION', enabled: collisionOn }, '*');
+}
+
+// --- Code & File ---
 function onHtmlFile(ev) {
   const f = ev.target.files[0]; if (!f) return;
   const r = new FileReader();
@@ -751,7 +1164,6 @@ function onHtmlFile(ev) {
   };
   r.readAsText(f); ev.target.value = '';
 }
-
 function saveNewScene() {
   const code = document.getElementById('sc-code').value.trim();
   if (!code) { toast('کد HTML را وارد کن'); return; }
@@ -759,17 +1171,16 @@ function saveNewScene() {
   const id = 'sc-' + Date.now();
   scenes.unshift({ id, name, code });
   saveStore(); selectScene(id);
-  document.getElementById('sc-name').value = '';
-  document.getElementById('sc-code').value = '';
+  document.getElementById('sc-name').value = ''; document.getElementById('sc-code').value = '';
   closeDrawers(); toast('صحنه جدید اجرا شد');
 }
-
 function deleteScene() {
   if (scenes.length <= 1) { toast('حداقل یک صحنه باید بماند'); return; }
   scenes = scenes.filter(x => x.id !== curId);
   saveStore(); selectScene(scenes[0].id); closeDrawers(); toast('حذف شد');
 }
 
+// --- Calibration (overlay_compare.py native implementation) ---
 function setAspect(m) {
   ['fill','916','169'].forEach(k => document.getElementById('asp-'+k).classList.remove('active'));
   document.getElementById('asp-' + (m==='9:16'?'916':m==='16:9'?'169':'fill')).classList.add('active');
@@ -780,13 +1191,11 @@ function setAspect(m) {
   if (h > main.clientHeight) { h = main.clientHeight; w = h * r; }
   shell.style.width = Math.round(w)+'px'; shell.style.height = Math.round(h)+'px';
 }
-
 function toggleGuide(g) {
   guides[g] = !guides[g];
   document.getElementById(g + '-layer').style.display = guides[g] ? 'block' : 'none';
   document.getElementById('btn-' + g).classList.toggle('active', guides[g]);
 }
-
 function onPlateFile(ev) {
   const f = ev.target.files[0]; if (!f) return;
   document.getElementById('plate-img').src = URL.createObjectURL(f);
@@ -810,30 +1219,99 @@ function updateOv() {
   const img = document.getElementById('plate-img');
   img.style.opacity = op; img.style.clipPath = `inset(0 ${100-sp}% 0 0)`;
 }
+async function exportOverlayCompare() {
+  const plateEl = document.getElementById('plate-img');
+  if (!plateEl.src) { toast('اول عکس پلیت را آپلود کن'); return; }
+  const renderUrl = grab3D(plateEl.naturalWidth || 1920, plateEl.naturalHeight || 1080);
+  if (!renderUrl) { toast('بوم سه‌بعدی پیدا نشد'); return; }
+  const rImg = await new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = renderUrl; });
+  const cv = document.createElement('canvas');
+  cv.width = plateEl.naturalWidth || 1920; cv.height = plateEl.naturalHeight || 1080;
+  const ctx = cv.getContext('2d');
+  const alpha = parseFloat(document.getElementById('ov-op').value);
+  ctx.drawImage(plateEl, 0, 0, cv.width, cv.height);
+  ctx.globalAlpha = 1 - alpha;
+  ctx.drawImage(rImg, 0, 0, cv.width, cv.height);
+  ctx.globalAlpha = 1.0;
+  await exportBlobOrDataUrl(cv.toDataURL('image/png'), 'overlay_compare.png');
+}
 
+// --- Messages from 3D Scene ---
 window.addEventListener('message', ev => {
-  if (ev.data && ev.data.type === 'CARIZMA_PRESET' && ev.data.label) {
-    document.getElementById('cap-lbl').value = ev.data.label;
+  const d = ev.data || {};
+  if (d.type === 'CARIZMA_PRESET' && d.label) {
+    document.getElementById('cap-lbl').value = d.label;
+  } else if (d.type === 'CARIZMA_PRESET_LIST' && Array.isArray(d.list)) {
+    const sFrom = document.getElementById('mot-from'), sTo = document.getElementById('mot-to');
+    const prevA = sFrom.value || 'P1', prevB = sTo.value || 'P2';
+    sFrom.innerHTML = ''; sTo.innerHTML = '';
+    d.list.forEach(item => {
+      const o1 = new Option(item.label, item.key);
+      const o2 = new Option(item.label, item.key);
+      sFrom.add(o1); sTo.add(o2);
+    });
+    sFrom.value = d.list.some(x => x.key === prevA) ? prevA : 'P1';
+    sTo.value   = d.list.some(x => x.key === prevB) ? prevB : 'P2';
+  } else if (d.type === 'CARIZMA_MOTION_TICK') {
+    document.getElementById('mot-scrub').value = d.t;
+    document.getElementById('mot-t-v').textContent = Math.round(d.t * 100) + '%';
+    if (!d.playing) { isPlaying = false; document.getElementById('btn-play').textContent = '▶ پخش حرکت'; }
   }
 });
 
-function captureFrame() {
+// --- Dual Save Modes & Storyboard (assemble_sheet.py exact parameters: 540x960, GAP=6, #c8c8c8) ---
+function setSaveMode(mode) {
+  saveMode = mode;
+  document.getElementById('mode-single').classList.toggle('active', mode === 'single');
+  document.getElementById('mode-sheet').classList.toggle('active', mode === 'sheet');
+  document.getElementById('btn-cap-action').textContent = mode === 'single' ? 'ذخیره تک PNG' : '+ ثبت پنل';
+  toast(mode === 'single' ? 'حالت ذخیره تک‌تک فعال شد' : 'حالت ذخیره پنلی (شیت) فعال شد');
+}
+
+function grab3D(w, h) {
   const fr = document.getElementById('scene-frame');
-  let url = null;
   try {
     if (fr.contentWindow && typeof fr.contentWindow.__CARIZMA_CAPTURE__ === 'function')
-      url = fr.contentWindow.__CARIZMA_CAPTURE__(1080, 1920);
-    else {
-      const c = fr.contentDocument && fr.contentDocument.querySelector('canvas');
-      if (c) url = c.toDataURL('image/png');
-    }
+      return fr.contentWindow.__CARIZMA_CAPTURE__(w, h);
+    const c = fr.contentDocument && fr.contentDocument.querySelector('canvas');
+    if (c) return c.toDataURL('image/png');
   } catch(e) {}
-  if (!url) { toast('بوم سه‌بعدی پیدا نشد'); return null; }
-  const label = document.getElementById('cap-lbl').value.trim() || ('P'+(panels.length+1));
-  panels.push({ id: Date.now()+Math.random(), label, url });
+  return null;
+}
+
+async function exportBlobOrDataUrl(dataUrl, filename) {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const file = new File([blob], filename, { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: filename }); toast('ذخیره شد: ' + filename); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast('دانلود شد: ' + filename);
+}
+
+async function handleCaptureButton() {
+  const url = grab3D(1080, 1920);
+  if (!url) { toast('بوم سه‌بعدی پیدا نشد'); return; }
+  const label = document.getElementById('cap-lbl').value.trim() || ('P' + (panels.length + 1));
+  panels.push({ id: Date.now() + Math.random(), label, url });
   renderPanels();
-  if (saveMode !== 'single') toast('پنل ثبت شد: ' + label);
-  return url;
+  if (saveMode === 'single') {
+    const safeName = label.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
+    await exportBlobOrDataUrl(url, safeName + '.png');
+  } else {
+    toast('پنل ثبت شد: ' + label);
+  }
+}
+
+function downloadSinglePanel(id) {
+  const p = panels.find(x => x.id === id); if (!p) return;
+  const safeName = (p.label || 'panel').replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'panel';
+  exportBlobOrDataUrl(p.url, safeName + '.png');
 }
 
 function importPngs(ev) {
@@ -855,7 +1333,7 @@ function renderPanels() {
   st.innerHTML = '';
   panels.forEach((p, i) => {
     const d = document.createElement('div'); d.className = 'thumb';
-    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button><button class="del" style="top:3px;left:3px;right:auto;background:rgba(14,165,233,0.9)" onclick="downloadSinglePanel(${p.id})" title="دانلود تک PNG">↓</button>`;
+    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button><button class="del" style="top:3px;left:3px;right:auto;background:rgba(14,165,233,0.9)" onclick="downloadSinglePanel(${p.id})">↓</button>`;
     st.appendChild(d);
   });
 }
@@ -872,11 +1350,12 @@ function openSheet() {
   buildSheet();
 }
 async function buildSheet() {
-  const PW=540, PH=960, GAP=8, cols=sheetCols, rows=Math.ceil(panels.length/cols);
+  // Exact assemble_sheet.py spec: PANEL_W=540, PANEL_H=960, GAP=6, BORDER=(200,200,200)
+  const PW=540, PH=960, GAP=6, cols=sheetCols, rows=Math.ceil(panels.length/cols);
   const cv = document.getElementById('sheet-canvas');
   cv.width = cols*PW+(cols+1)*GAP; cv.height = rows*PH+(rows+1)*GAP;
   const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#c8c8c8'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle = 'rgb(200,200,200)'; ctx.fillRect(0,0,cv.width,cv.height);
   for (let i=0; i<panels.length; i++) {
     const im = await new Promise(res => { const img = new Image(); img.onload=()=>res(img); img.src=panels[i].url; });
     const x = GAP + (i%cols)*(PW+GAP), y = GAP + Math.floor(i/cols)*(PH+GAP);
@@ -885,55 +1364,22 @@ async function buildSheet() {
     if (sr > dr) { sw = im.height*dr; sx = (im.width-sw)/2; } else { sh = im.width/dr; sy = (im.height-sh)/2; }
     ctx.drawImage(im, sx, sy, sw, sh, x, y, PW, PH);
     const txt = `${i+1} · ${panels[i].label}`;
-    ctx.direction = 'ltr';
-    ctx.textAlign = 'left';
-    ctx.font = 'bold 28px JetBrains Mono, Arial, sans-serif';
+    ctx.direction = 'ltr'; ctx.textAlign = 'left';
+    ctx.font = 'bold 30px JetBrains Mono, Arial, sans-serif';
     const tw = ctx.measureText(txt).width;
-    ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(x, y, tw+24, 46);
-    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.fillText(txt, x+12, y+24);
+    ctx.fillStyle = '#000000'; ctx.fillRect(x, y, tw+24, 46);
+    ctx.fillStyle = '#ffffff'; ctx.textBaseline = 'middle'; ctx.fillText(txt, x+12, y+23);
   }
-  _syncSheetImg();
-}
-let _lastSheetBlob = null;
-function _syncSheetImg() {
-  const cv = document.getElementById('sheet-canvas');
   cv.toBlob(blob => {
-    _lastSheetBlob = blob;
+    window._lastSheetBlob = blob;
     const imgEl = document.getElementById('sheet-preview-img');
     if (imgEl.dataset.url) URL.revokeObjectURL(imgEl.dataset.url);
-    const u = URL.createObjectURL(blob);
-    imgEl.dataset.url = u;
-    imgEl.src = u;
+    const u = URL.createObjectURL(blob); imgEl.dataset.url = u; imgEl.src = u;
   }, 'image/png');
 }
-
 async function downloadSheet() {
   const cv = document.getElementById('sheet-canvas');
-  const blob = _lastSheetBlob || await new Promise(res => cv.toBlob(res, 'image/png'));
-  if (!blob) { toast('خطا در ساخت عکس'); return; }
-  const file = new File([blob], 'carizma_storyboard_sheet.png', { type: 'image/png' });
-
-  // iOS Safari / PWA native Share Sheet (Save Image to Photos)
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: 'Carizma Storyboard Sheet' });
-      toast('ذخیره شد!');
-      return;
-    } catch (e) {
-      if (e.name === 'AbortError') return;
-    }
-  }
-
-  // Desktop / Android fallback via Blob URL
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'carizma_storyboard_sheet.png';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 4000);
-  toast('شیت دانلود شد!');
+  await exportBlobOrDataUrl(cv.toDataURL('image/png'), 'carizma_storyboard_sheet.png');
 }
 
 init();
