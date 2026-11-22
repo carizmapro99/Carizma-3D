@@ -217,6 +217,46 @@
   .modal-f { border-bottom: none; border-top: 1px solid var(--border); justify-content: flex-end; gap: 8px; }
   .modal-b { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
+  /* Floating Game-Hub Look Joystick (Pure Camera Angle Rotation + Magnetic Header Dock) */
+  #look-hub {
+    position: fixed; width: 92px; height: 92px; border-radius: 50%; z-index: 60;
+    background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow), var(--specular), 0 0 0 1px rgba(56,189,248,0.18);
+    display: flex; align-items: center; justify-content: center;
+    touch-action: none; user-select: none;
+    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease, left 0.34s cubic-bezier(0.22, 1, 0.36, 1), top 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #look-hub.dragging { transition: none !important; }
+  #look-hub.docked {
+    transform: scale(0.22);
+    opacity: 0;
+    pointer-events: none;
+  }
+  #look-hub .ring-inner {
+    position: absolute; inset: 10px; border-radius: 50%;
+    border: 1px dashed rgba(148,163,184,0.35); pointer-events: none;
+  }
+  #look-hub .knob {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(56,189,248,0.92), rgba(45,212,191,0.92));
+    border: 1.5px solid rgba(255,255,255,0.85);
+    box-shadow: 0 4px 14px rgba(14,165,233,0.45), inset 0 1px 2px #fff;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; transition: transform 0.14s ease-out;
+  }
+  #look-hub .drag-handle {
+    position: absolute; top: -9px; width: 28px; height: 16px; border-radius: 99px;
+    background: var(--glass); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--muted); cursor: grab; box-shadow: var(--specular);
+  }
+  #look-hub.dock-magnet {
+    border-color: var(--teal);
+    box-shadow: 0 0 24px rgba(45,212,191,0.65);
+    transform: scale(0.72);
+  }
+
   #toast {
     position: fixed; top: 62px; left: 50%; transform: translateX(-50%) translateY(-10px);
     background: var(--glass); backdrop-filter: blur(18px); border: 1px solid var(--accent); color: var(--text);
@@ -244,6 +284,9 @@
     </div>
     <select id="scene-sel" class="scene-sel" onchange="selectScene(this.value)"></select>
     <div class="row" style="gap:6px">
+      <button class="btn sm active" id="btn-hub-dock" onclick="toggleLookHub()" title="هاب چرخش زاویه دوربین">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
       <button class="btn sm" id="btn-theme" onclick="toggleTheme()" title="تغییر تم تاریک/روشن">☀️</button>
       <button class="btn sm primary" onclick="openDrawer('code')">+ کد</button>
     </div>
@@ -451,6 +494,17 @@
   </div>
 </div>
 
+<!-- Floating Game-Hub Look Joystick -->
+<div id="look-hub" style="left: 18px; top: 130px;">
+  <div class="drag-handle" id="hub-mover" title="جابه‌جایی یا کشیدن به هدر">⋮⋮</div>
+  <div class="ring-inner"></div>
+  <div class="knob" id="hub-knob">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04131c" stroke-width="2.4">
+      <path d="M5 12h14M12 5v14"/>
+    </svg>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -501,6 +555,30 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
   body.light-theme .pill.add-btn {
     background: rgba(14,165,233,0.14); color: #0284c7; border-color: rgba(14,165,233,0.4);
   }
+  #panel-edit-hud {
+    position: fixed; top: 10px; right: 10px; z-index: 15;
+    display: flex; gap: 5px; align-items: center;
+  }
+  .mini-pill {
+    background: rgba(15, 22, 34, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    color: #f1f5f9; border: 1px solid rgba(255,255,255,0.22); border-radius: 99px;
+    padding: 5px 10px; font-size: 10.5px; font-weight: 700; cursor: pointer; transition: 0.16s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.25);
+  }
+  body.light-theme .mini-pill {
+    background: rgba(255,255,255,0.78); color: #0f172a; border-color: rgba(255,255,255,0.95);
+  }
+  .mini-pill.save {
+    background: linear-gradient(135deg, rgba(16,185,129,0.9), rgba(45,212,191,0.9));
+    color: #031b15 !important; border-color: rgba(255,255,255,0.55);
+  }
+  .mini-pill.dirty {
+    animation: pulseDirty 1.4s infinite;
+  }
+  @keyframes pulseDirty {
+    0%,100% { box-shadow: 0 0 0 0 rgba(45,212,191,0.55); }
+    50% { box-shadow: 0 0 0 6px rgba(45,212,191,0); }
+  }
   #hud-desc {
     position: fixed; top: 48px; left: 10px; right: 10px; z-index: 9; pointer-events: none;
     display: flex; justify-content: center;
@@ -521,6 +599,10 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
 </style>
 </head>
 <body>
+<div id="panel-edit-hud">
+  <button class="mini-pill save" id="btn-save-angle" onclick="saveCurrentPanelAngle()" style="display:none">✓ ثبت زاویه پنل</button>
+  <button class="mini-pill" id="btn-reset-angle" onclick="resetCurrentPanelAngle()" style="display:none">↺ پیش‌فرض</button>
+</div>
 <div id="hud-desc"><span id="desc">P1 · 0.0s (MS 32mm)</span></div>
 <div id="canvas-wrap"></div>
 <div id="preset-bar"></div>
@@ -673,17 +755,28 @@ const mTipR = box(0.05, 0.024, 0.03,  0.12, -0.028, 0.168, 0x161312, headGroup);
 const hairBack = sph(0.165, 0, 0.02, -0.03, 0x221b17, headGroup);
 hairBack.scale.set(0.98, 0.95, 0.92);
 
-// Two-Segment Articulated Arms (Shoulder -> UpperArm -> Elbow -> Forearm -> Hand)
+// Natural Blended Shoulders & Articulated Two-Segment Arms
 function makeArm(side) {
   const shoulder = new THREE.Group();
-  shoulder.position.set(side * 0.35, 1.07, 0);
-  sph(0.085, 0, 0, 0, 0xe66a17, shoulder);
-  cyl(0.072, 0.064, 0.26, 0, -0.13, 0, 0xe66a17, shoulder);
+  shoulder.position.set(side * 0.30, 1.05, 0.01);
+  // Soft tapered deltoid cap tucked into torso
+  const delt = new THREE.Mesh(new THREE.SphereGeometry(0.078, 18, 14), mat(0xe66a17));
+  delt.scale.set(0.88, 1.28, 0.92);
+  delt.position.set(-side * 0.015, -0.02, 0);
+  shoulder.add(delt);
+  // Rolled-sleeve upper arm
+  cyl(0.068, 0.062, 0.22, 0, -0.12, 0, 0xe66a17, shoulder);
+  // Sleeve cuff ring
+  cyl(0.066, 0.066, 0.028, 0, -0.22, 0, 0xf5efe6, shoulder);
   const elbow = new THREE.Group();
-  elbow.position.set(0, -0.26, 0);
-  sph(0.062, 0, 0, 0, 0xf3a76b, elbow);
-  cyl(0.060, 0.050, 0.24, 0, -0.12, 0, 0xf3a76b, elbow);
-  sph(0.058, 0, -0.25, 0, 0xf3a76b, elbow); // Hand
+  elbow.position.set(0, -0.23, 0);
+  sph(0.054, 0, 0, 0, 0xf3a76b, elbow);
+  cyl(0.054, 0.044, 0.23, 0, -0.115, 0, 0xf3a76b, elbow);
+  // Natural slightly flattened hand
+  const hand = new THREE.Mesh(new THREE.SphereGeometry(0.052, 16, 12), mat(0xf3a76b));
+  hand.scale.set(0.85, 1.15, 0.65);
+  hand.position.set(0, -0.24, 0.01);
+  elbow.add(hand);
   shoulder.add(elbow);
   asghar.add(shoulder);
   return { shoulder, elbow };
@@ -801,9 +894,63 @@ const PRESETS = {
   }
 };
 
+// Deep-clone factory defaults so user can always reset any panel back to original
+const DEFAULT_PRESETS_BACKUP = JSON.parse(JSON.stringify(PRESETS));
+const OVERRIDE_STORE = 'carizma_panel_overrides_v1';
+let panelOverrides = {};
+try { panelOverrides = JSON.parse(localStorage.getItem(OVERRIDE_STORE) || '{}'); } catch(e) { panelOverrides = {}; }
+Object.keys(panelOverrides).forEach(k => {
+  if (PRESETS[k]) Object.assign(PRESETS[k], panelOverrides[k]);
+});
+
 let presetOrder = ['CAM_PLATE','CAM_DOOR','P1','P2','P3','P4','P5','P6'];
 let currentKey = 'P1';
 let customCount = 0;
+let isPanelDirty = false;
+
+function updateEditHud() {
+  const btnS = document.getElementById('btn-save-angle');
+  const btnR = document.getElementById('btn-reset-angle');
+  const hasOverride = !!panelOverrides[currentKey];
+  btnS.style.display = isPanelDirty ? 'inline-flex' : 'none';
+  btnS.classList.toggle('dirty', isPanelDirty);
+  btnR.style.display = (isPanelDirty || hasOverride) ? 'inline-flex' : 'none';
+}
+
+controls.addEventListener('change', () => {
+  if (!motionState.playing) {
+    isPanelDirty = true;
+    updateEditHud();
+  }
+});
+
+window.saveCurrentPanelAngle = function() {
+  const p = PRESETS[currentKey];
+  if (!p) return;
+  const ov = {
+    pos: [camera.position.x, camera.position.y, camera.position.z],
+    aim: [controls.target.x, controls.target.y, controls.target.z],
+    lens: fovToFocal(camera.fov)
+  };
+  Object.assign(p, ov);
+  panelOverrides[currentKey] = ov;
+  try { localStorage.setItem(OVERRIDE_STORE, JSON.stringify(panelOverrides)); } catch(e) {}
+  isPanelDirty = false;
+  updateEditHud();
+  descEl.textContent = p.label + ' — زاویه جدید ثبت شد ✓';
+};
+
+window.resetCurrentPanelAngle = function() {
+  const orig = DEFAULT_PRESETS_BACKUP[currentKey];
+  if (orig) {
+    PRESETS[currentKey] = JSON.parse(JSON.stringify(orig));
+  }
+  delete panelOverrides[currentKey];
+  try { localStorage.setItem(OVERRIDE_STORE, JSON.stringify(panelOverrides)); } catch(e) {}
+  isPanelDirty = false;
+  selectPreset(currentKey);
+  descEl.textContent = PRESETS[currentKey].label + ' — بازگشت به پیش‌فرض ↺';
+};
 
 function renderPresetBar() {
   presetBar.innerHTML = '';
@@ -812,7 +959,7 @@ function renderPresetBar() {
     const b = document.createElement('button');
     b.className = 'pill' + (k === currentKey ? ' active' : '');
     b.id = 'b-' + k;
-    b.textContent = p.short || p.label;
+    b.textContent = (p.short || p.label) + (panelOverrides[k] ? ' •' : '');
     b.onclick = () => selectPreset(k);
     presetBar.appendChild(b);
   });
@@ -891,7 +1038,9 @@ window.selectPreset = function(key) {
   camera.updateProjectionMatrix();
   controls.update();
   applyCharacterState(p);
-  descEl.textContent = p.desc;
+  isPanelDirty = false;
+  updateEditHud();
+  descEl.textContent = p.desc + (panelOverrides[key] ? ' [سفارشی]' : '');
   renderPresetBar();
   window.parent.postMessage({ type: 'CARIZMA_PRESET', key, label: p.label }, '*');
 };
@@ -963,6 +1112,17 @@ window.addEventListener('message', ev => {
     saveCustomPreset(d.label);
   } else if (d.type === 'CARIZMA_COLLISION') {
     collisionEnabled = !!d.enabled;
+  } else if (d.type === 'CARIZMA_LOOK_ROTATE') {
+    // Rotate camera look direction ONLY without moving camera.position
+    const offset = controls.target.clone().sub(camera.position);
+    const sphCoords = new THREE.Spherical().setFromVector3(offset);
+    sphCoords.theta -= (d.dx || 0) * 0.045;
+    sphCoords.phi = Math.max(0.15, Math.min(Math.PI - 0.15, sphCoords.phi + (d.dy || 0) * 0.045));
+    offset.setFromSpherical(sphCoords);
+    controls.target.copy(camera.position).add(offset);
+    controls.update();
+    isPanelDirty = true;
+    updateEditHud();
   } else if (d.type === 'CARIZMA_MOTION_CFG') {
     Object.assign(motionState, d.cfg || {});
     if (typeof d.scrub === 'number') {
@@ -1029,7 +1189,7 @@ let lastTs = performance.now();
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v7_scenes';
+const STORE = 'carizma_3d_v8_scenes';
 const THEME_KEY = 'carizma_3d_theme';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, plateOn = false, guides = { sz: false, grid: false };
@@ -1381,6 +1541,136 @@ async function downloadSheet() {
   const cv = document.getElementById('sheet-canvas');
   await exportBlobOrDataUrl(cv.toDataURL('image/png'), 'carizma_storyboard_sheet.png');
 }
+
+// --- Floating Game-Hub Look Joystick (Pure Angle Rotation + Magnetic Header Dock) ---
+(function initLookHub() {
+  const hub = document.getElementById('look-hub');
+  const knob = document.getElementById('hub-knob');
+  const mover = document.getElementById('hub-mover');
+  const dockBtn = document.getElementById('btn-hub-dock');
+
+  let hubDocked = false;
+  let joyActive = false, joyVec = { x: 0, y: 0 };
+  let dragActive = false, dragOff = { x: 0, y: 0 };
+
+  function getDockCenter() {
+    const r = dockBtn.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - 46, y: r.top + r.height / 2 - 46 };
+  }
+
+  window.toggleLookHub = function() {
+    hubDocked = !hubDocked;
+    dockBtn.classList.toggle('active', !hubDocked);
+    if (hubDocked) {
+      const dc = getDockCenter();
+      hub.style.left = dc.x + 'px';
+      hub.style.top  = dc.y + 'px';
+      hub.classList.add('docked');
+      toast('هاب زاویه به هدر منتقل شد');
+    } else {
+      hub.classList.remove('docked', 'dock-magnet');
+      hub.style.left = '18px';
+      hub.style.top  = '130px';
+      toast('هاب چرخش زاویه فعال شد');
+    }
+  };
+
+  mover.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    dragActive = true;
+    hub.classList.add('dragging');
+    const r = hub.getBoundingClientRect();
+    dragOff.x = e.clientX - r.left;
+    dragOff.y = e.clientY - r.top;
+    mover.setPointerCapture(e.pointerId);
+  });
+
+  mover.addEventListener('pointermove', e => {
+    if (!dragActive) return;
+    let nx = Math.max(6, Math.min(window.innerWidth - 98, e.clientX - dragOff.x));
+    let ny = Math.max(6, Math.min(window.innerHeight - 160, e.clientY - dragOff.y));
+    hub.style.left = nx + 'px';
+    hub.style.top  = ny + 'px';
+
+    if (ny < 68) {
+      hub.classList.add('dock-magnet');
+    } else {
+      hub.classList.remove('dock-magnet');
+    }
+  });
+
+  mover.addEventListener('pointerup', e => {
+    if (!dragActive) return;
+    dragActive = false;
+    hub.classList.remove('dragging');
+    const r = hub.getBoundingClientRect();
+    if (r.top < 68) {
+      hubDocked = true;
+      dockBtn.classList.add('active');
+      const dc = getDockCenter();
+      hub.style.left = dc.x + 'px';
+      hub.style.top  = dc.y + 'px';
+      hub.classList.remove('dock-magnet');
+      hub.classList.add('docked');
+      toast('هاب زاویه در هدر جمع شد');
+    }
+  });
+
+  hub.addEventListener('pointerdown', e => {
+    if (e.target === mover) return;
+    joyActive = true;
+    knob.style.transition = 'none';
+    hub.setPointerCapture(e.pointerId);
+    updateJoy(e);
+  });
+
+  hub.addEventListener('pointermove', e => {
+    if (!joyActive) return;
+    updateJoy(e);
+  });
+
+  function endJoy() {
+    if (!joyActive) return;
+    joyActive = false;
+    joyVec.x = 0; joyVec.y = 0;
+    knob.style.transition = 'transform 0.16s cubic-bezier(0.22, 1, 0.36, 1)';
+    knob.style.transform = 'translate(0px, 0px)';
+  }
+  hub.addEventListener('pointerup', endJoy);
+  hub.addEventListener('pointercancel', endJoy);
+
+  function updateJoy(e) {
+    const r = hub.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const maxR = 26;
+    let dx = e.clientX - cx;
+    let dy = e.clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist > maxR) {
+      dx = (dx / dist) * maxR;
+      dy = (dy / dist) * maxR;
+    }
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+    joyVec.x = dx / maxR;
+    joyVec.y = dy / maxR;
+  }
+
+  function tickJoy() {
+    requestAnimationFrame(tickJoy);
+    if (joyActive && (Math.abs(joyVec.x) > 0.04 || Math.abs(joyVec.y) > 0.04)) {
+      const fr = document.getElementById('scene-frame');
+      if (fr && fr.contentWindow) {
+        fr.contentWindow.postMessage({
+          type: 'CARIZMA_LOOK_ROTATE',
+          dx: joyVec.x,
+          dy: joyVec.y
+        }, '*');
+      }
+    }
+  }
+  tickJoy();
+})();
 
 init();
 </script>
