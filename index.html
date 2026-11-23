@@ -141,9 +141,10 @@
   }
   iframe#scene-frame { width: 100%; height: 100%; border: none; display: block; }
 
-  /* Floating Capture Pill inside 3D Stage (Top-Left, never touches header!) */
+  /* Floating Unified Save Panel + Reset inside 3D Stage (Top-Left) */
   .fab-capture {
     position: absolute; top: 10px; left: 10px; z-index: 25;
+    display: flex; align-items: center; gap: 6px;
   }
 
   /* Overlays */
@@ -359,8 +360,6 @@
   <header>
     <div class="header-info">
       <span class="view-desc" id="header-desc">نگاه مشکوک اصغر به سبد کره و ترازو</span>
-      <button class="btn xs save-ok" id="btn-save-angle" onclick="triggerSaveAngle()" style="display:none" title="ثبت زاویه فعلی پنل">✓ ثبت</button>
-      <button class="btn xs" id="btn-reset-angle" onclick="triggerResetAngle()" style="display:none" title="بازگشت به پیش‌فرض">↺</button>
     </div>
     <div class="header-actions">
       <button class="btn icon-only active" id="btn-hub-dock" onclick="toggleLookHub()" title="هاب چرخش زاویه">
@@ -380,7 +379,8 @@
     </div>
 
     <div class="fab-capture">
-      <button class="btn sm primary" onclick="handleCaptureButton()">ثبت پنل</button>
+      <button class="btn sm primary" id="btn-fab-save" onclick="handleUnifiedSavePanel()">ثبت پنل</button>
+      <button class="btn sm" id="btn-reset-angle" onclick="triggerResetAngle()" style="display:none;padding:0 10px;" title="بازگشت زاویه به پیش‌فرض">↺</button>
     </div>
 
     <!-- 20% Smaller Floating Precision Look Hub (Stays inside Stage & auto-hides when drawer opens) -->
@@ -964,7 +964,7 @@ controls.addEventListener('change', () => {
   }
 });
 
-window.saveCurrentPanelAngle = function() {
+window.saveCurrentPanelAngle = function(silent) {
   const p = PRESETS[currentKey];
   if (!p) return;
   const ov = {
@@ -978,7 +978,7 @@ window.saveCurrentPanelAngle = function() {
   isPanelDirty = false;
   renderPresetBar();
   updateEditHud();
-  window.parent.postMessage({ type: 'CARIZMA_TOAST', msg: 'زاویه پنل ثبت شد ✓' }, '*');
+  if (!silent) window.parent.postMessage({ type: 'CARIZMA_TOAST', msg: 'زاویه پنل ثبت شد ✓' }, '*');
 };
 
 window.resetCurrentPanelAngle = function() {
@@ -1154,7 +1154,7 @@ window.addEventListener('message', ev => {
   } else if (d.type === 'CARIZMA_ADD_CUSTOM') {
     saveCustomPreset(d.label);
   } else if (d.type === 'CARIZMA_SAVE_ANGLE') {
-    saveCurrentPanelAngle();
+    saveCurrentPanelAngle(!!d.silent);
   } else if (d.type === 'CARIZMA_RESET_ANGLE') {
     resetCurrentPanelAngle();
   } else if (d.type === 'CARIZMA_COLLISION') {
@@ -1237,7 +1237,7 @@ let lastTs = performance.now();
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v14_scenes';
+const STORE = 'carizma_3d_v15_scenes';
 const THEME_KEY = 'carizma_3d_theme';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, guides = { sz: false, grid: false };
@@ -1279,9 +1279,19 @@ function toggleTheme() {
   applyTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light');
 }
 
-function triggerSaveAngle() {
+let currentAngleDirty = false;
+
+function triggerSaveAngle(silent) {
   const fr = document.getElementById('scene-frame');
-  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_SAVE_ANGLE' }, '*');
+  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_SAVE_ANGLE', silent: !!silent }, '*');
+}
+
+async function handleUnifiedSavePanel() {
+  if (currentAngleDirty) {
+    triggerSaveAngle(true);
+    currentAngleDirty = false;
+  }
+  await handleCaptureButton();
 }
 function triggerResetAngle() {
   const fr = document.getElementById('scene-frame');
@@ -1446,7 +1456,9 @@ window.addEventListener('message', ev => {
   const d = ev.data || {};
   if (d.type === 'CARIZMA_HUD_STATE') {
     if (d.desc) document.getElementById('header-desc').textContent = d.desc;
-    document.getElementById('btn-save-angle').style.display = d.dirty ? 'inline-flex' : 'none';
+    currentAngleDirty = !!d.dirty;
+    const fabBtn = document.getElementById('btn-fab-save');
+    if (fabBtn) fabBtn.textContent = d.dirty ? '✓ ثبت پنل' : 'ثبت پنل';
     document.getElementById('btn-reset-angle').style.display = (d.dirty || d.hasOverride) ? 'inline-flex' : 'none';
   } else if (d.type === 'CARIZMA_TOAST' && d.msg) {
     toast(d.msg);
