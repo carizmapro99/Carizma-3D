@@ -10,40 +10,56 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
+    /* Pure Black Dark Theme + Soft Tactile Elevation (Inspired by reference) */
     --bg: #000000;
-    --glass-bg: rgba(0, 0, 0, 0.58);
-    --glass-drawer: rgba(8, 8, 8, 0.84);
-    --glass-btn: rgba(255, 255, 255, 0.08);
-    --glass-btn-hover: rgba(255, 255, 255, 0.16);
-    --rim: rgba(255, 255, 255, 0.065);
-    --rim-strong: rgba(255, 255, 255, 0.12);
-    --specular: inset 0 1px 2px rgba(255, 255, 255, 0.09), inset 0 -1px 1px rgba(255, 255, 255, 0.02);
-    --shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+    --surface: #0b0c10;
+    --surface-2: #14161d;
+    --surface-btn: #161922;
+    --surface-btn-hover: #1e222f;
+    --border-soft: rgba(255, 255, 255, 0.07);
+    --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.65);
+
+    /* Liquid Glass variables ONLY for floating drawers, preset bar & hub inside 3D viewport */
+    --glass-drawer: rgba(12, 13, 18, 0.78);
+    --glass-card: rgba(255, 255, 255, 0.06);
+    --glass-card-hover: rgba(255, 255, 255, 0.12);
+    --glass-rim: rgba(255, 255, 255, 0.11);
+    --glass-spec: inset 0 1px 1.5px rgba(255, 255, 255, 0.14);
+
+    --accent-grad: linear-gradient(135deg, #2563eb, #06b6d4);
+    --accent-glow: 0 6px 18px rgba(37, 99, 235, 0.38);
     --accent: #38bdf8;
-    --teal: #2dd4bf;
+    --teal: #06b6d4;
     --danger: #fb7185;
     --text: #ffffff;
-    --muted: rgba(255, 255, 255, 0.62);
-    --input-bg: rgba(0, 0, 0, 0.78);
+    --muted: rgba(255, 255, 255, 0.58);
     --safe-b: env(safe-area-inset-bottom, 0px);
     --safe-t: env(safe-area-inset-top, 0px);
   }
+
   body.light-theme {
-    --bg: #ffffff;
-    --glass-bg: rgba(255, 255, 255, 0.68);
-    --glass-drawer: rgba(255, 255, 255, 0.88);
-    --glass-btn: rgba(255, 255, 255, 0.72);
-    --glass-btn-hover: rgba(255, 255, 255, 0.96);
-    --rim: rgba(0, 0, 0, 0.055);
-    --rim-strong: rgba(0, 0, 0, 0.10);
-    --specular: inset 0 1.5px 2px #ffffff, inset 0 -1px 1.5px rgba(0, 0, 0, 0.05);
-    --shadow: 0 12px 32px rgba(0, 0, 0, 0.11);
-    --accent: #0284c7;
-    --teal: #0d9488;
+    /* Soft Tactile Cool-White Theme (Inspired by IMG_699AF03E) */
+    --bg: #eef3fb;
+    --surface: #f7faff;
+    --surface-2: #ffffff;
+    --surface-btn: #ffffff;
+    --surface-btn-hover: #f1f5fe;
+    --border-soft: rgba(37, 99, 235, 0.08);
+    --shadow-soft: 0 6px 18px rgba(37, 99, 235, 0.09), 0 2px 4px rgba(15, 23, 42, 0.04), inset 0 1.5px 1px #ffffff;
+    --shadow-inset: inset 0 2px 5px rgba(15, 23, 42, 0.06);
+
+    --glass-drawer: rgba(248, 251, 255, 0.82);
+    --glass-card: rgba(255, 255, 255, 0.72);
+    --glass-card-hover: rgba(255, 255, 255, 0.96);
+    --glass-rim: rgba(255, 255, 255, 0.85);
+    --glass-spec: inset 0 1.5px 2px #ffffff, 0 4px 14px rgba(37, 99, 235, 0.08);
+
+    --accent: #2563eb;
+    --teal: #0284c7;
     --danger: #e11d48;
-    --text: #000000;
-    --muted: rgba(0, 0, 0, 0.56);
-    --input-bg: rgba(245, 245, 247, 0.92);
+    --text: #0f172a;
+    --muted: #64748b;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -51,13 +67,72 @@
     width: 100%; height: 100%; overflow: hidden;
     font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
     background: var(--bg); color: var(--text);
+    transition: background 0.22s ease, color 0.22s ease;
   }
 
-  .app { position: relative; width: 100%; height: 100dvh; overflow: hidden; }
+  /* Docked App Shell: Header (Top) + 3D Stage (Flex Middle) + Curved-Notch Bar (Bottom) */
+  .app {
+    display: flex; flex-direction: column; width: 100%; height: 100dvh;
+    padding-top: var(--safe-t); background: var(--bg);
+  }
 
-  /* Full-Bleed 3D Stage */
+  /* Docked Soft-Tactile Header (Merged with View Description & Save/Reset Angle) */
+  header {
+    height: 56px; padding: 0 12px; flex-shrink: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .header-info {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px;
+  }
+  .view-desc {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .header-actions {
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+
+  /* Soft Tactile Buttons (Used in Header & Global Shell) */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    height: 36px; padding: 0 14px; border-radius: 99px;
+    font-family: inherit; font-size: 11.5px; font-weight: 600;
+    color: var(--text); background: var(--surface-btn);
+    border: 1px solid var(--border-soft); box-shadow: var(--shadow-soft);
+    cursor: pointer; transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1); white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-btn-hover); }
+  .btn:active { transform: scale(0.95); }
+  .btn.icon-only { width: 34px; height: 34px; padding: 0; border-radius: 12px; flex-shrink: 0; }
+  .btn.sm { height: 32px; padding: 0 11px; font-size: 11px; }
+  .btn.xs { height: 28px; padding: 0 9px; font-size: 10.5px; }
+  .btn.primary {
+    background: var(--accent-grad); color: #ffffff;
+    border-color: rgba(255,255,255,0.18); font-weight: 700;
+    box-shadow: var(--accent-glow), inset 0 1px 1.5px rgba(255,255,255,0.32);
+  }
+  .btn.save-ok {
+    background: linear-gradient(135deg, #10b981, #06b6d4); color: #ffffff;
+    border-color: rgba(255,255,255,0.2); font-weight: 700;
+    box-shadow: 0 4px 14px rgba(16,185,129,0.32);
+  }
+  .btn.active {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .btn.danger { color: var(--danger); border-color: rgba(244,63,94,0.28); }
+  .btn.hub-magnet-target {
+    transform: scale(1.18);
+    border-color: var(--teal);
+    box-shadow: 0 0 0 4px rgba(6,182,212,0.28);
+  }
+
+  /* Middle 3D Stage — Cleanly bounded between Header and Bottom Nav! */
   main {
-    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex: 1; position: relative; min-height: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
     background: var(--bg);
   }
   .stage-shell {
@@ -66,62 +141,14 @@
   }
   iframe#scene-frame { width: 100%; height: 100%; border: none; display: block; }
 
-  /* Floating Liquid Glass Top Header */
-  header {
-    position: fixed; top: calc(10px + var(--safe-t)); left: 12px; right: 12px; height: 50px;
-    padding: 0 8px 0 10px; z-index: 40;
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    background: var(--glass-bg); backdrop-filter: blur(26px) saturate(160%); -webkit-backdrop-filter: blur(26px) saturate(160%);
-    border: 1px solid var(--rim); border-radius: 99px;
-    box-shadow: var(--shadow), var(--specular);
+  /* Floating Capture Pill inside 3D Stage (Top-Left, never touches header!) */
+  .fab-capture {
+    position: absolute; top: 10px; left: 10px; z-index: 25;
   }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px; flex-shrink: 0; letter-spacing: -0.2px; }
-  .logo {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: linear-gradient(145deg, rgba(45,212,191,0.28), rgba(56,189,248,0.22));
-    border: 1px solid var(--rim-strong); box-shadow: var(--specular);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .scene-sel {
-    flex: 1; min-width: 0; max-width: 195px;
-    background: var(--glass-btn); color: var(--text);
-    border: 1px solid var(--rim); border-radius: 99px;
-    padding: 6px 12px; font-family: inherit; font-size: 11.5px; font-weight: 600; outline: none;
-    box-shadow: var(--specular);
-  }
-  .scene-sel option, select.inp option { background: var(--bg); color: var(--text); }
-
-  /* True Liquid Glass Pill & Circle Buttons (inspired by IMG_3609) */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    height: 36px; padding: 0 14px; border-radius: 99px;
-    font-family: inherit; font-size: 11.5px; font-weight: 600;
-    color: var(--text); background: var(--glass-btn);
-    border: 1px solid var(--rim); box-shadow: var(--specular), 0 4px 14px rgba(0,0,0,0.16);
-    backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
-    cursor: pointer; transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1); white-space: nowrap;
-  }
-  .btn:hover { background: var(--glass-btn-hover); border-color: var(--rim-strong); }
-  .btn:active { transform: scale(0.95); }
-  .btn.icon-only { width: 34px; height: 34px; padding: 0; border-radius: 50%; flex-shrink: 0; }
-  .btn.sm { height: 32px; padding: 0 11px; font-size: 11px; }
-  .btn.primary {
-    background: linear-gradient(135deg, rgba(14,165,233,0.88), rgba(45,212,191,0.88));
-    color: #03151e; border-color: rgba(255,255,255,0.18); font-weight: 700;
-    box-shadow: 0 6px 20px rgba(14,165,233,0.34), inset 0 1px 2px rgba(255,255,255,0.28);
-  }
-  .btn.active {
-    background: linear-gradient(135deg, rgba(56,189,248,0.28), rgba(45,212,191,0.22));
-    border-color: var(--accent); color: var(--text);
-  }
-  .btn.danger { color: var(--danger); border-color: rgba(244,63,94,0.38); }
-
-  /* Floating Capture Pill */
-  .fab-capture { position: fixed; top: calc(70px + var(--safe-t)); left: 14px; z-index: 30; }
 
   /* Overlays */
   .ov-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; display: none; }
-  #sz-layer { border: 2px dashed rgba(45,212,191,0.55); }
+  #sz-layer { border: 2px dashed rgba(6,182,212,0.55); }
   .sz-t { position: absolute; top:0; left:0; right:0; height:14%; background:rgba(244,63,94,0.16); border-bottom:1px dashed rgba(244,63,94,0.6); }
   .sz-b { position: absolute; bottom:0; left:0; right:0; height:35%; background:rgba(244,63,94,0.16); border-top:1px dashed rgba(244,63,94,0.6); }
   .sz-r { position: absolute; top:14%; bottom:35%; right:0; width:14%; background:rgba(251,191,36,0.12); border-left:1px dashed rgba(251,191,36,0.5); }
@@ -130,54 +157,84 @@
     background-size: 33.333% 33.333%;
   }
 
-  /* Segmented Control */
+  /* Liquid Glass Floating Drawers (Inside 3D Viewport Area, Unified Cohesive Controls) */
+  .drawer {
+    position: absolute; left: 10px; right: 10px; bottom: 10px;
+    max-height: calc(100% - 20px); overflow-y: auto; z-index: 45;
+    background: var(--glass-drawer);
+    backdrop-filter: blur(28px) saturate(165%); -webkit-backdrop-filter: blur(28px) saturate(165%);
+    border: 1px solid var(--glass-rim); border-radius: 24px;
+    padding: 15px 15px 16px; display: flex; flex-direction: column; gap: 11px;
+    box-shadow: 0 18px 42px rgba(0,0,0,0.38), var(--glass-spec);
+    opacity: 0; transform: translateY(18px) scale(0.98); pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .drawer.open {
+    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+  }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; }
+  .drawer-head h3 { font-size: 13.5px; font-weight: 800; color: var(--text); }
+
+  /* Unified Liquid Glass Controls inside Drawers */
+  .drawer .btn {
+    background: var(--glass-card); border-color: var(--glass-rim); box-shadow: var(--glass-spec);
+  }
+  .drawer .btn:hover { background: var(--glass-card-hover); }
+  .drawer .btn.primary {
+    background: var(--accent-grad); color: #ffffff; border-color: rgba(255,255,255,0.22);
+    box-shadow: var(--accent-glow), inset 0 1px 1.5px rgba(255,255,255,0.32);
+  }
+  .drawer .btn.active {
+    background: linear-gradient(135deg, rgba(37,99,235,0.22), rgba(6,182,212,0.18));
+    border-color: var(--accent); color: var(--text);
+  }
+
   .seg {
     display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px;
-    background: var(--input-bg); border: 1px solid var(--rim); border-radius: 99px;
-    box-shadow: var(--specular);
+    background: var(--glass-card); border: 1px solid var(--glass-rim); border-radius: 99px;
+    box-shadow: var(--shadow-inset);
   }
   .seg button {
     border: none; background: transparent; color: var(--muted); font-family: inherit;
-    font-size: 11px; font-weight: 600; padding: 7px 10px; border-radius: 99px; cursor: pointer; transition: 0.16s;
+    font-size: 11px; font-weight: 600; padding: 7px 10px; border-radius: 99px; cursor: pointer; transition: 0.18s;
   }
   .seg button.active {
-    background: var(--glass-btn-hover); color: var(--text);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.65);
+    background: var(--accent-grad); color: #ffffff;
+    box-shadow: 0 3px 10px rgba(37,99,235,0.3);
   }
-
-  /* Floating Liquid Glass Drawer */
-  .drawer {
-    position: fixed; left: 12px; right: 12px; bottom: calc(82px + var(--safe-b));
-    max-height: 60dvh; overflow-y: auto; z-index: 45;
-    background: var(--glass-drawer); backdrop-filter: blur(32px) saturate(165%); -webkit-backdrop-filter: blur(32px) saturate(165%);
-    border: 1px solid var(--rim); border-radius: 28px;
-    padding: 16px 16px 18px; display: none; flex-direction: column; gap: 12px;
-    box-shadow: var(--shadow), var(--specular);
-  }
-  .drawer.open { display: flex; }
-  .drawer-head { display: flex; align-items: center; justify-content: space-between; }
-  .drawer-head h3 { font-size: 13.5px; font-weight: 800; color: var(--text); }
 
   .row { display: flex; align-items: center; gap: 8px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
   input[type="text"], select.inp, textarea {
-    width: 100%; background: var(--input-bg); color: var(--text);
-    border: 1px solid var(--rim); border-radius: 16px;
+    width: 100%; background: var(--glass-card); color: var(--text);
+    border: 1px solid var(--glass-rim); border-radius: 16px;
     padding: 9px 13px; font-family: inherit; font-size: 12px; outline: none;
-    box-shadow: var(--specular);
+    box-shadow: var(--shadow-inset);
   }
-  input[type="range"] { flex: 1; accent-color: var(--teal); }
-  .code-box { min-height: 140px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; direction: ltr; text-align: left; resize: vertical; }
-  .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--teal); min-width: 36px; text-align: left; }
+  select.inp option { background: var(--surface); color: var(--text); }
+
+  /* Unified Sleek Range Sliders */
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; flex: 1; height: 6px;
+    border-radius: 99px; background: var(--glass-card-hover); outline: none;
+    border: 1px solid var(--glass-rim);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent-grad); border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.45); cursor: pointer;
+  }
+  .code-box { min-height: 120px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; direction: ltr; text-align: left; resize: vertical; }
+  .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); min-width: 38px; text-align: left; font-weight: 600; }
   .lbl { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
   /* Storyboard Strip */
   .strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
   .thumb {
-    position: relative; height: 94px; min-width: 56px; border-radius: 14px; overflow: hidden;
-    border: 1px solid var(--rim); background: #000000; flex-shrink: 0;
+    position: relative; height: 92px; min-width: 54px; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--glass-rim); background: #000000; flex-shrink: 0;
   }
   .thumb img { height: 100%; width: auto; display: block; }
   .thumb .tag {
@@ -189,118 +246,130 @@
     background: rgba(244,63,94,0.9); color: #fff; border: none; font-size: 12px; cursor: pointer;
   }
 
-  /* Floating Liquid Glass Bottom Pill Dock (4 clean items — inspired by IMG_3610) */
+  /* --- CURVED NOTCH BOTTOM NAVIGATION BAR (Inspired by video_1.mp4) --- */
+  .nav-shell {
+    position: relative; flex-shrink: 0; height: calc(64px + var(--safe-b));
+    padding-bottom: var(--safe-b); z-index: 50; background: transparent;
+  }
+  .nav-svg-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: visible;
+    filter: drop-shadow(0 -4px 14px rgba(0,0,0,0.16));
+  }
+  .nav-svg-bg path {
+    fill: var(--surface);
+    transition: fill 0.22s ease;
+  }
+  .nav-active-bubble {
+    position: absolute; top: -18px; width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent-grad); color: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--accent-glow), 0 0 0 4px var(--bg);
+    pointer-events: none; z-index: 3;
+    transition: left 0.36s cubic-bezier(0.34, 1.38, 0.64, 1), transform 0.25s ease;
+  }
+  .nav-active-bubble.pop { transform: scale(1.12); }
   nav.bottom-bar {
-    position: fixed; left: 16px; right: 16px; bottom: calc(12px + var(--safe-b)); height: 58px;
-    padding: 0 8px; z-index: 50;
-    background: var(--glass-bg); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid var(--rim-strong); border-radius: 99px;
-    box-shadow: var(--shadow), var(--specular);
+    position: relative; z-index: 2; height: 64px;
     display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
   }
   .nav-item {
     background: none; border: none; color: var(--muted); font-family: inherit;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    height: 44px; border-radius: 99px; font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.18s;
+    height: 100%; font-size: 10px; font-weight: 600; cursor: pointer;
+    transition: color 0.2s ease, opacity 0.2s ease;
   }
-  .nav-item.active {
-    color: var(--text); font-weight: 700;
-    background: var(--glass-btn-hover);
-    box-shadow: inset 0 1px 2px rgba(255,255,255,0.12);
-  }
+  .nav-item .nav-ic { transition: transform 0.25s ease, opacity 0.2s ease; }
+  .nav-item.active .nav-ic { opacity: 0; transform: translateY(-10px) scale(0.6); }
+  .nav-item.active { color: var(--accent); font-weight: 800; }
+  .nav-item .nav-lbl { transition: transform 0.25s ease; }
+  .nav-item.active .nav-lbl { transform: translateY(6px); }
   .nav-item .badge {
-    background: var(--teal); color: #03151e; font-size: 9px; font-weight: 800;
+    background: var(--accent-grad); color: #ffffff; font-size: 9px; font-weight: 800;
     padding: 0 5px; border-radius: 99px; margin-right: 2px;
+  }
+
+  /* --- 20% SMALLER PRECISION LOOK HUB (80px x 80px) --- */
+  #look-hub {
+    position: absolute; width: 80px; height: 80px; border-radius: 50%; z-index: 30;
+    background: var(--glass-drawer); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid var(--glass-rim);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.34), var(--glass-spec);
+    display: flex; align-items: center; justify-content: center;
+    touch-action: none; user-select: none;
+    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease, left 0.34s cubic-bezier(0.22, 1, 0.36, 1), top 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #look-hub.dragging { transition: none !important; z-index: 70; }
+  #look-hub.docked, #look-hub.hidden-by-drawer {
+    transform: scale(0.25); opacity: 0; pointer-events: none;
+  }
+  #look-hub .ring-inner { position: absolute; inset: 9px; border-radius: 50%; border: 1px solid var(--glass-rim); pointer-events: none; }
+  #look-hub .dir-dot { position: absolute; width: 3.5px; height: 3.5px; border-radius: 50%; background: var(--muted); pointer-events: none; }
+  #look-hub .dir-n { top: 5px; } #look-hub .dir-s { bottom: 5px; }
+  #look-hub .dir-l { left: 5px; } #look-hub .dir-r { right: 5px; }
+  #look-hub .knob {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ffffff, #38bdf8 52%, #2563eb);
+    border: 1px solid rgba(255,255,255,0.45);
+    box-shadow: 0 4px 12px rgba(37,99,235,0.45), inset 0 1px 1.5px #fff;
+    pointer-events: none; transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #look-hub .drag-handle {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    padding: 2px 10px; border-radius: 99px; background: var(--glass-drawer); border: 1px solid var(--glass-rim);
+    font-size: 9px; color: var(--muted); cursor: grab; box-shadow: var(--glass-spec); letter-spacing: 1px;
+  }
+  #look-hub .speed-pill {
+    position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%);
+    padding: 1.5px 8px; border-radius: 99px; background: var(--glass-drawer); border: 1px solid var(--glass-rim);
+    font-size: 9px; font-weight: 700; color: var(--accent); cursor: pointer; box-shadow: var(--glass-spec);
+  }
+  #look-hub.dock-magnet {
+    border-color: var(--teal);
+    box-shadow: 0 0 22px rgba(6,182,212,0.65);
+    transform: scale(0.76);
   }
 
   /* Modal */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(14px);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(14px);
     display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
   }
   .modal-bg.open { display: flex; }
   .modal {
     width: 100%; max-width: 680px; max-height: 88dvh; background: var(--glass-drawer);
-    backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
-    border: 1px solid var(--rim); border-radius: 26px; overflow: hidden;
-    display: flex; flex-direction: column; box-shadow: var(--shadow), var(--specular);
+    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-rim); border-radius: 26px; overflow: hidden;
+    display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.45), var(--glass-spec);
   }
-  .modal-h, .modal-f { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rim); }
-  .modal-f { border-bottom: none; border-top: 1px solid var(--rim); justify-content: flex-end; gap: 8px; }
+  .modal-h, .modal-f { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-rim); }
+  .modal-f { border-bottom: none; border-top: 1px solid var(--glass-rim); justify-content: flex-end; gap: 8px; }
   .modal-b { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-  /* Floating Liquid-Glass Precision Look Dial */
-  #look-hub {
-    position: fixed; width: 100px; height: 100px; border-radius: 50%; z-index: 60;
-    background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid var(--rim-strong);
-    box-shadow: var(--shadow), var(--specular);
-    display: flex; align-items: center; justify-content: center;
-    touch-action: none; user-select: none;
-    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease, left 0.34s cubic-bezier(0.22, 1, 0.36, 1), top 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  #look-hub.dragging { transition: none !important; }
-  #look-hub.docked { transform: scale(0.2); opacity: 0; pointer-events: none; }
-  #look-hub .ring-inner { position: absolute; inset: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06); pointer-events: none; }
-  #look-hub .dir-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.45); pointer-events: none; }
-  body.light-theme #look-hub .dir-dot { background: rgba(15,23,42,0.32); }
-  #look-hub .dir-n { top: 6px; } #look-hub .dir-s { bottom: 6px; }
-  #look-hub .dir-l { left: 6px; } #look-hub .dir-r { right: 6px; }
-  #look-hub .knob {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #ffffff, rgba(56,189,248,0.88) 55%, rgba(45,212,191,0.92));
-    border: 1px solid rgba(255,255,255,0.28);
-    box-shadow: 0 4px 14px rgba(14,165,233,0.42), inset 0 1px 2px #fff;
-    pointer-events: none; transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  #look-hub .drag-handle {
-    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-    padding: 2px 10px; border-radius: 99px; background: var(--glass-drawer); border: 1px solid var(--rim);
-    font-size: 9px; color: var(--muted); cursor: grab; box-shadow: var(--specular); letter-spacing: 1px;
-  }
-  #look-hub .speed-pill {
-    position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
-    padding: 2px 9px; border-radius: 99px; background: var(--glass-drawer); border: 1px solid var(--rim);
-    font-size: 9.5px; font-weight: 700; color: var(--teal); cursor: pointer; box-shadow: var(--specular);
-  }
-  #look-hub.dock-magnet { border-color: var(--teal); box-shadow: 0 0 24px rgba(45,212,191,0.65); transform: scale(0.72); }
-
   #toast {
-    position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-10px);
-    background: var(--glass-drawer); backdrop-filter: blur(20px); border: 1px solid var(--rim-strong); color: var(--text);
+    position: fixed; top: 64px; left: 50%; transform: translateX(-50%) translateY(-10px);
+    background: var(--glass-drawer); backdrop-filter: blur(20px); border: 1px solid var(--glass-rim); color: var(--text);
     padding: 7px 15px; border-radius: 99px; font-size: 11.5px; opacity: 0; pointer-events: none;
-    transition: 0.2s; z-index: 200; white-space: nowrap; box-shadow: var(--shadow), var(--specular);
+    transition: 0.2s; z-index: 200; white-space: nowrap; box-shadow: var(--shadow-soft);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   @media (min-width: 860px) {
-    header, nav.bottom-bar, .drawer { max-width: 560px; left: 50%; right: auto; width: calc(100% - 24px); transform: translateX(-50%); }
+    .drawer { max-width: 520px; left: 50%; right: auto; width: calc(100% - 24px); transform: translate(-50%, 18px) scale(0.98); }
+    .drawer.open { transform: translate(-50%, 0) scale(1); }
   }
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- Floating Liquid Glass Header -->
+  <!-- Docked Soft-Tactile Header (No Logo/Name, Merged Description + Save/Reset Angle) -->
   <header>
-    <div class="brand">
-      <div class="logo">
-        <!-- Upgraded Geometric Lotus + 3D Cube Emblem -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <defs>
-            <linearGradient id="czGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#38bdf8"/>
-              <stop offset="100%" stop-color="#2dd4bf"/>
-            </linearGradient>
-          </defs>
-          <path d="M12 2.5C9.8 6.2 9 9.5 12 13.2C15 9.5 14.2 6.2 12 2.5Z" fill="url(#czGrad)"/>
-          <path d="M12 13.8C8.4 12.6 5.4 10.2 3.8 6.8C3.6 11.6 6.2 16 12 18.2C17.8 16 20.4 11.6 20.2 6.8C18.6 10.2 15.6 12.6 12 13.8Z" fill="url(#czGrad)" fill-opacity="0.72"/>
-          <circle cx="12" cy="20.2" r="1.4" fill="#2dd4bf"/>
-        </svg>
-      </div>
-      <span>Carizma 3D</span>
+    <div class="header-info">
+      <span class="view-desc" id="header-desc">نگاه مشکوک اصغر به سبد کره و ترازو</span>
+      <button class="btn xs save-ok" id="btn-save-angle" onclick="triggerSaveAngle()" style="display:none" title="ثبت زاویه فعلی پنل">✓ ثبت</button>
+      <button class="btn xs" id="btn-reset-angle" onclick="triggerResetAngle()" style="display:none" title="بازگشت به پیش‌فرض">↺</button>
     </div>
-    <select id="scene-sel" class="scene-sel" onchange="selectScene(this.value)"></select>
-    <div class="row" style="gap:5px">
+    <div class="header-actions">
       <button class="btn icon-only active" id="btn-hub-dock" onclick="toggleLookHub()" title="هاب چرخش زاویه">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.8"/></svg>
       </button>
@@ -309,141 +378,162 @@
     </div>
   </header>
 
+  <!-- Docked 3D Stage (Bounded cleanly between Header & Curved Bottom Bar) -->
   <main id="main-stage">
     <div class="stage-shell" id="stage-shell">
       <iframe id="scene-frame" allow="fullscreen"></iframe>
       <div class="ov-layer" id="sz-layer"><div class="sz-t"></div><div class="sz-r"></div><div class="sz-b"></div></div>
       <div class="ov-layer" id="grid-layer"></div>
     </div>
+
+    <div class="fab-capture">
+      <button class="btn sm primary" onclick="handleCaptureButton()">ثبت پنل</button>
+    </div>
+
+    <!-- 20% Smaller Floating Precision Look Hub (Stays inside Stage & auto-hides when drawer opens) -->
+    <div id="look-hub" style="left: 14px; bottom: 72px;">
+      <div class="drag-handle" id="hub-mover" title="جابه‌جایی یا کشیدن به بالا برای بستن">•••</div>
+      <div class="ring-inner"></div>
+      <div class="dir-dot dir-n"></div><div class="dir-dot dir-s"></div>
+      <div class="dir-dot dir-l"></div><div class="dir-dot dir-r"></div>
+      <div class="knob" id="hub-knob"></div>
+      <button class="speed-pill" id="hub-speed" title="تغییر سرعت چرخش">دقیق</button>
+    </div>
+
+    <!-- Drawer 1: Camera Motion (Liquid Glass) -->
+    <div class="drawer" id="drawer-motion">
+      <div class="drawer-head">
+        <h3>حرکت دوربین بین دو نما</h3>
+        <button class="btn sm" onclick="closeDrawers()">بستن</button>
+      </div>
+      <div class="grid-2">
+        <div><div class="lbl" style="margin-bottom:4px">نمای شروع (A)</div><select id="mot-from" class="inp" onchange="syncMotionCfg()"></select></div>
+        <div><div class="lbl" style="margin-bottom:4px">نمای مقصد (B)</div><select id="mot-to" class="inp" onchange="syncMotionCfg()"></select></div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="lbl" style="margin-bottom:4px">نوع حرکت</div>
+          <select id="mot-type" class="inp" onchange="syncMotionCfg()">
+            <option value="push_orbit">ترکیبی: دالی + چرخش کمانی</option>
+            <option value="crane_pan_dolly">ترکیبی: کرین + پن + دالی</option>
+            <option value="linear">دالی خطی (Linear)</option>
+            <option value="arc">چرخش کمانی (Arc)</option>
+            <option value="crane">کرین بالا/پایین</option>
+            <option value="dolly_zoom">دالی زوم (Vertigo)</option>
+            <option value="handheld">روی دست (Handheld)</option>
+          </select>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:4px">نرمی حرکت</div>
+          <select id="mot-ease" class="inp" onchange="syncMotionCfg()">
+            <option value="easeInOut">نرم دوطرفه</option>
+            <option value="easeOut">توقف نرم</option>
+            <option value="easeIn">شروع نرم</option>
+            <option value="linear">ثابت</option>
+          </select>
+        </div>
+      </div>
+      <div class="row"><span class="lbl">مدت</span><input type="range" id="mot-dur" min="1" max="10" step="0.5" value="3.5" oninput="syncMotionCfg()" /><span class="val" id="mot-dur-v">3.5s</span></div>
+      <div class="row"><span class="lbl">قوس</span><input type="range" id="mot-curve" min="-1" max="1" step="0.05" value="0.45" oninput="syncMotionCfg()" /><span class="val" id="mot-curve-v">0.45</span></div>
+      <div class="row"><span class="lbl">کرین</span><input type="range" id="mot-crane" min="-0.6" max="0.8" step="0.05" value="0.25" oninput="syncMotionCfg()" /><span class="val" id="mot-crane-v">0.25</span></div>
+      <div class="row"><span class="lbl">لرزش</span><input type="range" id="mot-shake" min="0" max="1" step="0.05" value="0" oninput="syncMotionCfg()" /><span class="val" id="mot-shake-v">0.00</span></div>
+      <div class="row"><span class="lbl">تایم‌لاین</span><input type="range" id="mot-scrub" min="0" max="1" step="0.01" value="0" oninput="scrubMotion(this.value)" /><span class="val" id="mot-t-v">0%</span></div>
+      <div class="grid-3">
+        <button class="btn sm primary" id="btn-play" onclick="togglePlayMotion()">▶ پخش</button>
+        <button class="btn sm" onclick="resetMotion()">↺ ریست</button>
+        <button class="btn sm active" id="btn-col" onclick="toggleCollision()">محافظ: روشن</button>
+      </div>
+    </div>
+
+    <!-- Drawer 2: Framing & Guides (Liquid Glass) -->
+    <div class="drawer" id="drawer-cal">
+      <div class="drawer-head">
+        <h3>کادربندی و راهنما</h3>
+        <button class="btn sm" onclick="closeDrawers()">بستن</button>
+      </div>
+      <div class="lbl">نسبت تصویر نمایشگر</div>
+      <div class="grid-3">
+        <button class="btn sm active" id="asp-fill" onclick="setAspect('fill')">کامل</button>
+        <button class="btn sm" id="asp-916" onclick="setAspect('9:16')">۹:۱۶ ریلز</button>
+        <button class="btn sm" id="asp-169" onclick="setAspect('16:9')">۱۶:۹ واید</button>
+      </div>
+      <div class="lbl">خطوط راهنما</div>
+      <div class="grid-2">
+        <button class="btn sm" id="btn-sz" onclick="toggleGuide('sz')">Safe Zone 9:16</button>
+        <button class="btn sm" id="btn-grid" onclick="toggleGuide('grid')">یک‌سوم طلایی</button>
+      </div>
+    </div>
+
+    <!-- Drawer 3: Storyboard Panels (Liquid Glass) -->
+    <div class="drawer" id="drawer-sb">
+      <div class="drawer-head">
+        <h3>استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
+        <button class="btn sm" onclick="closeDrawers()">بستن</button>
+      </div>
+      <div class="seg">
+        <button class="active" id="mode-single" onclick="setSaveMode('single')">ذخیره تک‌تک (PNG)</button>
+        <button id="mode-sheet" onclick="setSaveMode('sheet')">ذخیره پنلی (شیت)</button>
+      </div>
+      <div class="row">
+        <input type="text" id="cap-lbl" value="P1 · 0.0s" placeholder="برچسب پنل" />
+        <button class="btn primary" id="btn-cap-action" onclick="handleCaptureButton()">ذخیره تک</button>
+      </div>
+      <div class="strip" id="sb-strip">
+        <div style="font-size:11.5px;color:var(--muted);padding:12px">هنوز پنلی ثبت نشده است.</div>
+      </div>
+      <div class="grid-2">
+        <button class="btn sm" onclick="document.getElementById('imp-png').click()">+ افزودن PNG</button>
+        <button class="btn sm primary" onclick="openSheet()">ساخت شیت ۳×۲</button>
+      </div>
+      <input type="file" id="imp-png" accept="image/*" multiple style="display:none" onchange="importPngs(event)" />
+    </div>
+
+    <!-- Drawer 4: Scenes, Code & File (Scene selector moved here!) -->
+    <div class="drawer" id="drawer-code">
+      <div class="drawer-head">
+        <h3>مدیریت صحنه و کد</h3>
+        <button class="btn sm" onclick="closeDrawers()">بستن</button>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:4px">صحنه فعال</div>
+        <select id="scene-sel" class="inp" onchange="selectScene(this.value)"></select>
+      </div>
+      <div class="grid-2">
+        <button class="btn sm" onclick="document.getElementById('html-in').click()">انتخاب فایل .html</button>
+        <button class="btn sm danger" onclick="deleteScene()">حذف صحنه فعلی</button>
+      </div>
+      <input type="file" id="html-in" accept=".html,.htm,.txt" style="display:none" onchange="onHtmlFile(event)" />
+      <input type="text" id="sc-name" placeholder="نام صحنه جدید (مثلاً صحنه ۳ — دادگاه)" />
+      <textarea id="sc-code" class="code-box" placeholder="کد HTML را اینجا Paste کن..."></textarea>
+      <button class="btn primary" onclick="saveNewScene()">ذخیره و اجرای زنده</button>
+    </div>
   </main>
 
-  <div class="fab-capture">
-    <button class="btn sm primary" onclick="handleCaptureButton()">ثبت پنل</button>
+  <!-- Docked Curved-Notch Bottom Navigation Bar (Inspired by video_1.mp4) -->
+  <div class="nav-shell" id="nav-shell">
+    <svg class="nav-svg-bg" id="nav-svg" preserveAspectRatio="none">
+      <path id="nav-path" d=""></path>
+    </svg>
+    <div class="nav-active-bubble" id="nav-bubble"></div>
+    <nav class="bottom-bar" id="bottom-bar">
+      <button class="nav-item active" id="nav-view" onclick="closeDrawers()">
+        <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
+        <span class="nav-lbl">صحنه 3D</span>
+      </button>
+      <button class="nav-item" id="nav-motion" onclick="openDrawer('motion')">
+        <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+        <span class="nav-lbl">حرکت دوربین</span>
+      </button>
+      <button class="nav-item" id="nav-cal" onclick="openDrawer('cal')">
+        <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg></span>
+        <span class="nav-lbl">کادربندی</span>
+      </button>
+      <button class="nav-item" id="nav-sb" onclick="openDrawer('sb')">
+        <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="9" rx="2"/><rect x="3" y="15" width="7" height="6" rx="2"/><rect x="14" y="15" width="7" height="6" rx="2"/></svg></span>
+        <span class="nav-lbl">استوری‌بورد <span class="badge" id="nav-cnt">0</span></span>
+      </button>
+    </nav>
   </div>
-
-  <!-- Drawer 1: Camera Motion -->
-  <div class="drawer" id="drawer-motion">
-    <div class="drawer-head">
-      <h3>حرکت دوربین بین دو نما</h3>
-      <button class="btn sm" onclick="closeDrawers()">بستن</button>
-    </div>
-    <div class="grid-2">
-      <div><div class="lbl" style="margin-bottom:4px">نمای شروع (A)</div><select id="mot-from" class="inp" onchange="syncMotionCfg()"></select></div>
-      <div><div class="lbl" style="margin-bottom:4px">نمای مقصد (B)</div><select id="mot-to" class="inp" onchange="syncMotionCfg()"></select></div>
-    </div>
-    <div class="grid-2">
-      <div>
-        <div class="lbl" style="margin-bottom:4px">نوع حرکت</div>
-        <select id="mot-type" class="inp" onchange="syncMotionCfg()">
-          <option value="push_orbit">ترکیبی: دالی + چرخش کمانی</option>
-          <option value="crane_pan_dolly">ترکیبی: کرین + پن + دالی</option>
-          <option value="linear">دالی خطی (Linear)</option>
-          <option value="arc">چرخش کمانی (Arc)</option>
-          <option value="crane">کرین بالا/پایین</option>
-          <option value="dolly_zoom">دالی زوم (Vertigo)</option>
-          <option value="handheld">روی دست (Handheld)</option>
-        </select>
-      </div>
-      <div>
-        <div class="lbl" style="margin-bottom:4px">نرمی حرکت</div>
-        <select id="mot-ease" class="inp" onchange="syncMotionCfg()">
-          <option value="easeInOut">نرم دوطرفه</option>
-          <option value="easeOut">توقف نرم</option>
-          <option value="easeIn">شروع نرم</option>
-          <option value="linear">ثابت</option>
-        </select>
-      </div>
-    </div>
-    <div class="row"><span class="lbl">مدت</span><input type="range" id="mot-dur" min="1" max="10" step="0.5" value="3.5" oninput="syncMotionCfg()" /><span class="val" id="mot-dur-v">3.5s</span></div>
-    <div class="row"><span class="lbl">قوس</span><input type="range" id="mot-curve" min="-1" max="1" step="0.05" value="0.45" oninput="syncMotionCfg()" /><span class="val" id="mot-curve-v">0.45</span></div>
-    <div class="row"><span class="lbl">کرین</span><input type="range" id="mot-crane" min="-0.6" max="0.8" step="0.05" value="0.25" oninput="syncMotionCfg()" /><span class="val" id="mot-crane-v">0.25</span></div>
-    <div class="row"><span class="lbl">لرزش</span><input type="range" id="mot-shake" min="0" max="1" step="0.05" value="0" oninput="syncMotionCfg()" /><span class="val" id="mot-shake-v">0.00</span></div>
-    <div class="row"><span class="lbl">تایم‌لاین</span><input type="range" id="mot-scrub" min="0" max="1" step="0.01" value="0" oninput="scrubMotion(this.value)" /><span class="val" id="mot-t-v">0%</span></div>
-    <div class="grid-3">
-      <button class="btn sm primary" id="btn-play" onclick="togglePlayMotion()">▶ پخش</button>
-      <button class="btn sm" onclick="resetMotion()">↺ ریست</button>
-      <button class="btn sm active" id="btn-col" onclick="toggleCollision()">محافظ: روشن</button>
-    </div>
-  </div>
-
-  <!-- Drawer 2: Framing & Guides (Clean — No Plate Upload) -->
-  <div class="drawer" id="drawer-cal">
-    <div class="drawer-head">
-      <h3>کادربندی و راهنما</h3>
-      <button class="btn sm" onclick="closeDrawers()">بستن</button>
-    </div>
-    <div class="lbl">نسبت تصویر نمایشگر</div>
-    <div class="grid-3">
-      <button class="btn sm active" id="asp-fill" onclick="setAspect('fill')">کامل</button>
-      <button class="btn sm" id="asp-916" onclick="setAspect('9:16')">۹:۱۶ ریلز</button>
-      <button class="btn sm" id="asp-169" onclick="setAspect('16:9')">۱۶:۹ واید</button>
-    </div>
-    <div class="lbl">خطوط راهنما</div>
-    <div class="grid-2">
-      <button class="btn sm" id="btn-sz" onclick="toggleGuide('sz')">Safe Zone 9:16</button>
-      <button class="btn sm" id="btn-grid" onclick="toggleGuide('grid')">یک‌سوم طلایی</button>
-    </div>
-  </div>
-
-  <!-- Drawer 3: Storyboard Panels -->
-  <div class="drawer" id="drawer-sb">
-    <div class="drawer-head">
-      <h3>استوری‌بورد (<span id="sb-cnt">0</span> پنل)</h3>
-      <button class="btn sm" onclick="closeDrawers()">بستن</button>
-    </div>
-    <div class="seg">
-      <button class="active" id="mode-single" onclick="setSaveMode('single')">ذخیره تک‌تک (PNG)</button>
-      <button id="mode-sheet" onclick="setSaveMode('sheet')">ذخیره پنلی (شیت)</button>
-    </div>
-    <div class="row">
-      <input type="text" id="cap-lbl" value="P1 · 0.0s" placeholder="برچسب پنل" />
-      <button class="btn primary" id="btn-cap-action" onclick="handleCaptureButton()">ذخیره تک</button>
-    </div>
-    <div class="strip" id="sb-strip">
-      <div style="font-size:11.5px;color:var(--muted);padding:12px">هنوز پنلی ثبت نشده است.</div>
-    </div>
-    <div class="grid-2">
-      <button class="btn sm" onclick="document.getElementById('imp-png').click()">+ افزودن PNG</button>
-      <button class="btn sm primary" onclick="openSheet()">ساخت شیت ۳×۲</button>
-    </div>
-    <input type="file" id="imp-png" accept="image/*" multiple style="display:none" onchange="importPngs(event)" />
-  </div>
-
-  <!-- Drawer 4: Code / File (Opened only from Header "+ کد") -->
-  <div class="drawer" id="drawer-code">
-    <div class="drawer-head">
-      <h3>افزودن کد یا فایل صحنه</h3>
-      <button class="btn sm" onclick="closeDrawers()">بستن</button>
-    </div>
-    <div class="grid-2">
-      <button class="btn sm" onclick="document.getElementById('html-in').click()">انتخاب فایل .html</button>
-      <button class="btn sm danger" onclick="deleteScene()">حذف صحنه فعلی</button>
-    </div>
-    <input type="file" id="html-in" accept=".html,.htm,.txt" style="display:none" onchange="onHtmlFile(event)" />
-    <input type="text" id="sc-name" placeholder="نام صحنه (مثلاً صحنه ۳ — دادگاه)" />
-    <textarea id="sc-code" class="code-box" placeholder="کد HTML را اینجا Paste کن..."></textarea>
-    <button class="btn primary" onclick="saveNewScene()">ذخیره و اجرای زنده</button>
-  </div>
-
-  <!-- Floating Liquid Glass Pill Bottom Bar (4 clean tabs, NO duplicate Code tab) -->
-  <nav class="bottom-bar">
-    <button class="nav-item active" id="nav-view" onclick="closeDrawers()">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      <span>صحنه 3D</span>
-    </button>
-    <button class="nav-item" id="nav-motion" onclick="openDrawer('motion')">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-      <span>حرکت دوربین</span>
-    </button>
-    <button class="nav-item" id="nav-cal" onclick="openDrawer('cal')">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-      <span>کادربندی</span>
-    </button>
-    <button class="nav-item" id="nav-sb" onclick="openDrawer('sb')">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="9" rx="2"/><rect x="3" y="15" width="7" height="6" rx="2"/><rect x="14" y="15" width="7" height="6" rx="2"/></svg>
-      <span>استوری‌بورد <span class="badge" id="nav-cnt">0</span></span>
-    </button>
-  </nav>
 </div>
 
 <!-- Sheet Export Modal -->
@@ -467,16 +557,6 @@
   </div>
 </div>
 
-<!-- Floating Liquid-Glass Precision Look Dial -->
-<div id="look-hub" style="left: 16px; top: calc(100dvh - 260px);">
-  <div class="drag-handle" id="hub-mover" title="جابه‌جایی یا کشیدن به هدر">•••</div>
-  <div class="ring-inner"></div>
-  <div class="dir-dot dir-n"></div><div class="dir-dot dir-s"></div>
-  <div class="dir-dot dir-l"></div><div class="dir-dot dir-r"></div>
-  <div class="knob" id="hub-knob"></div>
-  <button class="speed-pill" id="hub-speed" title="تغییر سرعت چرخش">دقیق</button>
-</div>
-
 <div id="toast"></div>
 
 <script>
@@ -493,7 +573,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
   #canvas-wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
   canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   #preset-bar {
-    position: fixed; bottom: 82px; left: 12px; right: 12px; z-index: 10;
+    position: fixed; bottom: 12px; left: 10px; right: 10px; z-index: 10;
     display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px;
     background: rgba(0, 0, 0, 0.66); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 99px;
@@ -518,9 +598,9 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
     box-shadow: 0 2px 6px rgba(15,23,42,0.06), inset 0 1px 1px #fff;
   }
   .pill.active {
-    background: linear-gradient(135deg, rgba(56,189,248,0.92), rgba(45,212,191,0.92));
-    color: #04131c !important; font-weight: 700; border-color: rgba(255,255,255,0.5);
-    box-shadow: 0 4px 14px rgba(56,189,248,0.38), inset 0 1px 2px rgba(255,255,255,0.7);
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    color: #ffffff !important; font-weight: 700; border-color: rgba(255,255,255,0.28);
+    box-shadow: 0 4px 14px rgba(37,99,235,0.42), inset 0 1px 1.5px rgba(255,255,255,0.35);
   }
   .pill.add-btn {
     background: rgba(56,189,248,0.20); border-color: rgba(56,189,248,0.5); color: #7dd3fc;
@@ -528,10 +608,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
   body.light-theme .pill.add-btn {
     background: rgba(14,165,233,0.14); color: #0284c7; border-color: rgba(14,165,233,0.4);
   }
-  #panel-edit-hud {
-    position: fixed; top: 10px; right: 10px; z-index: 15;
-    display: flex; gap: 5px; align-items: center;
-  }
+  #panel-edit-hud { display: none !important; }
   .mini-pill {
     background: rgba(0, 0, 0, 0.74); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     color: #f1f5f9; border: 1px solid rgba(255,255,255,0.08); border-radius: 99px;
@@ -552,10 +629,7 @@ const DEFAULT_SCENE = `<!DOCTYPE html>
     0%,100% { box-shadow: 0 0 0 0 rgba(45,212,191,0.55); }
     50% { box-shadow: 0 0 0 6px rgba(45,212,191,0); }
   }
-  #hud-desc {
-    position: fixed; top: 48px; left: 10px; right: 10px; z-index: 9; pointer-events: none;
-    display: flex; justify-content: center;
-  }
+  #hud-desc { display: none !important; }
   #hud-desc span {
     background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 99px;
@@ -816,54 +890,54 @@ const PRESETS = {
   CAM_PLATE: {
     lens:28, pos:[0.05,1.42,0.55], aim:[-0.05,1.22,-4.5], showAsghar:false,
     butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_PLATE", short:"پلیت تنور",
-    desc:"نمای واید کالیبراسیون تنور (۱۶:۹)"
+    desc:"نمای واید تنور و نانوایی"
   },
   CAM_DOOR: {
     lens:28, pos:[-0.1,1.45,-3.3], aim:[0.25,1.25,1.2], showAsghar:false,
     butterOnScale:false, needleAngle: Math.PI/2, label:"CAM_DOOR", short:"دیوار در",
-    desc:"نمای واید دیوارِ درِ خروجی (۱۶:۹)"
+    desc:"نمای واید دیوار و درِ خروجی"
   },
   P1: {
     lens:32, pos:[0.85,1.42,-0.15], aim:[-1.30,1.15,-2.00], showAsghar:true,
     aPos:[-1.22,0,-2.05], aRotY: -Math.PI * 0.45,
     armL:[[0.15,0,0.12],[-0.35,0,0]], armR:[[0.20,0,-0.12],[-0.45,0,0]],
     headRot:[0.12, 0.18, 0], butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    label:"P1 · 0.0s", short:"P1 · 0s", desc:"P1 · 0.0s (MS 32mm) — نگاه مشکوک اصغر به سبد کره و ترازو"
+    label:"P1 · 0.0s", short:"P1 · 0s", desc:"نگاه مشکوک اصغر به سبد کره و ترازو"
   },
   P2: {
     lens:38, pos:[-0.25,1.40,-0.32], aim:[-1.18,1.24,-2.10], showAsghar:true,
     aPos:[-1.22,0,-1.85], aRotY: -Math.PI * 0.30,
     armL:[[0.10,0,0.15],[-0.25,0,0]], armR:[[-0.55,0.15,-0.10],[-0.75,0,0]],
     headRot:[0.08, -0.15, 0], butterOnScale:false, needleAngle: Math.PI/2, capState:'head',
-    label:"P2 · 3.0s", short:"P2 · 3s", desc:"P2 · 3.0s (MCU 38mm) — دیالوگ لب‌خوانی با دست خم سمت سبد"
+    label:"P2 · 3.0s", short:"P2 · 3s", desc:"دیالوگ اصغر با دست خم سمت سبد"
   },
   P3: {
     lens:50, pos:[-0.65,1.28,-0.75], aim:[-1.92,1.10,-1.35], showAsghar:true,
     aPos:[-1.22,0,-1.85], aRotY: -Math.PI * 0.45,
     armL:[[0.12,0,0.12],[-0.30,0,0]], armR:[[-0.25,0,-0.10],[-0.40,0,0]],
     headRot:[0.18, 0.12, 0], butterOnScale:true, needleAngle: 0.55, capState:'head',
-    label:"P3 · 6.2s", short:"P3 · 6.2s", desc:"P3 · 6.2s (CU 50mm) — کره روی ترازو، عقربه قبل از مثلث قرمز"
+    label:"P3 · 6.2s", short:"P3 · 6.2s", desc:"کره روی ترازو، عقربه قبل از مثلث"
   },
   P4: {
     lens:46, pos:[-0.30,1.34,-2.45], aim:[-1.22,1.32,-1.55], showAsghar:true,
     aPos:[-1.22,0,-1.55], aRotY: -Math.PI * 0.72,
     armL:[[0.15,0,0.18],[-0.40,0,0]], armR:[[-1.75,-0.20,-0.25],[-1.15,0,0]],
     headRot:[0.05, 0.10, 0], butterOnScale:true, needleAngle: 0.55, capState:'head',
-    label:"P4 · 8.8s", short:"P4 · 8.8s", desc:"P4 · 8.8s (CU 46mm) — خشم اصغر و دست روی لبه عرقچین"
+    label:"P4 · 8.8s", short:"P4 · 8.8s", desc:"خشم اصغر و دست روی لبه عرقچین"
   },
   P5: {
     lens:36, pos:[0.35,1.35,-0.20], aim:[-1.20,1.18,-2.05], showAsghar:true,
     aPos:[-1.22,0,-1.55], aRotY: -Math.PI * 0.35,
     armL:[[0.18,0,0.18],[-0.35,0,0]], armR:[[-0.65,0,-0.22],[-0.75,0,0]],
     headRot:[0.08, 0.08, 0], butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    label:"P5 · 10.5s", short:"P5 · 10.5s", desc:"P5 · 10.5s (MCU 36mm) — عرقچین در دست راست، سر برهنه"
+    label:"P5 · 10.5s", short:"P5 · 10.5s", desc:"عرقچین در دست راست، سر برهنه"
   },
   P6: {
     lens:28, pos:[0.45,1.38,-1.85], aim:[0.15,1.12,1.25], showAsghar:true,
     aPos:[0.10,0,-0.35], aRotY: 0.05,
     armL:[[-0.35,0,0.15],[-0.35,0,0]], armR:[[0.30,0,-0.15],[-0.45,0,0]],
     headRot:[0, 0, 0], butterOnScale:true, needleAngle: 0.55, capState:'hand',
-    label:"P6 · 14.0s", short:"P6 · 14s", desc:"P6 · 14.0s (MWS 28mm) — یورش عصبانی با سر برهنه سمت در"
+    label:"P6 · 14.0s", short:"P6 · 14s", desc:"یورش عصبانی با سر برهنه سمت در"
   }
 };
 
@@ -882,12 +956,15 @@ let customCount = 0;
 let isPanelDirty = false;
 
 function updateEditHud() {
-  const btnS = document.getElementById('btn-save-angle');
-  const btnR = document.getElementById('btn-reset-angle');
   const hasOverride = !!panelOverrides[currentKey];
-  btnS.style.display = isPanelDirty ? 'inline-flex' : 'none';
-  btnS.classList.toggle('dirty', isPanelDirty);
-  btnR.style.display = (isPanelDirty || hasOverride) ? 'inline-flex' : 'none';
+  const p = PRESETS[currentKey] || {};
+  window.parent.postMessage({
+    type: 'CARIZMA_HUD_STATE',
+    desc: p.desc || '',
+    dirty: isPanelDirty,
+    hasOverride: hasOverride,
+    key: currentKey
+  }, '*');
 }
 
 controls.addEventListener('change', () => {
@@ -909,8 +986,9 @@ window.saveCurrentPanelAngle = function() {
   panelOverrides[currentKey] = ov;
   try { localStorage.setItem(OVERRIDE_STORE, JSON.stringify(panelOverrides)); } catch(e) {}
   isPanelDirty = false;
+  renderPresetBar();
   updateEditHud();
-  descEl.textContent = p.label + ' — زاویه جدید ثبت شد ✓';
+  window.parent.postMessage({ type: 'CARIZMA_TOAST', msg: 'زاویه پنل ثبت شد ✓' }, '*');
 };
 
 window.resetCurrentPanelAngle = function() {
@@ -922,7 +1000,7 @@ window.resetCurrentPanelAngle = function() {
   try { localStorage.setItem(OVERRIDE_STORE, JSON.stringify(panelOverrides)); } catch(e) {}
   isPanelDirty = false;
   selectPreset(currentKey);
-  descEl.textContent = PRESETS[currentKey].label + ' — بازگشت به پیش‌فرض ↺';
+  window.parent.postMessage({ type: 'CARIZMA_TOAST', msg: 'زاویه به پیش‌فرض برگشت ↺' }, '*');
 };
 
 function renderPresetBar() {
@@ -960,7 +1038,7 @@ function saveCustomPreset(customLabel) {
     lens: fovToFocal(camera.fov),
     label: lbl,
     short: 'P' + (6 + customCount),
-    desc: lbl + ' (نمای سفارشی ذخیره شده)'
+    desc: 'نمای سفارشی ذخیره شده'
   });
   presetOrder.push(key);
   currentKey = key;
@@ -1085,6 +1163,10 @@ window.addEventListener('message', ev => {
     scene.background.setHex(isLight ? 0xffffff : 0x000000);
   } else if (d.type === 'CARIZMA_ADD_CUSTOM') {
     saveCustomPreset(d.label);
+  } else if (d.type === 'CARIZMA_SAVE_ANGLE') {
+    saveCurrentPanelAngle();
+  } else if (d.type === 'CARIZMA_RESET_ANGLE') {
+    resetCurrentPanelAngle();
   } else if (d.type === 'CARIZMA_COLLISION') {
     collisionEnabled = !!d.enabled;
   } else if (d.type === 'CARIZMA_LOOK_ROTATE') {
@@ -1165,7 +1247,7 @@ let lastTs = performance.now();
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v12_scenes';
+const STORE = 'carizma_3d_v13_scenes';
 const THEME_KEY = 'carizma_3d_theme';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, guides = { sz: false, grid: false };
@@ -1177,6 +1259,69 @@ function toast(m) {
   clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// --- Curved Notch Bottom Navigation Animation ---
+let currentNotchX = 0, targetNotchX = 0, notchAnimId = null;
+
+function drawNavCurve(cx) {
+  const shell = document.getElementById('nav-shell');
+  const svg = document.getElementById('nav-svg');
+  const path = document.getElementById('nav-path');
+  const w = shell.clientWidth || window.innerWidth;
+  const h = shell.clientHeight || 64;
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+
+  const notchW = 46;
+  const depth = 32;
+  const left = cx - notchW;
+  const right = cx + notchW;
+  const d = [
+    `M 0 0`,
+    `L ${Math.max(0, left)} 0`,
+    `C ${cx - notchW * 0.55} 0, ${cx - notchW * 0.45} ${depth}, ${cx} ${depth}`,
+    `C ${cx + notchW * 0.45} ${depth}, ${cx + notchW * 0.55} 0, ${Math.min(w, right)} 0`,
+    `L ${w} 0`,
+    `L ${w} ${h}`,
+    `L 0 ${h} Z`
+  ].join(' ');
+  path.setAttribute('d', d);
+}
+
+function animateNotch() {
+  currentNotchX += (targetNotchX - currentNotchX) * 0.22;
+  drawNavCurve(currentNotchX);
+  if (Math.abs(targetNotchX - currentNotchX) > 0.35) {
+    notchAnimId = requestAnimationFrame(animateNotch);
+  } else {
+    currentNotchX = targetNotchX;
+    drawNavCurve(currentNotchX);
+    notchAnimId = null;
+  }
+}
+
+function syncNavNotch(instant) {
+  const activeBtn = document.querySelector('.nav-item.active') || document.getElementById('nav-view');
+  const barRect = document.getElementById('bottom-bar').getBoundingClientRect();
+  const btnRect = activeBtn.getBoundingClientRect();
+  const cx = (btnRect.left - barRect.left) + btnRect.width / 2;
+  targetNotchX = cx;
+
+  const bubble = document.getElementById('nav-bubble');
+  bubble.style.left = (cx - 24) + 'px';
+  const ic = activeBtn.querySelector('.nav-ic');
+  if (ic) bubble.innerHTML = ic.innerHTML;
+
+  if (instant) {
+    currentNotchX = cx;
+    drawNavCurve(cx);
+  } else {
+    bubble.classList.add('pop');
+    setTimeout(() => bubble.classList.remove('pop'), 200);
+    if (!notchAnimId) notchAnimId = requestAnimationFrame(animateNotch);
+  }
+}
+window.addEventListener('resize', () => syncNavNotch(true));
+
+// --- Theme ---
 function applyTheme(th) {
   document.body.classList.toggle('light-theme', th === 'light');
   document.getElementById('btn-theme').textContent = th === 'light' ? '🌙' : '☀️';
@@ -1186,6 +1331,15 @@ function applyTheme(th) {
 }
 function toggleTheme() {
   applyTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light');
+}
+
+function triggerSaveAngle() {
+  const fr = document.getElementById('scene-frame');
+  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_SAVE_ANGLE' }, '*');
+}
+function triggerResetAngle() {
+  const fr = document.getElementById('scene-frame');
+  if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: 'CARIZMA_RESET_ANGLE' }, '*');
 }
 
 function patchCode(html) {
@@ -1203,6 +1357,7 @@ function init() {
   }
   renderDropdown();
   selectScene(scenes[0].id);
+  setTimeout(() => syncNavNotch(true), 60);
 }
 
 function saveStore() { try { localStorage.setItem(STORE, JSON.stringify(scenes)); } catch(e) {} }
@@ -1223,21 +1378,33 @@ function selectScene(id) {
   fr.src = curBlobUrl;
 }
 
+function updateHubDrawerVisibility() {
+  const anyOpen = !!document.querySelector('.drawer.open');
+  document.getElementById('look-hub').classList.toggle('hidden-by-drawer', anyOpen);
+}
+
 function openDrawer(name) {
   const target = document.getElementById('drawer-' + name);
   const wasOpen = target.classList.contains('open');
-  closeDrawers();
+  closeDrawers(true);
   if (!wasOpen) {
     target.classList.add('open');
-    document.getElementById('nav-view').classList.remove('active');
     const navBtn = document.getElementById('nav-' + name);
-    if (navBtn) navBtn.classList.add('active');
+    if (navBtn) {
+      document.getElementById('nav-view').classList.remove('active');
+      navBtn.classList.add('active');
+    }
   }
+  updateHubDrawerVisibility();
+  syncNavNotch(false);
 }
-function closeDrawers() {
+
+function closeDrawers(silent) {
   document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('nav-view').classList.add('active');
+  updateHubDrawerVisibility();
+  if (!silent) syncNavNotch(false);
 }
 
 function postMotion(extra) {
@@ -1331,7 +1498,13 @@ function toggleGuide(g) {
 
 window.addEventListener('message', ev => {
   const d = ev.data || {};
-  if (d.type === 'CARIZMA_PRESET' && d.label) {
+  if (d.type === 'CARIZMA_HUD_STATE') {
+    if (d.desc) document.getElementById('header-desc').textContent = d.desc;
+    document.getElementById('btn-save-angle').style.display = d.dirty ? 'inline-flex' : 'none';
+    document.getElementById('btn-reset-angle').style.display = (d.dirty || d.hasOverride) ? 'inline-flex' : 'none';
+  } else if (d.type === 'CARIZMA_TOAST' && d.msg) {
+    toast(d.msg);
+  } else if (d.type === 'CARIZMA_PRESET' && d.label) {
     document.getElementById('cap-lbl').value = d.label;
   } else if (d.type === 'CARIZMA_PRESET_LIST' && Array.isArray(d.list)) {
     const sFrom = document.getElementById('mot-from'), sTo = document.getElementById('mot-to');
@@ -1423,7 +1596,7 @@ function renderPanels() {
   st.innerHTML = '';
   panels.forEach((p, i) => {
     const d = document.createElement('div'); d.className = 'thumb';
-    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button><button class="del" style="top:3px;left:3px;right:auto;background:rgba(14,165,233,0.9)" onclick="downloadSinglePanel(${p.id})">↓</button>`;
+    d.innerHTML = `<img src="${p.url}"><span class="tag">${i+1} · ${p.label}</span><button class="del" onclick="removePanel(${p.id})">×</button><button class="del" style="top:3px;left:3px;right:auto;background:rgba(37,99,235,0.9)" onclick="downloadSinglePanel(${p.id})">↓</button>`;
     st.appendChild(d);
   });
 }
@@ -1471,8 +1644,9 @@ async function downloadSheet() {
   await exportBlobOrDataUrl(cv.toDataURL('image/png'), 'carizma_storyboard_sheet.png');
 }
 
-// --- Floating Liquid-Glass Precision Look Dial ---
+// --- 20% Smaller Precision Look Hub + Improved Magnetic Drag-to-Dock ---
 (function initLookHub() {
+  const mainEl = document.getElementById('main-stage');
   const hub = document.getElementById('look-hub');
   const knob = document.getElementById('hub-knob');
   const mover = document.getElementById('hub-mover');
@@ -1481,7 +1655,7 @@ async function downloadSheet() {
 
   let hubDocked = false;
   let joyActive = false, joyVec = { x: 0, y: 0 }, smoothVec = { x: 0, y: 0 };
-  let dragActive = false, dragOff = { x: 0, y: 0 };
+  let dragActive = false, dragOff = { x: 0, y: 0 }, lastDragY = 0, dragVelY = 0;
   let speedModes = [
     { label: 'دقیق', val: 0.45 },
     { label: 'عادی', val: 1.0 },
@@ -1496,48 +1670,88 @@ async function downloadSheet() {
     toast('سرعت چرخش: ' + speedModes[speedIdx].label);
   });
 
-  function getDockCenter() {
-    const r = dockBtn.getBoundingClientRect();
-    return { x: r.left + r.width / 2 - 50, y: r.top + r.height / 2 - 50 };
+  function getDockPosInStage() {
+    const mRect = mainEl.getBoundingClientRect();
+    const bRect = dockBtn.getBoundingClientRect();
+    return {
+      x: (bRect.left - mRect.left) + bRect.width / 2 - 40,
+      y: (bRect.top - mRect.top) + bRect.height / 2 - 40
+    };
+  }
+
+  function dockHub() {
+    hubDocked = true;
+    dockBtn.classList.remove('active', 'hub-magnet-target');
+    const dc = getDockPosInStage();
+    hub.style.bottom = 'auto';
+    hub.style.left = dc.x + 'px';
+    hub.style.top = dc.y + 'px';
+    hub.classList.remove('dock-magnet');
+    hub.classList.add('docked');
+    toast('هاب زاویه در هدر جمع شد');
+  }
+
+  function undockHub() {
+    hubDocked = false;
+    dockBtn.classList.add('active');
+    hub.classList.remove('docked', 'dock-magnet');
+    hub.style.top = 'auto';
+    hub.style.left = '14px';
+    hub.style.bottom = '72px';
+    toast('هاب چرخش زاویه فعال شد');
   }
 
   window.toggleLookHub = function() {
-    hubDocked = !hubDocked;
-    dockBtn.classList.toggle('active', !hubDocked);
-    if (hubDocked) {
-      const dc = getDockCenter();
-      hub.style.left = dc.x + 'px'; hub.style.top = dc.y + 'px';
-      hub.classList.add('docked');
-      toast('هاب زاویه در هدر جمع شد');
-    } else {
-      hub.classList.remove('docked', 'dock-magnet');
-      hub.style.left = '16px'; hub.style.top = (window.innerHeight - 260) + 'px';
-      toast('هاب چرخش زاویه فعال شد');
-    }
+    if (hubDocked) undockHub();
+    else dockHub();
   };
 
   mover.addEventListener('pointerdown', e => {
-    e.stopPropagation(); dragActive = true; hub.classList.add('dragging');
-    const r = hub.getBoundingClientRect();
-    dragOff.x = e.clientX - r.left; dragOff.y = e.clientY - r.top;
+    e.stopPropagation();
+    dragActive = true;
+    hub.classList.add('dragging');
+    const mRect = mainEl.getBoundingClientRect();
+    const hRect = hub.getBoundingClientRect();
+    hub.style.bottom = 'auto';
+    hub.style.left = (hRect.left - mRect.left) + 'px';
+    hub.style.top = (hRect.top - mRect.top) + 'px';
+    dragOff.x = e.clientX - hRect.left;
+    dragOff.y = e.clientY - hRect.top;
+    lastDragY = e.clientY;
+    dragVelY = 0;
     mover.setPointerCapture(e.pointerId);
   });
+
   mover.addEventListener('pointermove', e => {
     if (!dragActive) return;
-    let nx = Math.max(6, Math.min(window.innerWidth - 106, e.clientX - dragOff.x));
-    let ny = Math.max(6, Math.min(window.innerHeight - 170, e.clientY - dragOff.y));
-    hub.style.left = nx + 'px'; hub.style.top = ny + 'px';
-    hub.classList.toggle('dock-magnet', ny < 70);
+    const mRect = mainEl.getBoundingClientRect();
+    dragVelY = e.clientY - lastDragY;
+    lastDragY = e.clientY;
+    let nx = Math.max(4, Math.min(mRect.width - 84, e.clientX - mRect.left - dragOff.x));
+    let ny = Math.max(-28, Math.min(mRect.height - 96, e.clientY - mRect.top - dragOff.y));
+    const nearTop = ny < 48;
+    // Gentle magnetic pull toward header dock button when dragged near top
+    if (nearTop) {
+      const dc = getDockPosInStage();
+      nx = nx + (dc.x - nx) * 0.25;
+    }
+    hub.style.left = nx + 'px';
+    hub.style.top = ny + 'px';
+    hub.classList.toggle('dock-magnet', nearTop);
+    dockBtn.classList.toggle('hub-magnet-target', nearTop);
   });
+
   mover.addEventListener('pointerup', e => {
     if (!dragActive) return;
-    dragActive = false; hub.classList.remove('dragging');
-    if (hub.getBoundingClientRect().top < 70) {
-      hubDocked = true; dockBtn.classList.add('active');
-      const dc = getDockCenter();
-      hub.style.left = dc.x + 'px'; hub.style.top = dc.y + 'px';
-      hub.classList.remove('dock-magnet'); hub.classList.add('docked');
-      toast('هاب زاویه در هدر جمع شد');
+    dragActive = false;
+    hub.classList.remove('dragging');
+    dockBtn.classList.remove('hub-magnet-target');
+    const mRect = mainEl.getBoundingClientRect();
+    const relTop = hub.getBoundingClientRect().top - mRect.top;
+    if (relTop < 52 || dragVelY < -14) {
+      dockHub();
+    } else {
+      hub.classList.remove('dock-magnet');
     }
   });
 
@@ -1558,7 +1772,7 @@ async function downloadSheet() {
 
   function updateJoy(e) {
     const r = hub.getBoundingClientRect();
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, maxR = 30;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, maxR = 23;
     let dx = e.clientX - cx, dy = e.clientY - cy;
     const dist = Math.hypot(dx, dy);
     if (dist > maxR) { dx = (dx / dist) * maxR; dy = (dy / dist) * maxR; }
