@@ -246,44 +246,37 @@
     background: rgba(244,63,94,0.9); color: #fff; border: none; font-size: 12px; cursor: pointer;
   }
 
-  /* --- CURVED NOTCH BOTTOM NAVIGATION BAR (Inspired by video_1.mp4) --- */
+  /* --- CLEAN DOCKED BOTTOM NAVIGATION BAR (Strictly inside frame, smooth sliding pill) --- */
   .nav-shell {
-    position: relative; flex-shrink: 0; height: calc(64px + var(--safe-b));
-    padding-bottom: var(--safe-b); z-index: 50; background: transparent;
+    position: relative; flex-shrink: 0; height: calc(60px + var(--safe-b));
+    padding: 6px 8px calc(6px + var(--safe-b)); z-index: 50;
+    background: var(--surface);
+    border-top: 1px solid var(--border-soft);
+    overflow: hidden;
   }
-  .nav-svg-bg {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; overflow: visible;
-    filter: drop-shadow(0 -4px 14px rgba(0,0,0,0.16));
-  }
-  .nav-svg-bg path {
-    fill: var(--surface);
-    transition: fill 0.22s ease;
-  }
-  .nav-active-bubble {
-    position: absolute; top: -18px; width: 48px; height: 48px; border-radius: 50%;
-    background: var(--accent-grad); color: #ffffff;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: var(--accent-glow), 0 0 0 4px var(--bg);
-    pointer-events: none; z-index: 3;
-    transition: left 0.36s cubic-bezier(0.34, 1.38, 0.64, 1), transform 0.25s ease;
-  }
-  .nav-active-bubble.pop { transform: scale(1.12); }
   nav.bottom-bar {
-    position: relative; z-index: 2; height: 64px;
+    position: relative; z-index: 2; height: 48px;
     display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
   }
+  .nav-pill-bg {
+    position: absolute; top: 0; left: 0; height: 48px; border-radius: 14px;
+    background: var(--surface-btn-hover);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-soft);
+    pointer-events: none; z-index: 1;
+    transition: left 0.28s cubic-bezier(0.22, 1, 0.36, 1), width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
   .nav-item {
+    position: relative; z-index: 2;
     background: none; border: none; color: var(--muted); font-family: inherit;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    height: 100%; font-size: 10px; font-weight: 600; cursor: pointer;
-    transition: color 0.2s ease, opacity 0.2s ease;
+    height: 48px; border-radius: 14px; font-size: 10px; font-weight: 600; cursor: pointer;
+    transition: color 0.2s ease, transform 0.16s ease;
   }
-  .nav-item .nav-ic { transition: transform 0.25s ease, opacity 0.2s ease; }
-  .nav-item.active .nav-ic { opacity: 0; transform: translateY(-10px) scale(0.6); }
-  .nav-item.active { color: var(--accent); font-weight: 800; }
-  .nav-item .nav-lbl { transition: transform 0.25s ease; }
-  .nav-item.active .nav-lbl { transform: translateY(6px); }
+  .nav-item:active { transform: scale(0.95); }
+  .nav-item .nav-ic { display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
+  .nav-item.active { color: var(--accent); font-weight: 700; }
+  .nav-item.active .nav-ic { transform: translateY(-1px); }
   .nav-item .badge {
     background: var(--accent-grad); color: #ffffff; font-size: 9px; font-weight: 800;
     padding: 0 5px; border-radius: 99px; margin-right: 2px;
@@ -509,13 +502,10 @@
     </div>
   </main>
 
-  <!-- Docked Curved-Notch Bottom Navigation Bar (Inspired by video_1.mp4) -->
+  <!-- Clean Docked Bottom Navigation Bar -->
   <div class="nav-shell" id="nav-shell">
-    <svg class="nav-svg-bg" id="nav-svg" preserveAspectRatio="none">
-      <path id="nav-path" d=""></path>
-    </svg>
-    <div class="nav-active-bubble" id="nav-bubble"></div>
     <nav class="bottom-bar" id="bottom-bar">
+      <div class="nav-pill-bg" id="nav-pill-bg"></div>
       <button class="nav-item active" id="nav-view" onclick="closeDrawers()">
         <span class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
         <span class="nav-lbl">صحنه 3D</span>
@@ -1247,7 +1237,7 @@ let lastTs = performance.now();
 <\/script>
 </body>
 </html>`;
-const STORE = 'carizma_3d_v13_scenes';
+const STORE = 'carizma_3d_v14_scenes';
 const THEME_KEY = 'carizma_3d_theme';
 let scenes = [], curId = null, curBlobUrl = null;
 let panels = [], sheetCols = 3, guides = { sz: false, grid: false };
@@ -1259,64 +1249,20 @@ function toast(m) {
   clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// --- Curved Notch Bottom Navigation Animation ---
-let currentNotchX = 0, targetNotchX = 0, notchAnimId = null;
-
-function drawNavCurve(cx) {
-  const shell = document.getElementById('nav-shell');
-  const svg = document.getElementById('nav-svg');
-  const path = document.getElementById('nav-path');
-  const w = shell.clientWidth || window.innerWidth;
-  const h = shell.clientHeight || 64;
-  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-
-  const notchW = 46;
-  const depth = 32;
-  const left = cx - notchW;
-  const right = cx + notchW;
-  const d = [
-    `M 0 0`,
-    `L ${Math.max(0, left)} 0`,
-    `C ${cx - notchW * 0.55} 0, ${cx - notchW * 0.45} ${depth}, ${cx} ${depth}`,
-    `C ${cx + notchW * 0.45} ${depth}, ${cx + notchW * 0.55} 0, ${Math.min(w, right)} 0`,
-    `L ${w} 0`,
-    `L ${w} ${h}`,
-    `L 0 ${h} Z`
-  ].join(' ');
-  path.setAttribute('d', d);
-}
-
-function animateNotch() {
-  currentNotchX += (targetNotchX - currentNotchX) * 0.22;
-  drawNavCurve(currentNotchX);
-  if (Math.abs(targetNotchX - currentNotchX) > 0.35) {
-    notchAnimId = requestAnimationFrame(animateNotch);
-  } else {
-    currentNotchX = targetNotchX;
-    drawNavCurve(currentNotchX);
-    notchAnimId = null;
-  }
-}
-
+// --- Simple Smooth Sliding Pill Bottom Navigation ---
 function syncNavNotch(instant) {
   const activeBtn = document.querySelector('.nav-item.active') || document.getElementById('nav-view');
-  const barRect = document.getElementById('bottom-bar').getBoundingClientRect();
+  const bar = document.getElementById('bottom-bar');
+  const pill = document.getElementById('nav-pill-bg');
+  if (!activeBtn || !bar || !pill) return;
+  const barRect = bar.getBoundingClientRect();
   const btnRect = activeBtn.getBoundingClientRect();
-  const cx = (btnRect.left - barRect.left) + btnRect.width / 2;
-  targetNotchX = cx;
-
-  const bubble = document.getElementById('nav-bubble');
-  bubble.style.left = (cx - 24) + 'px';
-  const ic = activeBtn.querySelector('.nav-ic');
-  if (ic) bubble.innerHTML = ic.innerHTML;
-
+  if (instant) pill.style.transition = 'none';
+  pill.style.left = (btnRect.left - barRect.left + 4) + 'px';
+  pill.style.width = Math.max(0, btnRect.width - 8) + 'px';
   if (instant) {
-    currentNotchX = cx;
-    drawNavCurve(cx);
-  } else {
-    bubble.classList.add('pop');
-    setTimeout(() => bubble.classList.remove('pop'), 200);
-    if (!notchAnimId) notchAnimId = requestAnimationFrame(animateNotch);
+    pill.offsetHeight; // force reflow
+    pill.style.transition = '';
   }
 }
 window.addEventListener('resize', () => syncNavNotch(true));
